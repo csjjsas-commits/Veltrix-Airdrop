@@ -80,9 +80,6 @@ export const MissionVerificationModal = ({
     return true;
   };
 
-  return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 px-4 py-6">
-      <div className="w-full max-w-2xl rounded-[2rem] border border-brand-electricBlue/20 bg-brand-deepBlue/95 p-8 shadow-2xl shadow-brand-blackVoid/70">
   const getModalTitle = (task: UserTask) => {
     switch (task.taskType) {
       case 'MANUAL_SUBMIT':
@@ -110,6 +107,19 @@ export const MissionVerificationModal = ({
         return 'Completa la acción requerida para finalizar la misión.';
     }
   };
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 px-4 py-6">
+      <div className="w-full max-w-2xl rounded-[2rem] border border-brand-electricBlue/20 bg-brand-deepBlue/95 p-8 shadow-2xl shadow-brand-blackVoid/70">
+        <div className="mb-6 flex items-center justify-between gap-4">
+          <div>
+            <h2 className="text-3xl font-semibold text-brand-pureWhite">
+              {getModalTitle(task)}
+            </h2>
+            <p className="mt-2 text-sm text-brand-softGray">
+              {getModalDescription(task)}
+            </p>
+          </div>
           <button
             onClick={onClose}
             className="rounded-full border border-brand-graphite/70 bg-brand-blackVoid/80 px-4 py-2 text-sm text-brand-softGray transition hover:border-brand-electricBlue"
