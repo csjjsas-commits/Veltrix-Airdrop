@@ -7,7 +7,6 @@ import { TopBar } from './components/layout/TopBar';
 import { LoginPage } from './pages/LoginPage';
 import { RegisterPage } from './pages/RegisterPage';
 import { DashboardPage } from './pages/DashboardPage';
-import { TasksPage } from './pages/TasksPage';
 import { AdminPanel } from './pages/AdminPanel';
 
 const ProtectedRoute = ({ children }: { children: JSX.Element }) => {
@@ -39,7 +38,6 @@ const AppContent = () => {
         <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<RegisterPage />} />
         <Route path="/dashboard" element={<ProtectedRoute><DashboardPage /></ProtectedRoute>} />
-        <Route path="/tasks" element={<ProtectedRoute><TasksPage /></ProtectedRoute>} />
         <Route path="/admin" element={<AdminRoute><AdminPanel /></AdminRoute>} />
         <Route path="/*" element={<Navigate to="/dashboard" replace />} />
       </Routes>

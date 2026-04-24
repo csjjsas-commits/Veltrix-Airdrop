@@ -174,26 +174,21 @@ export const MissionVerificationModal = ({
           {modalMode === 'verify' && (
             <div className="space-y-4">
               {task.actionUrl && (
-                <div className="flex gap-3">
+                <div className="space-y-3">
+                  <div className="rounded-3xl border border-brand-neonCyan/30 bg-brand-neonCyan/10 px-4 py-3">
+                    <p className="text-sm text-brand-neonCyan font-medium">
+                      ✓ Enlace abierto automáticamente
+                    </p>
+                    <p className="text-xs text-brand-softGray mt-1">
+                      El enlace se abrió en una nueva pestaña. Completa la acción y regresa para verificar.
+                    </p>
+                  </div>
                   <button
                     onClick={async () => await openLink(task)}
-                    disabled={currentState.linkOpened || currentState.isLoading}
-                    className={`rounded-3xl px-4 py-3 text-sm font-semibold transition ${
-                      currentState.linkOpened
-                        ? 'bg-brand-neonCyan/20 text-brand-neonCyan cursor-not-allowed'
-                        : 'bg-brand-electricBlue/10 text-brand-electricBlue hover:bg-brand-electricBlue/20'
-                    }`}
+                    className="w-full rounded-3xl bg-brand-graphite/70 px-4 py-3 text-sm font-semibold text-brand-softGray hover:bg-brand-graphite/50"
                   >
-                    {currentState.isLoading ? 'Abriendo...' : currentState.linkOpened ? '✓ Enlace abierto' : 'Abrir enlace'}
+                    Abrir enlace de nuevo
                   </button>
-                  {currentState.linkOpened && (
-                    <button
-                      onClick={() => openLink(task)}
-                      className="rounded-3xl bg-brand-graphite/70 px-4 py-3 text-sm font-semibold text-brand-softGray hover:bg-brand-graphite/50"
-                    >
-                      Abrir de nuevo
-                    </button>
-                  )}
                 </div>
               )}
               <p className="text-sm text-brand-softGray">

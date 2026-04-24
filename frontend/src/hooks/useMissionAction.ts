@@ -47,10 +47,15 @@ export const useMissionAction = () => {
     try {
       const updatedTask = await startTask(token, task.id);
 
-      // For tasks with actionUrl, track that link needs to be opened
+      // For tasks with actionUrl, automatically open link and track it
       if (task.actionUrl && (task.taskType === 'EXTERNAL_LINK' || task.taskType === 'AUTO_COMPLETE')) {
-        // Don't open link automatically - let user click "Open Link" button
-        setState(prev => ({ ...prev, linkOpened: false, linkOpenedAt: null }));
+        await apiOpenLink(token, task.id);
+        window.open(task.actionUrl, '_blank');
+        setState(prev => ({
+          ...prev,
+          linkOpened: true,
+          linkOpenedAt: new Date()
+        }));
       } else if (task.actionUrl) {
         // For other task types, open link immediately
         window.open(task.actionUrl, '_blank');
