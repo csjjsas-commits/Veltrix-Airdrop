@@ -16,12 +16,12 @@ export const TopBar = () => {
     <header className="sticky top-0 z-50 border-b border-brand-graphite/60 bg-brand-blackVoid/95 backdrop-blur-xl">
       <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4">
         <NavLink to="/dashboard" className="flex items-center gap-3">
-          <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-brand-electricBlue shadow-brand-glow">
-            <span className="text-lg font-bold text-brand-blackVoid">V</span>
+          <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-brand-electricBlue shadow-brand-glow overflow-hidden">
+            <img src="/branding/logo-icon.png" alt="Veltrix" className="h-8 w-8 object-contain" />
           </div>
           <div>
             <p className="text-xs uppercase tracking-[0.35em] text-brand-softGray">VELTRIX</p>
-            <p className="text-sm font-semibold text-brand-pureWhite">Command Hub</p>
+            <p className="text-sm font-semibold text-brand-pureWhite">Rewards Hub</p>
           </div>
         </NavLink>
 
