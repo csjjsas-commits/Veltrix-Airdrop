@@ -5,9 +5,10 @@ import { TaskCard } from './TaskCard';
 interface Props {
   tasks: UserTask[];
   onTaskUpdate?: (taskId: string, updatedTask: UserTask) => void;
+  onTaskAction?: (task: UserTask) => void;
 }
 
-export const TaskList = ({ tasks, onTaskUpdate }: Props) => {
+export const TaskList = ({ tasks, onTaskUpdate, onTaskAction }: Props) => {
   const handleTaskUpdate = (updatedTask: UserTask) => {
     if (onTaskUpdate) {
       onTaskUpdate(updatedTask.id, updatedTask);
@@ -26,6 +27,7 @@ export const TaskList = ({ tasks, onTaskUpdate }: Props) => {
             key={task.id}
             task={task}
             onTaskUpdate={handleTaskUpdate}
+            onTaskAction={onTaskAction}
           />
         ))
       )}

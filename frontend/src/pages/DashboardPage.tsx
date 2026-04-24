@@ -2,11 +2,13 @@ import { useEffect, useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
 import { useAnalytics } from '../hooks/useAnalytics';
-import { getDashboard, getTasks, completeTask, startTask, submitTaskForReview, verifyTask } from '../services/api';
+import { useMissionAction } from '../hooks/useMissionAction';
+import { getDashboard, getTasks, completeTask } from '../services/api';
 import { DashboardData, UserTask } from '../types';
 import { HeroPanel } from '../components/dashboard/HeroPanel';
 import { StatsGrid } from '../components/dashboard/StatsGrid';
 import { MissionCard } from '../components/dashboard/MissionCard';
+import { MissionVerificationModal } from '../components/MissionVerificationModal';
 import { SkeletonCard } from '../components/ui/SkeletonCard';
 import { motion } from 'framer-motion';
 
@@ -14,15 +16,13 @@ export const DashboardPage = () => {
   const { token } = useAuth();
   const { navigation } = useAnalytics();
   const navigate = useNavigate();
+  const { state: missionState, resetState: resetMissionState } = useMissionAction();
   const [dashboard, setDashboard] = useState<DashboardData | null>(null);
   const [availableTasks, setAvailableTasks] = useState<UserTask[]>([]);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(true);
   const [actionLoading, setActionLoading] = useState(false);
   const [modalTask, setModalTask] = useState<UserTask | null>(null);
-  const [modalMode, setModalMode] = useState<'manual' | 'wallet' | 'verify' | null>(null);
-  const [modalInput, setModalInput] = useState('');
-  const [modalError, setModalError] = useState('');
   const [inProgressTasks, setInProgressTasks] = useState<Record<string, boolean>>({});
 
   const fetchDashboardData = useCallback(async () => {
@@ -68,64 +68,20 @@ export const DashboardPage = () => {
     }
   };
 
-  const showModal = (task: UserTask, mode: 'manual' | 'wallet' | 'verify') => {
+  const showModal = (task: UserTask) => {
     setModalTask(task);
-    setModalMode(mode);
-    setModalInput('');
-    setModalError('');
+    resetMissionState();
   };
 
   const closeModal = () => {
     setModalTask(null);
-    setModalMode(null);
-    setModalInput('');
-    setModalError('');
   };
 
-  const completeMission = async (taskId: string) => {
-    if (!token) return;
-    setActionLoading(true);
-    try {
-      await completeTask(token, taskId);
-      await fetchDashboardData();
-    } catch (err) {
-      setError('No se pudo completar la misión');
-    } finally {
-      setActionLoading(false);
-    }
-  };
-
-  const submitMissionProof = async () => {
-    if (!token || !modalTask) return;
-    if (modalInput.trim().length < 20) {
-      setModalError('La prueba debe tener al menos 20 caracteres.');
-      return;
-    }
-
-    setActionLoading(true);
-    try {
-      await submitTaskForReview(token, modalTask.id, modalInput.trim());
-      closeModal();
-      await fetchDashboardData();
-    } catch (err: any) {
-      setModalError(err?.message || 'Error al enviar la prueba.');
-    } finally {
-      setActionLoading(false);
-    }
-  };
-
-  const verifyMission = async (verificationData?: any) => {
-    if (!token || !modalTask) return;
-    setActionLoading(true);
-    try {
-      await verifyTask(token, modalTask.id, verificationData || {});
-      closeModal();
-      await fetchDashboardData();
-    } catch (err: any) {
-      setModalError(err?.message || 'Error al verificar la misión.');
-    } finally {
-      setActionLoading(false);
-    }
+  const handleTaskComplete = (updatedTask: UserTask) => {
+    setAvailableTasks(prev => prev.map(task =>
+      task.id === updatedTask.id ? updatedTask : task
+    ));
+    fetchDashboardData();
   };
 
   const getMissionCategory = (task: UserTask) => {
@@ -149,31 +105,22 @@ export const DashboardPage = () => {
   const handleMissionStart = async (task: UserTask) => {
     if (task.status === 'COMPLETED') return;
 
+    // For tasks that need verification, show modal
+    if (task.taskType === 'EXTERNAL_LINK' || task.taskType === 'AUTO_COMPLETE' ||
+        task.taskType === 'MANUAL_SUBMIT' || task.taskType === 'WALLET_ACTION') {
+      showModal(task);
+      return;
+    }
+
+    // For other tasks, handle directly
     const category = getMissionCategory(task);
 
     switch (category) {
-      case 'EXTERNAL_LINK':
-      case 'REFERRAL':
-        if (!token) return;
-        setActionLoading(true);
-        try {
-          await startTask(token, task.id);
-          if (task.actionUrl) {
-            window.open(task.actionUrl, '_blank');
-          }
-          showModal(task, 'verify');
-          setInProgressTasks(prev => ({ ...prev, [task.id]: true }));
-        } catch (err) {
-          setError('No se pudo iniciar la misión');
-        } finally {
-          setActionLoading(false);
-        }
-        break;
       case 'INTERNAL_ACTION':
         if (!token) return;
         setActionLoading(true);
         try {
-          await startTask(token, task.id);
+          // For internal actions, navigate directly
           if (task.actionUrl) {
             navigate(task.actionUrl);
           } else if (task.verificationData?.path) {
@@ -188,17 +135,9 @@ export const DashboardPage = () => {
           setActionLoading(false);
         }
         break;
-      case 'MANUAL_SUBMIT':
-        showModal(task, 'manual');
-        break;
-      case 'AUTO_COMPLETE':
-        await completeMission(task.id);
-        break;
-      case 'WALLET_ACTION':
-        showModal(task, 'wallet');
-        break;
       default:
-        await completeMission(task.id);
+        // For auto-complete tasks without actionUrl, complete immediately
+        await completeTask(token!, task.id);
         break;
     }
   };
@@ -289,98 +228,14 @@ export const DashboardPage = () => {
             </div>
           </motion.section>
 
-          {modalTask && modalMode && (
-            <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 px-4 py-6">
-              <div className="w-full max-w-2xl rounded-[2rem] border border-brand-electricBlue/20 bg-brand-deepBlue/95 p-8 shadow-2xl shadow-brand-blackVoid/70">
-                <div className="mb-6 flex items-center justify-between gap-4">
-                  <div>
-                    <h2 className="text-3xl font-semibold text-brand-pureWhite">{modalMode === 'manual' ? 'Submit Proof' : modalMode === 'wallet' ? 'Connect Wallet' : 'Verify Mission'}</h2>
-                    <p className="mt-2 text-sm text-brand-softGray">{modalMode === 'manual'
-                      ? 'Provide a short proof for your submission.'
-                      : modalMode === 'wallet'
-                      ? 'Connect your wallet and complete the task.'
-                      : 'Open the external link and verify your action to complete the mission.'}
-                    </p>
-                  </div>
-                  <button
-                    onClick={closeModal}
-                    className="rounded-full border border-brand-graphite/70 bg-brand-blackVoid/80 px-4 py-2 text-sm text-brand-softGray transition hover:border-brand-electricBlue"
-                  >
-                    Close
-                  </button>
-                </div>
-
-                <div className="space-y-5">
-                  <div className="rounded-3xl border border-brand-graphite/70 bg-brand-blackVoid/75 p-5 text-brand-softGray">
-                    <p className="text-sm uppercase tracking-[0.3em] text-brand-neonCyan">Mission</p>
-                    <h3 className="mt-3 text-xl font-semibold text-brand-pureWhite">{modalTask.title}</h3>
-                    <p className="mt-2 text-sm leading-6">{modalTask.description || 'Provide the required details to finish this mission.'}</p>
-                  </div>
-
-                  {modalMode === 'manual' && (
-                    <div className="space-y-4">
-                      <textarea
-                        value={modalInput}
-                        onChange={(e) => setModalInput(e.target.value)}
-                        placeholder="Describe what you completed..."
-                        className="w-full min-h-[160px] rounded-3xl border border-brand-graphite/70 bg-brand-blackVoid/80 px-4 py-4 text-brand-pureWhite outline-none focus:border-brand-neonCyan"
-                      />
-                      {modalError && <p className="text-sm text-red-400">{modalError}</p>}
-                      <button
-                        onClick={submitMissionProof}
-                        disabled={actionLoading}
-                        className="rounded-3xl bg-brand-neonCyan px-5 py-3 text-sm font-semibold text-brand-blackVoid transition hover:bg-brand-electricBlue disabled:opacity-50"
-                      >
-                        {actionLoading ? 'Enviando...' : 'Enviar prueba y completar'}
-                      </button>
-                    </div>
-                  )}
-
-                  {modalMode === 'wallet' && (
-                    <div className="space-y-4">
-                      <input
-                        value={modalInput}
-                        onChange={(e) => setModalInput(e.target.value)}
-                        placeholder="Wallet address or connection note"
-                        className="w-full rounded-3xl border border-brand-graphite/70 bg-brand-blackVoid/80 px-4 py-3 text-brand-pureWhite outline-none focus:border-brand-neonCyan"
-                      />
-                      {modalError && <p className="text-sm text-red-400">{modalError}</p>}
-                      <button
-                        onClick={() => verifyMission({ action: 'connect', walletAddress: modalInput.trim() })}
-                        disabled={actionLoading}
-                        className="rounded-3xl bg-brand-neonCyan px-5 py-3 text-sm font-semibold text-brand-blackVoid transition hover:bg-brand-electricBlue disabled:opacity-50"
-                      >
-                        {actionLoading ? 'Conectando...' : 'Completar conexión'}
-                      </button>
-                    </div>
-                  )}
-
-                  {modalMode === 'verify' && (
-                    <div className="space-y-4">
-                      {modalTask.verificationData?.url && (
-                        <a
-                          href={modalTask.verificationData.url}
-                          target="_blank"
-                          rel="noreferrer"
-                          className="inline-flex items-center gap-2 rounded-3xl bg-brand-electricBlue/10 px-4 py-3 text-sm font-semibold text-brand-electricBlue transition hover:bg-brand-electricBlue/20"
-                        >
-                          Abrir enlace externo
-                        </a>
-                      )}
-                      <p className="text-sm text-brand-softGray">Once you finish the external action, press Verify to confirm and complete the task.</p>
-                      {modalError && <p className="text-sm text-red-400">{modalError}</p>}
-                      <button
-                        onClick={() => verifyMission({ verificationType: modalTask.verificationType, verificationData: modalTask.verificationData })}
-                        disabled={actionLoading}
-                        className="rounded-3xl bg-brand-neonCyan px-5 py-3 text-sm font-semibold text-brand-blackVoid transition hover:bg-brand-electricBlue disabled:opacity-50"
-                      >
-                        {actionLoading ? 'Verificando...' : 'Verificar y completar'}
-                      </button>
-                    </div>
-                  )}
-                </div>
-              </div>
-            </div>
+          {modalTask && (
+            <MissionVerificationModal
+              task={modalTask}
+              isOpen={true}
+              onClose={closeModal}
+              onTaskComplete={handleTaskComplete}
+              state={missionState}
+            />
           )}
         </div>
       </main>

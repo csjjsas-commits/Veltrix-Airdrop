@@ -83,6 +83,10 @@ export const startTask = async (token: string, taskId: string): Promise<UserTask
   return request<UserTask>(`/tasks/${taskId}/start`, 'POST', undefined, token);
 };
 
+export const openLink = async (token: string, taskId: string): Promise<UserTask> => {
+  return request<UserTask>(`/tasks/${taskId}/open-link`, 'POST', undefined, token);
+};
+
 export const submitTaskForReview = async (token: string, taskId: string, proof: string, description?: string): Promise<UserTask> => {
   return request<UserTask>(`/tasks/${taskId}/submit`, 'POST', { proof, description }, token);
 };

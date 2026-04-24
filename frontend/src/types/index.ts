@@ -70,6 +70,7 @@ export interface UserTask {
   status: 'PENDING' | 'COMPLETED' | 'FAILED' | 'IN_PROGRESS' | null;
   completedAt: string | null;
   pointsAwarded: number | null;
+  linkOpenedAt: string | null;
 }
 
 export interface TaskPayload {

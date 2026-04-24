@@ -8,9 +8,10 @@ import { VerificationButton } from '../verification/VerificationButton';
 interface Props {
   task: UserTask;
   onTaskUpdate?: (updatedTask: UserTask) => void;
+  onTaskAction?: (task: UserTask) => void;
 }
 
-export const TaskCard = ({ task, onTaskUpdate }: Props) => {
+export const TaskCard = ({ task, onTaskUpdate, onTaskAction }: Props) => {
   const [isCompleting, setIsCompleting] = useState(false);
   const [isStarting, setIsStarting] = useState(false);
   const [countdown, setCountdown] = useState<string>('');
@@ -122,7 +123,7 @@ export const TaskCard = ({ task, onTaskUpdate }: Props) => {
     if (task.taskType === 'EXTERNAL_LINK' || task.taskType === 'REFERRAL') {
       return (
         <button
-          onClick={() => task.actionUrl && handleStart(task.actionUrl)}
+          onClick={() => onTaskAction ? onTaskAction(task) : handleStart(task.actionUrl || undefined)}
           disabled={!task.actionUrl || isStarting}
           className="rounded-full bg-brand-neonCyan/10 px-4 py-2 text-brand-neonCyan hover:bg-brand-neonCyan/20 disabled:opacity-50"
         >
@@ -134,7 +135,7 @@ export const TaskCard = ({ task, onTaskUpdate }: Props) => {
     if (task.taskType === 'WALLET_ACTION') {
       return (
         <button
-          onClick={() => task.actionUrl && handleStart(task.actionUrl)}
+          onClick={() => onTaskAction ? onTaskAction(task) : handleStart(task.actionUrl || undefined)}
           disabled={!task.actionUrl || isStarting}
           className="rounded-full bg-brand-amber-500/10 px-4 py-2 text-brand-amber-400 hover:bg-brand-amber-500/20 disabled:opacity-50"
         >
@@ -146,7 +147,7 @@ export const TaskCard = ({ task, onTaskUpdate }: Props) => {
     if (task.taskType === 'MANUAL_SUBMIT') {
       return (
         <button
-          disabled
+          onClick={() => onTaskAction && onTaskAction(task)}
           className="rounded-full bg-brand-graphite/70 px-4 py-2 text-brand-softGray cursor-not-allowed"
         >
           Envío manual

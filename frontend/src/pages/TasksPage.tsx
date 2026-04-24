@@ -1,17 +1,21 @@
 import { useEffect, useState, useCallback } from 'react';
 import { useAuth } from '../hooks/useAuth';
 import { useAnalytics } from '../hooks/useAnalytics';
+import { useMissionAction } from '../hooks/useMissionAction';
 import { getTasks } from '../services/api';
 import { UserTask } from '../types';
 import { TaskList } from '../components/tasks/TaskList';
+import { MissionVerificationModal } from '../components/MissionVerificationModal';
 import { SkeletonCard } from '../components/ui/SkeletonCard';
 
 export const TasksPage = () => {
   const { token } = useAuth();
   const { navigation } = useAnalytics();
+  const { state: missionState, resetState: resetMissionState } = useMissionAction();
   const [tasks, setTasks] = useState<UserTask[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [modalTask, setModalTask] = useState<UserTask | null>(null);
 
   const fetchTasks = useCallback(async () => {
     if (!token) return;
@@ -45,6 +49,30 @@ export const TasksPage = () => {
     setTasks((prevTasks) => prevTasks.map((task) => (task.id === taskId ? updatedTask : task)));
   };
 
+  const handleTaskAction = (task: UserTask) => {
+    // For tasks that need verification, show modal
+    if (task.taskType === 'EXTERNAL_LINK' || task.taskType === 'AUTO_COMPLETE' ||
+        task.taskType === 'MANUAL_SUBMIT' || task.taskType === 'WALLET_ACTION') {
+      setModalTask(task);
+      resetMissionState();
+      return;
+    }
+
+    // For other tasks, handle through TaskCard component
+    // The TaskCard will handle the logic for these task types
+  };
+
+  const handleTaskComplete = (updatedTask: UserTask) => {
+    setTasks((prevTasks) => prevTasks.map((task) =>
+      task.id === updatedTask.id ? updatedTask : task
+    ));
+    setModalTask(null);
+  };
+
+  const closeModal = () => {
+    setModalTask(null);
+  };
+
   return (
     <main className="min-h-screen bg-brand-blackVoid text-brand-pureWhite">
       <section className="mx-auto max-w-7xl px-6 py-10">
@@ -68,7 +96,17 @@ export const TasksPage = () => {
             <SkeletonCard />
           </div>
         ) : (
-          <TaskList tasks={tasks} onTaskUpdate={handleTaskUpdate} />
+          <TaskList tasks={tasks} onTaskUpdate={handleTaskUpdate} onTaskAction={handleTaskAction} />
+        )}
+
+        {modalTask && (
+          <MissionVerificationModal
+            task={modalTask}
+            isOpen={true}
+            onClose={closeModal}
+            onTaskComplete={handleTaskComplete}
+            state={missionState}
+          />
         )}
       </section>
     </main>
