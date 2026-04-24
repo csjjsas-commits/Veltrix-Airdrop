@@ -10,12 +10,9 @@ for (const key of requiredEnv) {
   }
 }
 
-if (process.env.NODE_ENV === 'production' && !process.env.TURNSTILE_SECRET_KEY) {
-  throw new Error('Missing required environment variable: TURNSTILE_SECRET_KEY');
-}
-
-if (process.env.NODE_ENV === 'production' && !process.env.FRONTEND_URL) {
-  throw new Error('Missing required environment variable: FRONTEND_URL');
+// Warn if FRONTEND_URL is not set (defaults to localhost)
+if (!process.env.FRONTEND_URL) {
+  console.warn('Warning: FRONTEND_URL not set, defaulting to http://localhost:5173');
 }
 
 export const env = {
