@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
-import { env } from '../utils/env';
-import { ValidationError } from '../utils/errors';
+import { env } from '../utils/env.js';
+import { ValidationError } from '../utils/errors.js';
 
 type TurnstileResponse = {
   success: boolean;

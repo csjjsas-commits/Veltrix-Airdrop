@@ -1,8 +1,8 @@
 import { Request, Response, NextFunction } from 'express';
-import { registerSchema, loginSchema } from '../schemas/authSchema';
-import { register, login, getUserById } from '../services/authService';
+import { registerSchema, loginSchema } from '../schemas/authSchema.js';
+import { register, login, getUserById } from '../services/authService.js';
 import { ZodError } from 'zod';
-import { UnauthorizedError } from '../utils/errors';
+import { UnauthorizedError } from '../utils/errors.js';
 
 export const registerController = async (req: Request, res: Response, next: NextFunction) => {
   try {

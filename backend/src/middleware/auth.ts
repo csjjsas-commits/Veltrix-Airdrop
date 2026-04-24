@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
-import { verifyToken, TokenPayload } from '../services/authService';
-import { UnauthorizedError, ForbiddenError } from '../utils/errors';
+import { verifyToken, TokenPayload } from '../services/authService.js';
+import { UnauthorizedError, ForbiddenError } from '../utils/errors.js';
 
 declare global {
   namespace Express {

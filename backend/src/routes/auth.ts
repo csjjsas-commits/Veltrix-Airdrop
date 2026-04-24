@@ -1,10 +1,10 @@
 import { Router } from 'express';
-import { registerController, loginController, meController } from '../controllers/authController';
-import { authMiddleware } from '../middleware/auth';
-import { authLimiter, registerLimiter } from '../middleware/rateLimiter';
-import { verifyCaptcha } from '../middleware/captcha';
-import discordRouter from './discord';
-import youtubeRouter from './youtube';
+import { registerController, loginController, meController } from '../controllers/authController.js';
+import { authMiddleware } from '../middleware/auth.js';
+import { authLimiter, registerLimiter } from '../middleware/rateLimiter.js';
+import { verifyCaptcha } from '../middleware/captcha.js';
+import discordRouter from './discord.js';
+import youtubeRouter from './youtube.js';
 
 const router = Router();
 
