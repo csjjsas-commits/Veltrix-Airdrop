@@ -5,7 +5,6 @@ import {
   getAdminConfig,
   getAdminStats,
   getAdminTasks,
-  getAdminLeaderboard,
   getAnalyticsMetrics,
   getSubmissions,
   reviewSubmission,
@@ -94,12 +93,11 @@ export const AdminPanel = () => {
   const fetchAdminData = async () => {
     if (!token) return;
 
-    const [taskList, submissionList, configData, statsData, leaderboardData, analyticsData] = await Promise.all([
+    const [taskList, submissionList, configData, statsData, analyticsData] = await Promise.all([
       getAdminTasks(token),
       getSubmissions(token),
       getAdminConfig(token),
       getAdminStats(token),
-      getAdminLeaderboard(token),
       getAnalyticsMetrics(token)
     ]);
 
@@ -107,7 +105,6 @@ export const AdminPanel = () => {
     setSubmissions(submissionList);
     setConfig(configData);
     setStats(statsData);
-    setLeaderboard(leaderboardData);
     setAnalyticsMetrics(analyticsData);
   };
 

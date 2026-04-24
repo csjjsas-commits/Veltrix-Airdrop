@@ -9,8 +9,9 @@ interface AuthState {
 
 interface AuthContextValue extends AuthState {
   login: (email: string, password: string, captchaToken: string) => Promise<void>;
-  register: (name: string, email: string, password: string, captchaToken: string) => Promise<void>;
+  register: (name: string, email: string, password: string, captchaToken: string, referralCode?: string) => Promise<void>;
   logout: () => void;
+  setUser: (user: UserInfo) => void;
 }
 
 const AuthContext = createContext<AuthContextValue | undefined>(undefined);
@@ -35,8 +36,8 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     setState(newState);
   };
 
-  const register = async (name: string, email: string, password: string, captchaToken: string) => {
-    const response = await api.register(name, email, password, captchaToken);
+  const register = async (name: string, email: string, password: string, captchaToken: string, referralCode?: string) => {
+    const response = await api.register(name, email, password, captchaToken, referralCode);
     const newState = { user: response.user, token: response.token };
     localStorage.setItem(AUTH_STORAGE_KEY, JSON.stringify(newState));
     setState(newState);
@@ -47,8 +48,17 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     setState({ user: null, token: null });
   };
 
+  const setUser = (user: UserInfo) => {
+    setState(prev => ({ ...prev, user }));
+    const stored = localStorage.getItem(AUTH_STORAGE_KEY);
+    if (stored) {
+      const parsed = JSON.parse(stored);
+      localStorage.setItem(AUTH_STORAGE_KEY, JSON.stringify({ ...parsed, user }));
+    }
+  };
+
   const value = useMemo(
-    () => ({ ...state, login, register, logout }),
+    () => ({ ...state, login, register, logout, setUser }),
     [state]
   );
 

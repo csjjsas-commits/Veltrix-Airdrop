@@ -1,5 +1,5 @@
 import { FormEvent, useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate, Link, useSearchParams } from 'react-router-dom';
 import { useAuth } from '../../hooks/useAuth';
 import { useAnalytics } from '../../hooks/useAnalytics';
 import { useToast } from '../ui/ToastProvider';
@@ -10,6 +10,8 @@ export const RegisterForm = () => {
   const { showToast } = useToast();
   const navigate = useNavigate();
   const { user } = useAnalytics();
+  const [searchParams] = useSearchParams();
+  const referralCode = searchParams.get('ref');
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -26,7 +28,7 @@ export const RegisterForm = () => {
     try {
       // In development, allow empty token; in production, require valid token
       const tokenToSend = import.meta.env.DEV ? (captchaToken || 'dev-mode') : captchaToken;
-      await register(name.trim(), email.trim(), password, tokenToSend);
+      await register(name.trim(), email.trim(), password, tokenToSend, referralCode || undefined);
       user.register('email');
       showToast({
         type: 'success',

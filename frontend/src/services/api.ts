@@ -63,8 +63,8 @@ export const login = async (email: string, password: string, captchaToken: strin
   return request<{ user: UserInfo; token: string }>('/auth/login', 'POST', { email, password, captchaToken });
 };
 
-export const register = async (name: string, email: string, password: string, captchaToken: string) => {
-  return request<{ user: UserInfo; token: string }>('/auth/register', 'POST', { name, email, password, captchaToken });
+export const register = async (name: string, email: string, password: string, captchaToken: string, referralCode?: string) => {
+  return request<{ user: UserInfo; token: string }>('/auth/register', 'POST', { name, email, password, captchaToken, referralCode });
 };
 
 export const getDashboard = async (token: string): Promise<DashboardData> => {
@@ -111,8 +111,9 @@ export const getAdminStats = async (token: string): Promise<AdminStats> => {
   return request<AdminStats>('/admin/stats', 'GET', undefined, token);
 };
 
-export const getAdminLeaderboard = async (token: string): Promise<LeaderboardEntry[]> => {
-  return request<LeaderboardEntry[]>('/admin/leaderboard', 'GET', undefined, token);
+export const saveWallet = async (walletAddress: string): Promise<{ user: UserInfo }> => {
+  const token = localStorage.getItem('airdrop_auth') ? JSON.parse(localStorage.getItem('airdrop_auth')!).token : '';
+  return request<{ user: UserInfo }>('/auth/wallet', 'POST', { walletAddress }, token);
 };
 
 export const getAnalyticsMetrics = async (token: string): Promise<AnalyticsMetrics> => {

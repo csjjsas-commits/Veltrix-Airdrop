@@ -3,6 +3,9 @@ export interface UserInfo {
   email: string;
   name: string;
   role: 'USER' | 'ADMIN';
+  referralCode?: string;
+  walletAddress?: string;
+  walletConnectedAt?: string;
 }
 
 export interface DashboardStats {
@@ -71,6 +74,7 @@ export interface UserTask {
   completedAt: string | null;
   pointsAwarded: number | null;
   linkOpenedAt: string | null;
+  referralCount?: number;
 }
 
 export interface TaskPayload {
