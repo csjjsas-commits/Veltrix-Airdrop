@@ -23,7 +23,9 @@ app.use(express.urlencoded({ extended: false, limit: '10kb' }));
 app.use(globalLimiter);
 
 app.use((req, _res, next) => {
-  logger.info(`${req.method} ${req.originalUrl} ${req.ip}`);
+  if (process.env.NODE_ENV !== 'production') {
+    logger.info(`${req.method} ${req.originalUrl} ${req.ip}`);
+  }
   next();
 });
 

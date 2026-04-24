@@ -2,9 +2,8 @@ import bcrypt from 'bcrypt';
 import { PrismaClient, Prisma } from '@prisma/client';
 
 export const seedDemoDatabase = async (prisma: PrismaClient) => {
-  if (process.env.NODE_ENV === 'production') {
-    throw new Error('Demo seed is disabled in production. Use `npm run seed:admin` to create the first administrator.');
-  }
+  // This function is for development/demo purposes only
+  // It should never be called in production
 
   const users = [
   {

@@ -16,10 +16,17 @@ export const errorHandler = (
   });
 
   if (error instanceof AppError) {
-    return res.status(error.statusCode).json({
+    const response: any = {
       success: false,
       message: error.message
-    });
+    };
+
+    // Include details in development
+    if (process.env.NODE_ENV === 'development' && (error as any).details) {
+      response.details = (error as any).details;
+    }
+
+    return res.status(error.statusCode).json(response);
   }
 
   res.status(500).json({

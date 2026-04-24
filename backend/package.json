@@ -11,7 +11,8 @@
     "backup": "powershell -ExecutionPolicy Bypass -File scripts/backup-db.ps1",
     "db:push": "prisma db push",
     "seed": "prisma db push && prisma db seed",
-    "seed:admin": "tsx ./src/utils/createAdminUser.ts"
+    "seed:admin": "tsx ./scripts/create-admin-user.ts",
+    "cleanup:demo": "tsx ./scripts/cleanup-demo-data.ts"
   },
   "dependencies": {
     "@prisma/client": "^5.22.0",

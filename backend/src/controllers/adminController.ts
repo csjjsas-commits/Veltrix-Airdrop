@@ -1,5 +1,12 @@
 import { Request, Response } from 'express';
 import { ZodError } from 'zod';
+import { sanitizeLog } from '../utils/sanitize';
+
+const devLog = (...args: unknown[]) => {
+  if (process.env.NODE_ENV !== 'production') {
+    devLog(...args);
+  }
+};
 import {
   getAllTasks,
   createTask,
@@ -45,11 +52,11 @@ export const getTasks = async (req: Request, res: Response): Promise<void> => {
 
 export const createTaskHandler = async (req: Request, res: Response): Promise<void> => {
   try {
-    console.log('📥 [POST /admin/tasks] Received body:', JSON.stringify(req.body, null, 2));
+    devLog('📥 [POST /admin/tasks] Received body:', JSON.stringify(sanitizeLog(req.body), null, 2));
     const taskData = createTaskSchema.parse(req.body);
-    console.log('✅ [Validation passed] Parsed data:', JSON.stringify(taskData, null, 2));
+    devLog('✅ [Validation passed] Parsed data:', JSON.stringify(taskData, null, 2));
     const task = await createTask(taskData);
-    console.log('✅ [Task created]', task.id);
+    devLog('✅ [Task created]', task.id);
 
     res.status(201).json({
       success: true,
@@ -78,12 +85,12 @@ export const createTaskHandler = async (req: Request, res: Response): Promise<vo
 export const updateTaskHandler = async (req: Request, res: Response): Promise<void> => {
   try {
     const { id } = req.params;
-    console.log(`📥 [PUT /admin/tasks/${id}] Body:`, JSON.stringify(req.body, null, 2));
+    devLog(`📥 [PUT /admin/tasks/${id}] Body:`, JSON.stringify(sanitizeLog(req.body), null, 2));
     const taskData = updateTaskSchema.parse(req.body);
-    console.log('✅ [Validation passed]');
+    devLog('✅ [Validation passed]');
 
     const task = await updateTask(id, taskData);
-    console.log(`✅ [Task ${id} updated]`);
+    devLog(`✅ [Task ${id} updated]`);
 
     res.json({
       success: true,

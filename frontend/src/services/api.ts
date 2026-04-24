@@ -23,8 +23,17 @@ const request = async <T>(path: string, method = 'GET', body?: unknown, token?: 
     headers.Authorization = `Bearer ${token}`;
   }
 
-  console.log(`📡 [${method}] ${path}`);
-  if (body) console.log('  Payload:', body);
+  // Only log in development, and mask sensitive data
+  if (import.meta.env.DEV) {
+    console.log(`📡 [${method}] ${path}`);
+    if (body && typeof body === 'object') {
+      const maskedBody = { ...body };
+      if ('password' in maskedBody) maskedBody.password = '[REDACTED]';
+      if ('captchaToken' in maskedBody) maskedBody.captchaToken = '[REDACTED]';
+      if ('token' in maskedBody) maskedBody.token = '[REDACTED]';
+      console.log('  Payload:', maskedBody);
+    }
+  }
 
   const response = await fetch(`${API_BASE}${path}`, {
     method,

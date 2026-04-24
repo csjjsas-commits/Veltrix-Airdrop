@@ -21,12 +21,16 @@ export const verifyCaptcha = async (req: Request, _res: Response, next: NextFunc
     }
 
     if (!token || typeof token !== 'string' || token.trim().length === 0) {
-      throw new ValidationError('Captcha requerido');
+      console.error('Captcha token missing or empty');
+      throw new ValidationError('Captcha token missing');
     }
 
     if (!env.TURNSTILE_SECRET_KEY) {
-      throw new ValidationError('Captcha no configurado correctamente');
+      console.error('TURNSTILE_SECRET_KEY not configured');
+      throw new ValidationError('Captcha not configured correctly');
     }
+
+    console.log('Verifying captcha token with Cloudflare...');
 
     const response = await fetch('https://challenges.cloudflare.com/turnstile/v0/siteverify', {
       method: 'POST',
@@ -40,9 +44,17 @@ export const verifyCaptcha = async (req: Request, _res: Response, next: NextFunc
     const payload = (await response.json()) as TurnstileResponse;
 
     if (!payload.success) {
-      throw new ValidationError('Captcha inválido');
+      console.error('Turnstile verification failed:', {
+        'error-codes': payload['error-codes'],
+        hostname: payload.hostname,
+        challenge_ts: payload.challenge_ts
+      });
+
+      const details = process.env.NODE_ENV === 'development' ? { 'error-codes': payload['error-codes'] } : undefined;
+      throw new ValidationError('Captcha inválido', details);
     }
 
+    console.log('Captcha verification successful');
     next();
   } catch (error) {
     next(error);

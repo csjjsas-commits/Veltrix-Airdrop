@@ -3,10 +3,8 @@ import { sanitizeString } from '../utils/sanitize';
 
 const nonEmptyString = () => z.string().trim().min(1, 'El campo no puede quedar vacío').max(255, 'El valor es demasiado largo').transform(sanitizeString);
 
-// CAPTCHA completamente opcional en desarrollo
-const captchaSchema = process.env.NODE_ENV === 'production'
-  ? nonEmptyString()
-  : z.string().optional().default('dev-mode').or(z.string().min(0));
+// CAPTCHA opcional - validado por middleware
+const captchaSchema = z.string().optional();
 
 export const registerSchema = z.object({
   email: z.string().trim().email('Email inválido').max(254, 'Email demasiado largo').transform(sanitizeString),

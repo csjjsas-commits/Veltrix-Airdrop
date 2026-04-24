@@ -14,6 +14,7 @@ export const LoginForm = () => {
   const [captchaToken, setCaptchaToken] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const [resetCounter, setResetCounter] = useState(0);
 
   const { showToast } = useToast();
 
@@ -23,8 +24,8 @@ export const LoginForm = () => {
     setLoading(true);
 
     try {
-      // Siempre envía un token, incluso si está vacío
-      const tokenToSend = captchaToken || 'dev-mode';
+      // In development, allow empty token; in production, require valid token
+      const tokenToSend = import.meta.env.DEV ? (captchaToken || 'dev-mode') : captchaToken;
       await login(email.trim(), password, tokenToSend);
       user.login('email');
       showToast({
@@ -41,6 +42,8 @@ export const LoginForm = () => {
         title: 'Error de acceso',
         description: message
       });
+      // Reset Turnstile widget to get a new token
+      setResetCounter(prev => prev + 1);
       setLoading(false);
     }
   };
@@ -71,7 +74,7 @@ export const LoginForm = () => {
           />
         </label>
         {error && <p className="text-sm text-rose-400">{error}</p>}
-        <TurnstileWidget onVerify={setCaptchaToken} />
+        <TurnstileWidget onVerify={setCaptchaToken} resetTrigger={resetCounter} />
         <button
           type="submit"
           className="w-full rounded-3xl bg-gradient-to-r from-fuchsia-500 via-violet-500 to-sky-500 px-4 py-3 text-sm font-semibold text-slate-950 shadow-lg shadow-fuchsia-500/20 transition duration-300 hover:scale-[1.01] hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-60"
