@@ -1,5 +1,5 @@
-import { VerificationProvider, VerificationResult } from './types';
-import prisma from '../../utils/prismaClient';
+import { VerificationProvider, VerificationResult } from './types.js';
+import prisma from '../../utils/prismaClient.js';
 import { ethers } from 'ethers';
 
 export class WalletService implements VerificationProvider {

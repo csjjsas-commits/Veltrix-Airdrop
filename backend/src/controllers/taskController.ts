@@ -12,10 +12,10 @@ import {
   TaskWithStatus,
   UserStats,
   DashboardData
-} from '../services/taskService';
-import { VerificationService, VerificationRequest } from '../services/verificationService';
-import { taskIdSchema, submitTaskSchema } from '../schemas/taskSchema';
-import { ValidationError } from '../utils/errors';
+} from '../services/taskService.js';
+import { VerificationService, VerificationRequest } from '../services/verificationService.js';
+import { taskIdSchema, submitTaskSchema } from '../schemas/taskSchema.js';
+import { ValidationError } from '../utils/errors.js';
 
 export const getTasks = async (req: Request, res: Response): Promise<void> => {
   try {

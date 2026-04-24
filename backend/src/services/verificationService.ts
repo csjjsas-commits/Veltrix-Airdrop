@@ -1,8 +1,8 @@
-import prisma from '../utils/prismaClient';
-import { VerificationProviderRegistry } from './verification/registry';
-import { TaskVerificationTypes, TaskVerificationType, VerificationResult } from './verification/types';
-import { NotFoundError, ValidationError } from '../utils/errors';
-import { ReferralService } from './verification/referral.service';
+import prisma from '../utils/prismaClient.js';
+import { VerificationProviderRegistry } from './verification/registry.js';
+import { TaskVerificationTypes, TaskVerificationType, VerificationResult } from './verification/types.js';
+import { NotFoundError, ValidationError } from '../utils/errors.js';
+import { ReferralService } from './verification/referral.service.js';
 
 export interface VerificationRequest {
   verificationType: TaskVerificationType;

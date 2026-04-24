@@ -1,7 +1,7 @@
 import jwt from 'jsonwebtoken';
-import prisma from '../utils/prismaClient';
-import { env } from '../utils/env';
-import { NotFoundError, ValidationError } from '../utils/errors';
+import prisma from '../utils/prismaClient.js';
+import { env } from '../utils/env.js';
+import { NotFoundError, ValidationError } from '../utils/errors.js';
 
 const DISCORD_AUTHORIZE_URL = 'https://discord.com/api/oauth2/authorize';
 const DISCORD_TOKEN_URL = 'https://discord.com/api/oauth2/token';

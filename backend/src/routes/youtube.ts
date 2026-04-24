@@ -1,7 +1,7 @@
 import { Router } from 'express';
-import { authMiddleware } from '../middleware/auth';
-import { YouTubeService } from '../services/verification/youtube.service';
-import prisma from '../utils/prismaClient';
+import { authMiddleware } from '../middleware/auth.js';
+import { YouTubeService } from '../services/verification/youtube.service.js';
+import prisma from '../utils/prismaClient.js';
 
 const router = Router();
 const youtubeService = new YouTubeService();
@@ -41,7 +41,7 @@ router.get('/auth-url', authMiddleware, (req, res) => {
   }
 });
 
-import { env } from '../utils/env';
+import { env } from '../utils/env.js';
 
 // OAuth callback
 router.get('/callback', authMiddleware, async (req, res) => {

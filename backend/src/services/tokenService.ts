@@ -1,4 +1,4 @@
-import prisma from '../utils/prismaClient';
+import prisma from '../utils/prismaClient.js';
 import { Prisma } from '@prisma/client';
 
 export interface EstimatedTokens {

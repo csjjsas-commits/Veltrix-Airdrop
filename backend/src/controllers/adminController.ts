@@ -15,15 +15,15 @@ import {
   SubmissionWithDetails,
   AdminStats,
   AirdropConfig
-} from '../services/adminService';
+} from '../services/adminService.js';
 import {
   createTaskSchema,
   updateTaskSchema,
   taskStatusSchema,
   reviewSubmissionSchema,
   updateConfigSchema
-} from '../schemas/adminSchema';
-import { ValidationError } from '../utils/errors';
+} from '../schemas/adminSchema.js';
+import { ValidationError } from '../utils/errors.js';
 
 // Task Management Controllers
 export const getTasks = async (req: Request, res: Response): Promise<void> => {

@@ -1,8 +1,8 @@
 import { Router } from 'express';
-import { TelegramService } from '../services/verification/telegram.service';
-import { VerificationService } from '../services/verificationService';
-import { TaskVerificationTypes } from '../services/verification/types';
-import prisma from '../utils/prismaClient';
+import { TelegramService } from '../services/verification/telegram.service.js';
+import { VerificationService } from '../services/verificationService.js';
+import { TaskVerificationTypes } from '../services/verification/types.js';
+import prisma from '../utils/prismaClient.js';
 
 const router = Router();
 const telegramService = new TelegramService();

@@ -1,5 +1,5 @@
-import { VerificationProvider, VerificationResult } from './types';
-import prisma from '../../utils/prismaClient';
+import { VerificationProvider, VerificationResult } from './types.js';
+import prisma from '../../utils/prismaClient.js';
 
 export class ReferralService implements VerificationProvider {
   async verify(
