@@ -1,0 +1,18 @@
+import { RegisterForm } from '../components/auth/RegisterForm';
+
+export const RegisterPage = () => (
+  <div className="min-h-screen bg-slate-950 text-white">
+    <div className="mx-auto flex min-h-screen max-w-6xl items-center justify-center px-6 py-16">
+      <div className="w-full space-y-8">
+        <div className="rounded-[2.5rem] border border-slate-800/70 bg-slate-900/90 p-10 shadow-2xl shadow-slate-950/40 backdrop-blur-xl">
+          <div className="mb-10 max-w-xl">
+            <p className="text-xs uppercase tracking-[0.35em] text-fuchsia-400">AirDrop Premium</p>
+            <h1 className="mt-6 text-4xl font-semibold text-white">Regístrate y comienza a ganar.</h1>
+            <p className="mt-4 text-slate-400">Únete a la experiencia más elegante para completar misiones y reclamar tokens.</p>
+          </div>
+          <RegisterForm />
+        </div>
+      </div>
+    </div>
+  </div>
+);

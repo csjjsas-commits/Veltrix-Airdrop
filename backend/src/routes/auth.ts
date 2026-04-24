@@ -1,0 +1,17 @@
+import { Router } from 'express';
+import { registerController, loginController, meController } from '../controllers/authController';
+import { authMiddleware } from '../middleware/auth';
+import { authLimiter, registerLimiter } from '../middleware/rateLimiter';
+import { verifyCaptcha } from '../middleware/captcha';
+import discordRouter from './discord';
+import youtubeRouter from './youtube';
+
+const router = Router();
+
+router.post('/register', registerLimiter, verifyCaptcha, registerController);
+router.post('/login', authLimiter, verifyCaptcha, loginController);
+router.get('/me', authMiddleware, meController);
+router.use('/discord', discordRouter);
+router.use('/youtube', youtubeRouter);
+
+export default router;

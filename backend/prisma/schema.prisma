@@ -1,0 +1,149 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider           = env("DATABASE_PROVIDER")
+  url                = env("DATABASE_URL")
+  direct_url         = env("DATABASE_DIRECT_URL")
+  shadow_database_url = env("DATABASE_SHADOW_URL")
+}
+
+model User {
+  id              String      @id @default(uuid())
+  email           String      @unique
+  name            String
+  password        String
+  role            String      @default("USER")
+  points          Int         @default(0)
+  referralCode    String?     @unique
+  referredById    String?
+  referredBy      User?       @relation("Referrals", fields: [referredById], references: [id])
+  referredUsers   User[]      @relation("Referrals")
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
+  discordId       String?     @unique
+  discordUsername String?
+  discordDiscriminator String?
+  discordConnectedAt DateTime?
+  youtubeAccessToken String?
+  youtubeRefreshToken String?
+  youtubeTokenExpiresAt DateTime?
+  youtubeChannelId String?
+  youtubeChannelTitle String?
+  youtubeConnectedAt DateTime?
+  twitterAccessToken String?
+  twitterRefreshToken String?
+  twitterTokenExpiresAt DateTime?
+  twitterUserId String?
+  twitterUsername String?
+  twitterConnectedAt DateTime?
+  walletAddress    String?     @unique
+  walletChain      String?
+  walletConnectedAt DateTime?
+  userTasks       UserTask[]
+  analyticsEvents AnalyticsEvent[]
+  referralActions ReferralAction[]
+  receivedReferralActions ReferralAction[] @relation("referredUser")
+}
+
+model Task {
+  id                     String            @id @default(uuid())
+  title                  String
+  description            String?
+  points                 Int
+  deadline               DateTime?
+  taskType               String            @default("AUTO_COMPLETE")
+  actionUrl              String?
+  verificationType       String?
+  verificationMethod     String            @default("SYSTEM_AUTOMATIC")
+  platform               String?
+  requiredTarget         String?
+  requiredValue          String?
+  requiresProof          Boolean           @default(false)
+  weekNumber             Int?
+  startDate              DateTime?
+  endDate                DateTime?
+  timeLimit              Int?
+  referralTarget         String?
+  requiredReferralActions Int?              @default(0)
+  active                 Boolean           @default(true)
+  verificationData       String?
+  createdAt              DateTime          @default(now())
+  updatedAt              DateTime          @updatedAt
+  userTasks              UserTask[]
+}
+
+model UserTask {
+  id            String          @id @default(uuid())
+  user          User            @relation(fields: [userId], references: [id])
+  userId        String
+  task          Task            @relation(fields: [taskId], references: [id])
+  taskId        String
+  status        String  @default("PENDING")
+  pointsAwarded Int
+  completedAt   DateTime?
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @updatedAt
+  // Verification fields
+  verificationMetadata String?
+  lastCheckedAt       DateTime?
+  externalId          String?
+
+  @@unique([userId, taskId])
+}
+
+model AirdropConfig {
+  id                    String    @id @default(uuid())
+  totalAirdropPool      Decimal   @default("10000000")
+  currentWeek           Int       @default(1)
+  totalCommunityPoints  Int       @default(0)
+  startDate             DateTime?
+  endDate               DateTime?
+  isActive              Boolean   @default(true)
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @updatedAt
+}
+
+model SystemSettings {
+  id                    String    @id @default(uuid())
+  maintenanceMode       Boolean   @default(false)
+  maxTasksPerUser       Int       @default(15)
+  tokenSymbol           String    @default("VELX")
+  defaultTaskDuration   Int       @default(7)
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @updatedAt
+}
+
+model ReferralAction {
+  id            String      @id @default(uuid())
+  referrer      User        @relation(fields: [referrerId], references: [id])
+  referrerId    String
+  referredUser  User        @relation("referredUser", fields: [referredUserId], references: [id])
+  referredUserId String
+  taskId        String      // Task that must be completed
+  taskCompleted Boolean     @default(false)
+  completedAt   DateTime?
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+
+  @@unique([referrerId, referredUserId, taskId])
+  @@index([referrerId])
+  @@index([referredUserId])
+  @@index([taskCompleted])
+}
+
+model AnalyticsEvent {
+  id         String   @id @default(uuid())
+  eventType  String
+  userId     String?
+  properties String?  // JSON string
+  timestamp  DateTime @default(now())
+  user       User?    @relation(fields: [userId], references: [id])
+
+  @@index([eventType])
+  @@index([userId])
+  @@index([timestamp])
+}
+
+
