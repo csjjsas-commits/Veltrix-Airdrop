@@ -71,23 +71,23 @@ export const useMissionAction = () => {
     }
   }, [token, taskAnalytics]);
 
-  const openLink = useCallback(async (task: UserTask): Promise<boolean> => {
-    if (!token || !task.actionUrl) return false;
+  const openLink = useCallback(async (task: UserTask): Promise<UserTask | null> => {
+    if (!token || !task.actionUrl) return null;
 
     setState(prev => ({ ...prev, isLoading: true, error: '' }));
 
     try {
-      await apiOpenLink(token, task.id);
+      const updatedTask = await apiOpenLink(token, task.id);
       window.open(task.actionUrl, '_blank');
       setState(prev => ({
         ...prev,
         linkOpened: true,
         linkOpenedAt: new Date()
       }));
-      return true;
+      return updatedTask;
     } catch (error: any) {
       setState(prev => ({ ...prev, error: error?.message || 'Error al abrir el enlace' }));
-      return false;
+      return null;
     } finally {
       setState(prev => ({ ...prev, isLoading: false }));
     }

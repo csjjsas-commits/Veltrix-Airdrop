@@ -65,15 +65,17 @@ export const MissionVerificationModal = ({
   };
 
   const handleOpenLink = async () => {
-    const success = await openLink(task);
-    if (success) {
-      // Link opened successfully
+    const updatedTask = await openLink(task);
+    if (updatedTask) {
+      // Update the task in parent component
+      onTaskComplete(updatedTask);
     }
   };
 
   const canComplete = () => {
     if (task.taskType === 'EXTERNAL_LINK' || task.taskType === 'AUTO_COMPLETE') {
-      return task.actionUrl ? currentState.linkOpened : true;
+      // Check both local state and task data
+      return task.actionUrl ? (currentState.linkOpened || !!task.linkOpenedAt) : true;
     }
     return true;
   };
@@ -182,7 +184,7 @@ export const MissionVerificationModal = ({
             <div className="space-y-4">
               {task.actionUrl && (
                 <div className="space-y-3">
-                  {!currentState.linkOpened ? (
+                  {!currentState.linkOpened && !task.linkOpenedAt ? (
                     <div className="rounded-3xl border border-brand-electricBlue/30 bg-brand-electricBlue/10 px-4 py-3">
                       <p className="text-sm text-brand-electricBlue font-medium">
                         🔗 Debes abrir el enlace primero
@@ -203,16 +205,16 @@ export const MissionVerificationModal = ({
                   )}
                   <button
                     onClick={handleOpenLink}
-                    disabled={currentState.isLoading || currentState.linkOpened}
+                    disabled={currentState.isLoading || currentState.linkOpened || !!task.linkOpenedAt}
                     className="w-full rounded-3xl bg-brand-electricBlue px-4 py-3 text-sm font-semibold text-brand-blackVoid transition hover:bg-brand-electricBlue/80 disabled:opacity-50 disabled:cursor-not-allowed"
                   >
-                    {currentState.isLoading ? 'Abriendo...' : currentState.linkOpened ? 'Enlace abierto' : 'Abrir enlace'}
+                    {currentState.isLoading ? 'Abriendo...' : (currentState.linkOpened || !!task.linkOpenedAt) ? 'Enlace abierto' : 'Abrir enlace'}
                   </button>
                 </div>
               )}
               <p className="text-sm text-brand-softGray">
                 {task.actionUrl
-                  ? currentState.linkOpened
+                  ? (currentState.linkOpened || !!task.linkOpenedAt)
                     ? 'Has abierto el enlace. Ahora puedes verificar y completar la tarea.'
                     : 'Primero abre el enlace externo, completa la acción requerida, luego regresa aquí para verificar.'
                   : 'Completa la acción requerida y presiona verificar para confirmar.'}

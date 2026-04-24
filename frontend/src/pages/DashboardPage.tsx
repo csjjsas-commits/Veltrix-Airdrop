@@ -81,6 +81,10 @@ export const DashboardPage = () => {
     setAvailableTasks(prev => prev.map(task =>
       task.id === updatedTask.id ? updatedTask : task
     ));
+    // Update modal task if it's the same task
+    if (modalTask && modalTask.id === updatedTask.id) {
+      setModalTask(updatedTask);
+    }
     fetchDashboardData();
   };
 
