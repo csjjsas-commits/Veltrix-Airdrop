@@ -13,7 +13,6 @@ import {
 import { authMiddleware } from '../middleware/auth';
 import { submitLimiter, taskCompleteLimiter } from '../middleware/rateLimiter';
 import { verifyCaptcha } from '../middleware/captcha';
-import { createCooldown } from '../middleware/cooldown';
 
 const router = Router();
 
@@ -39,7 +38,6 @@ router.get('/:id', getTask);
 router.post(
   '/:id/complete',
   taskCompleteLimiter,
-  createCooldown(30 * 1000, 'Espera 30 segundos antes de realizar otra acción.'),
   completeTaskHandler
 );
 
@@ -47,7 +45,6 @@ router.post(
 router.post(
   '/:id/start',
   taskCompleteLimiter,
-  createCooldown(30 * 1000, 'Espera 30 segundos antes de realizar otra acción.'),
   startTaskHandler
 );
 
@@ -56,7 +53,6 @@ router.post(
   '/:id/submit',
   submitLimiter,
   verifyCaptcha,
-  createCooldown(30 * 1000, 'Espera 30 segundos antes de realizar otra acción.'),
   submitTaskHandler
 );
 
@@ -64,7 +60,6 @@ router.post(
 router.post(
   '/:id/verify',
   taskCompleteLimiter,
-  createCooldown(30 * 1000, 'Espera 30 segundos antes de realizar otra acción.'),
   verifyTaskHandler
 );
 
