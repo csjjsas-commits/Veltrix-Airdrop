@@ -50,7 +50,18 @@ export const useMissionAction = () => {
       // For tasks with actionUrl, automatically open link and track it
       if (task.actionUrl && (task.taskType === 'EXTERNAL_LINK' || task.taskType === 'AUTO_COMPLETE')) {
         await apiOpenLink(token, task.id);
-        window.open(task.actionUrl, '_blank');
+        
+        // Open link with fallback for mobile devices
+        const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+        if (isMobile) {
+          window.location.href = task.actionUrl;
+        } else {
+          const opened = window.open(task.actionUrl, '_blank');
+          if (!opened) {
+            window.location.href = task.actionUrl;
+          }
+        }
+        
         setState(prev => ({
           ...prev,
           linkOpened: true,
@@ -58,7 +69,15 @@ export const useMissionAction = () => {
         }));
       } else if (task.actionUrl) {
         // For other task types, open link immediately
-        window.open(task.actionUrl, '_blank');
+        const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+        if (isMobile) {
+          window.location.href = task.actionUrl;
+        } else {
+          const opened = window.open(task.actionUrl, '_blank');
+          if (!opened) {
+            window.location.href = task.actionUrl;
+          }
+        }
       }
 
       taskAnalytics.started(task.id, task.title || 'Unknown Task');
@@ -78,7 +97,21 @@ export const useMissionAction = () => {
 
     try {
       const updatedTask = await apiOpenLink(token, task.id);
-      window.open(task.actionUrl, '_blank');
+      
+      // Open link with fallback for mobile devices
+      const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+      if (isMobile) {
+        // On mobile, use location.href for better compatibility
+        window.location.href = task.actionUrl;
+      } else {
+        // On desktop, try window.open with fallback
+        const opened = window.open(task.actionUrl, '_blank');
+        if (!opened) {
+          // If popup was blocked, use location.href
+          window.location.href = task.actionUrl;
+        }
+      }
+      
       setState(prev => ({
         ...prev,
         linkOpened: true,
