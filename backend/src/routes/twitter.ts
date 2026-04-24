@@ -1,7 +1,7 @@
 import { Router } from 'express';
-import { TwitterService } from '../services/verification/twitter.service.js';
-import { authMiddleware } from '../middleware/auth.js';
-import prisma from '../utils/prismaClient.js';
+import { TwitterService } from '../services/verification/twitter.service';
+import { authMiddleware } from '../middleware/auth';
+import prisma from '../utils/prismaClient';
 
 const router = Router();
 const twitterService = new TwitterService();

@@ -10,8 +10,8 @@ import {
   updateConfigHandler,
   getLeaderboardHandler,
   getAdminStatsHandler
-} from '../controllers/adminController.js';
-import { authMiddleware, adminMiddleware } from '../middleware/auth.js';
+} from '../controllers/adminController';
+import { authMiddleware, adminMiddleware } from '../middleware/auth';
 
 const router = Router();
 

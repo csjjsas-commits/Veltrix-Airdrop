@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { sanitizeString } from '../utils/sanitize.js';
+import { sanitizeString } from '../utils/sanitize';
 
 export const taskIdSchema = z.object({
   id: z.string().uuid('ID de tarea inválido')

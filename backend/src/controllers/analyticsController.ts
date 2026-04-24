@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import { AnalyticsService } from '../services/analyticsService.js';
+import { AnalyticsService } from '../services/analyticsService';
 
 export const getAnalyticsMetrics = async (req: Request, res: Response) => {
   try {

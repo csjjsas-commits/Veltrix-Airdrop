@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
-import { ValidationError } from '../utils/errors.js';
+import { ValidationError } from '../utils/errors';
 
 const cooldownMap = new Map<string, number>();
 

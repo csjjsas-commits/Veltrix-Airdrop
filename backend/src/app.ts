@@ -1,11 +1,11 @@
 import express from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
-import router from './routes/index.js';
-import { notFoundHandler } from './middleware/notFound.js';
-import { errorHandler } from './middleware/errorHandler.js';
-import { globalLimiter } from './middleware/rateLimiter.js';
-import { logger } from './utils/logger.js';
+import router from './routes/index';
+import { notFoundHandler } from './middleware/notFound';
+import { errorHandler } from './middleware/errorHandler';
+import { globalLimiter } from './middleware/rateLimiter';
+import { logger } from './utils/logger';
 
 const app = express();
 

@@ -1,4 +1,4 @@
-import prisma from '../utils/prismaClient.js';
+import prisma from '../utils/prismaClient';
 
 export interface AnalyticsMetrics {
   totalUsers: number;

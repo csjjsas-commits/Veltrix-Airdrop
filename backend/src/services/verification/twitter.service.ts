@@ -1,5 +1,5 @@
-import { VerificationProvider, VerificationResult } from './types.js';
-import prisma from '../../utils/prismaClient.js';
+import { VerificationProvider, VerificationResult } from './types';
+import prisma from '../../utils/prismaClient';
 import crypto from 'crypto';
 
 export class TwitterService implements VerificationProvider {

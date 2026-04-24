@@ -1,7 +1,7 @@
-import prisma from '../utils/prismaClient.js';
+import prisma from '../utils/prismaClient';
 import { Prisma, Task, UserTask } from '@prisma/client';
-import { CreateTaskInput, UpdateTaskInput, TaskStatusInput, ReviewSubmissionInput, UpdateConfigInput } from '../schemas/adminSchema.js';
-import { NotFoundError, ValidationError } from '../utils/errors.js';
+import { CreateTaskInput, UpdateTaskInput, TaskStatusInput, ReviewSubmissionInput, UpdateConfigInput } from '../schemas/adminSchema';
+import { NotFoundError, ValidationError } from '../utils/errors';
 
 export interface AdminTask extends Task {
   _count: {

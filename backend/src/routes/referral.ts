@@ -1,7 +1,7 @@
 import express, { Router, Request, Response } from 'express';
-import { authMiddleware } from '../middleware/auth.js';
-import prisma from '../utils/prismaClient.js';
-import { env } from '../utils/env.js';
+import { authMiddleware } from '../middleware/auth';
+import prisma from '../utils/prismaClient';
+import { env } from '../utils/env';
 import { v4 as uuidv4 } from 'uuid';
 
 const router: Router = express.Router();

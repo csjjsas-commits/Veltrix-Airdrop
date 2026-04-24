@@ -1,8 +1,8 @@
-import { env } from './utils/env.js';
-import app from './app.js';
-import { initAnalyticsTable } from './services/analyticsService.js';
-import prisma from './utils/prismaClient.js';
-import { seedDemoDatabase } from './utils/seedDatabase.js';
+import { env } from './utils/env';
+import app from './app';
+import { initAnalyticsTable } from './services/analyticsService';
+import prisma from './utils/prismaClient';
+import { seedDemoDatabase } from './utils/seedDatabase';
 
 const PORT = env.PORT;
 

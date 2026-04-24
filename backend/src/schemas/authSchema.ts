@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { sanitizeString } from '../utils/sanitize.js';
+import { sanitizeString } from '../utils/sanitize';
 
 const nonEmptyString = () => z.string().trim().min(1, 'El campo no puede quedar vacío').max(255, 'El valor es demasiado largo').transform(sanitizeString);
 

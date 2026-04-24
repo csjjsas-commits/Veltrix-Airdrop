@@ -1,6 +1,6 @@
-import prisma from '../../utils/prismaClient.js';
-import { VerificationProvider, VerificationResult } from './types.js';
-import { ValidationError } from '../../utils/errors.js';
+import prisma from '../../utils/prismaClient';
+import { VerificationProvider, VerificationResult } from './types';
+import { ValidationError } from '../../utils/errors';
 
 const DISCORD_API_BASE = 'https://discord.com/api';
 

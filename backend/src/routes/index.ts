@@ -1,14 +1,14 @@
 import { Router } from 'express';
-import healthRouter from './health.js';
-import authRouter from './auth.js';
-import taskRouter from './tasks.js';
-import adminRouter from './admin.js';
-import analyticsRouter from './analytics.js';
-import telegramRouter from './telegram.js';
-import youtubeRouter from './youtube.js';
-import twitterRouter from './twitter.js';
-import walletRouter from './wallet.js';
-import referralRouter from './referral.js';
+import healthRouter from './health';
+import authRouter from './auth';
+import taskRouter from './tasks';
+import adminRouter from './admin';
+import analyticsRouter from './analytics';
+import telegramRouter from './telegram';
+import youtubeRouter from './youtube';
+import twitterRouter from './twitter';
+import walletRouter from './wallet';
+import referralRouter from './referral';
 
 const router = Router();
 

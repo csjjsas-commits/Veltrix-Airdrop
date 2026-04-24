@@ -1,5 +1,5 @@
-﻿import { VerificationProvider, VerificationResult } from './types.js';
-import prisma from '../../utils/prismaClient.js';
+﻿import { VerificationProvider, VerificationResult } from './types';
+import prisma from '../../utils/prismaClient';
 
 export class YouTubeService implements VerificationProvider {
   private clientId: string;

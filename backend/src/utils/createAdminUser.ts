@@ -1,6 +1,6 @@
 import bcrypt from 'bcrypt';
-import prisma from './prismaClient.js';
-import { env } from './env.js';
+import prisma from './prismaClient';
+import { env } from './env';
 
 const run = async () => {
   if (!env.ADMIN_EMAIL || !env.ADMIN_PASSWORD || !env.ADMIN_NAME) {

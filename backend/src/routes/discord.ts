@@ -1,6 +1,6 @@
 import { Router } from 'express';
-import { authMiddleware } from '../middleware/auth.js';
-import { getDiscordConnectUrlController, getDiscordStatusController, discordCallbackController } from '../controllers/discordController.js';
+import { authMiddleware } from '../middleware/auth';
+import { getDiscordConnectUrlController, getDiscordStatusController, discordCallbackController } from '../controllers/discordController';
 
 const router = Router();
 

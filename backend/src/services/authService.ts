@@ -1,10 +1,10 @@
 import bcrypt from 'bcrypt';
 import crypto from 'crypto';
 import jwt from 'jsonwebtoken';
-import prisma from '../utils/prismaClient.js';
-import { env } from '../utils/env.js';
-import { RegisterInput, LoginInput } from '../schemas/authSchema.js';
-import { UnauthorizedError, ValidationError, NotFoundError } from '../utils/errors.js';
+import prisma from '../utils/prismaClient';
+import { env } from '../utils/env';
+import { RegisterInput, LoginInput } from '../schemas/authSchema';
+import { UnauthorizedError, ValidationError, NotFoundError } from '../utils/errors';
 
 const JWT_SECRET: jwt.Secret = env.JWT_SECRET;
 const JWT_EXPIRE = env.JWT_EXPIRE;

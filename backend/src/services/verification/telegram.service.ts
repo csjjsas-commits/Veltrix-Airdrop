@@ -1,4 +1,4 @@
-import { VerificationProvider, VerificationResult } from './types.js';
+import { VerificationProvider, VerificationResult } from './types';
 
 export class TelegramService implements VerificationProvider {
   private botToken: string;

@@ -1,6 +1,6 @@
 import { Router } from 'express';
-import { authMiddleware, adminMiddleware } from '../middleware/auth.js';
-import { getAnalyticsMetrics, logAnalyticsEvent } from '../controllers/analyticsController.js';
+import { authMiddleware, adminMiddleware } from '../middleware/auth';
+import { getAnalyticsMetrics, logAnalyticsEvent } from '../controllers/analyticsController';
 
 const router = Router();
 

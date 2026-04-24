@@ -1,6 +1,6 @@
-import prisma from '../utils/prismaClient.js';
-import { TaskIdInput, SubmitTaskInput } from '../schemas/taskSchema.js';
-import { NotFoundError, ForbiddenError, ValidationError } from '../utils/errors.js';
+import prisma from '../utils/prismaClient';
+import { TaskIdInput, SubmitTaskInput } from '../schemas/taskSchema';
+import { NotFoundError, ForbiddenError, ValidationError } from '../utils/errors';
 
 export interface TaskWithStatus {
   id: string;

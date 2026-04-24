@@ -9,11 +9,11 @@ import {
   getUserDashboardHandler,
   getUserRankHandler,
   startTaskHandler
-} from '../controllers/taskController.js';
-import { authMiddleware } from '../middleware/auth.js';
-import { submitLimiter, taskCompleteLimiter } from '../middleware/rateLimiter.js';
-import { verifyCaptcha } from '../middleware/captcha.js';
-import { createCooldown } from '../middleware/cooldown.js';
+} from '../controllers/taskController';
+import { authMiddleware } from '../middleware/auth';
+import { submitLimiter, taskCompleteLimiter } from '../middleware/rateLimiter';
+import { verifyCaptcha } from '../middleware/captcha';
+import { createCooldown } from '../middleware/cooldown';
 
 const router = Router();
 

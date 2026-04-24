@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
-import { getDiscordConnectUrl, connectDiscordAccount, getDiscordStatus } from '../services/discordOAuthService.js';
-import { ValidationError } from '../utils/errors.js';
-import { env } from '../utils/env.js';
+import { getDiscordConnectUrl, connectDiscordAccount, getDiscordStatus } from '../services/discordOAuthService';
+import { ValidationError } from '../utils/errors';
+import { env } from '../utils/env';
 
 export const getDiscordConnectUrlController = async (req: Request, res: Response): Promise<void> => {
   try {

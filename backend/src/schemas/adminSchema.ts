@@ -1,6 +1,6 @@
 import { z } from 'zod';
-import { sanitizeString } from '../utils/sanitize.js';
-import { TaskVerificationTypes } from '../services/verification/types.js';
+import { sanitizeString } from '../utils/sanitize';
+import { TaskVerificationTypes } from '../services/verification/types';
 
 const safeString = (max: number, message: string) =>
   z.string().trim().min(1, 'El campo no puede quedar vacío').max(max, message).transform(sanitizeString);

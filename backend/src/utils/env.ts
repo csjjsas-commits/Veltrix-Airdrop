@@ -2,7 +2,7 @@ import dotenv from 'dotenv';
 
 dotenv.config();
 
-const requiredEnv = ['DATABASE_PROVIDER', 'DATABASE_URL', 'JWT_SECRET'] as const;
+const requiredEnv = ['DATABASE_URL', 'JWT_SECRET'] as const;
 
 for (const key of requiredEnv) {
   if (!process.env[key]) {
@@ -19,7 +19,6 @@ if (process.env.NODE_ENV === 'production' && !process.env.FRONTEND_URL) {
 }
 
 export const env = {
-  DATABASE_PROVIDER: process.env.DATABASE_PROVIDER!,
   DATABASE_URL: process.env.DATABASE_URL!,
   DATABASE_DIRECT_URL: process.env.DATABASE_DIRECT_URL || '',
   DATABASE_SHADOW_URL: process.env.DATABASE_SHADOW_URL || '',

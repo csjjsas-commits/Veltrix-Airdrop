@@ -1,10 +1,10 @@
-import { TaskVerificationType, TaskVerificationTypes, VerificationProvider, VerificationConfig } from './types.js';
-import { TwitterService } from './twitter.service.js';
-import { DiscordService } from './discord.service.js';
-import { TelegramService } from './telegram.service.js';
-import { YouTubeService } from './youtube.service.js';
-import { WalletService } from './wallet.service.js';
-import { ReferralService } from './referral.service.js';
+import { TaskVerificationType, TaskVerificationTypes, VerificationProvider, VerificationConfig } from './types';
+import { TwitterService } from './twitter.service';
+import { DiscordService } from './discord.service';
+import { TelegramService } from './telegram.service';
+import { YouTubeService } from './youtube.service';
+import { WalletService } from './wallet.service';
+import { ReferralService } from './referral.service';
 
 export class VerificationProviderRegistry {
   private static providers: Map<TaskVerificationType, VerificationConfig> = new Map([
