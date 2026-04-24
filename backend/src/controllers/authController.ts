@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
-import { registerSchema, loginSchema } from '../schemas/authSchema';
-import { register, login, getUserById } from '../services/authService';
+import { registerSchema, loginSchema, walletSchema } from '../schemas/authSchema';
+import { register, login, getUserById, saveWalletAddress } from '../services/authService';
+import { completeWalletTasks } from '../services/taskService';
 import { ZodError } from 'zod';
 import { UnauthorizedError } from '../utils/errors';
 
@@ -42,6 +43,27 @@ export const meController = async (req: Request, res: Response, next: NextFuncti
     const user = await getUserById(req.user.userId);
     res.json({ success: true, data: { user } });
   } catch (error) {
+    next(error);
+  }
+};
+
+export const saveWalletController = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    if (!req.user) {
+      throw new UnauthorizedError('No autenticado');
+    }
+
+    const validatedData = walletSchema.parse(req.body);
+    const user = await saveWalletAddress(req.user.userId, validatedData);
+    
+    // Complete any wallet tasks automatically
+    await completeWalletTasks(req.user.userId);
+    
+    res.json({ success: true, data: { user } });
+  } catch (error) {
+    if (error instanceof ZodError) {
+      return res.status(400).json({ success: false, message: 'Dirección de wallet inválida', errors: error.errors });
+    }
     next(error);
   }
 };

@@ -3,7 +3,7 @@ import crypto from 'crypto';
 import jwt from 'jsonwebtoken';
 import prisma from '../utils/prismaClient';
 import { env } from '../utils/env';
-import { RegisterInput, LoginInput } from '../schemas/authSchema';
+import { RegisterInput, LoginInput, WalletInput } from '../schemas/authSchema';
 import { UnauthorizedError, ValidationError, NotFoundError } from '../utils/errors';
 
 const JWT_SECRET: jwt.Secret = env.JWT_SECRET;
@@ -77,6 +77,23 @@ export const register = async (data: RegisterInput) => {
       referredById: inviter?.id ?? null
     }
   });
+
+  // Create referral actions if user was referred
+  if (inviter) {
+    const referralTasks = await prisma.task.findMany({
+      where: { taskType: 'REFERRAL' }
+    });
+
+    for (const task of referralTasks) {
+      await prisma.referralAction.create({
+        data: {
+          referrerId: inviter.id,
+          referredUserId: user.id,
+          taskId: task.id
+        }
+      });
+    }
+  }
 
   const token = generateToken({
     userId: user.id,
@@ -153,6 +170,42 @@ export const getUserById = async (userId: string) => {
     referralCode: user.referralCode,
     discordId: user.discordId,
     discordUsername: user.discordUsername,
-    discordDiscriminator: user.discordDiscriminator
+    discordDiscriminator: user.discordDiscriminator,
+    walletAddress: user.walletAddress,
+    walletChain: user.walletChain
+  };
+};
+
+export const saveWalletAddress = async (userId: string, data: WalletInput) => {
+  // Check if wallet address is already taken by another user
+  const existingUser = await prisma.user.findFirst({
+    where: {
+      walletAddress: data.walletAddress,
+      id: { not: userId }
+    }
+  });
+
+  if (existingUser) {
+    throw new ValidationError('Esta dirección de wallet ya está registrada por otro usuario');
+  }
+
+  const user = await prisma.user.update({
+    where: { id: userId },
+    data: {
+      walletAddress: data.walletAddress,
+      walletChain: 'ethereum', // Default to ethereum for MVP
+      walletConnectedAt: new Date()
+    }
+  });
+
+  return {
+    id: user.id,
+    email: user.email,
+    name: user.name,
+    role: user.role,
+    points: user.points,
+    referralCode: user.referralCode,
+    walletAddress: user.walletAddress,
+    walletChain: user.walletChain
   };
 };

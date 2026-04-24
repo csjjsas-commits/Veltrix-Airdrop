@@ -20,5 +20,10 @@ export const loginSchema = z.object({
   captchaToken: captchaSchema
 });
 
+export const walletSchema = z.object({
+  walletAddress: z.string().trim().regex(/^0x[a-fA-F0-9]{40}$/, 'Dirección de wallet inválida (debe ser formato Ethereum 0x...)').transform(sanitizeString)
+});
+
 export type RegisterInput = Omit<z.infer<typeof registerSchema>, 'captchaToken'>;
 export type LoginInput = Omit<z.infer<typeof loginSchema>, 'captchaToken'>;
+export type WalletInput = z.infer<typeof walletSchema>;

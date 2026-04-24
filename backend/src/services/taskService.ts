@@ -401,6 +401,9 @@ export const completeTask = async (taskId: string, userId: string): Promise<Task
     }
   });
 
+  // Handle referral actions if user was referred
+  await handleReferralCompletion(userId, taskId);
+
   // Actualizar puntos totales de la comunidad
   await prisma.airdropConfig.updateMany({
     data: {
@@ -837,4 +840,169 @@ export const getUserDashboard = async (userId: string): Promise<DashboardData> =
     recentTasks: completedTasks,
     availableTasks
   };
+};
+
+export const completeWalletTasks = async (userId: string): Promise<void> => {
+  // Find all active wallet tasks
+  const walletTasks = await prisma.task.findMany({
+    where: {
+      taskType: 'WALLET_ACTION',
+      active: true
+    }
+  });
+
+  for (const task of walletTasks) {
+    // Check if user has already completed this task
+    const existingUserTask = await prisma.userTask.findUnique({
+      where: {
+        userId_taskId: {
+          userId,
+          taskId: task.id
+        }
+      }
+    });
+
+    if (existingUserTask && existingUserTask.status === 'COMPLETED') {
+      continue; // Already completed
+    }
+
+    // Complete the wallet task
+    await prisma.userTask.upsert({
+      where: {
+        userId_taskId: {
+          userId,
+          taskId: task.id
+        }
+      },
+      update: {
+        status: 'COMPLETED',
+        completedAt: new Date(),
+        pointsAwarded: task.points
+      },
+      create: {
+        userId,
+        taskId: task.id,
+        status: 'COMPLETED',
+        completedAt: new Date(),
+        pointsAwarded: task.points
+      }
+    });
+
+    // Update user points
+    await prisma.user.update({
+      where: { id: userId },
+      data: {
+        points: {
+          increment: task.points
+        }
+      }
+    });
+
+    // Update community points
+    await prisma.airdropConfig.updateMany({
+      data: {
+        totalCommunityPoints: {
+          increment: task.points
+        }
+      }
+    });
+  }
+};
+
+export const handleReferralCompletion = async (userId: string, taskId: string): Promise<void> => {
+  // Find referral actions where this user is the referred user and the task matches
+  const referralActions = await prisma.referralAction.findMany({
+    where: {
+      referredUserId: userId,
+      taskId: taskId,
+      taskCompleted: false
+    },
+    include: {
+      referrer: true
+    }
+  });
+
+  for (const action of referralActions) {
+    // Mark the referral action as completed
+    await prisma.referralAction.update({
+      where: { id: action.id },
+      data: {
+        taskCompleted: true,
+        completedAt: new Date()
+      }
+    });
+
+    // Check if the referrer has completed all required referral actions for REFERRAL tasks
+    const referralTasks = await prisma.task.findMany({
+      where: { taskType: 'REFERRAL' }
+    });
+
+    for (const referralTask of referralTasks) {
+      // Count completed referral actions for this referrer and task
+      const completedActions = await prisma.referralAction.count({
+        where: {
+          referrerId: action.referrerId,
+          taskId: referralTask.id,
+          taskCompleted: true
+        }
+      });
+
+      // Check if referrer meets the required number of referrals
+      const requiredActions = referralTask.requiredReferralActions || 1;
+      if (completedActions >= requiredActions) {
+        // Check if referrer has already completed this referral task
+        const existingUserTask = await prisma.userTask.findUnique({
+          where: {
+            userId_taskId: {
+              userId: action.referrerId,
+              taskId: referralTask.id
+            }
+          }
+        });
+
+        if (!existingUserTask || existingUserTask.status !== 'COMPLETED') {
+          // Complete the referral task for the referrer
+          await prisma.userTask.upsert({
+            where: {
+              userId_taskId: {
+                userId: action.referrerId,
+                taskId: referralTask.id
+              }
+            },
+            update: {
+              status: 'COMPLETED',
+              completedAt: new Date(),
+              pointsAwarded: referralTask.points
+            },
+            create: {
+              userId: action.referrerId,
+              taskId: referralTask.id,
+              status: 'COMPLETED',
+              completedAt: new Date(),
+              pointsAwarded: referralTask.points
+            }
+          });
+
+          // Update referrer's points
+          await prisma.user.update({
+            where: { id: action.referrerId },
+            data: {
+              points: {
+                increment: referralTask.points
+              }
+            }
+          });
+
+          // Update community points
+          await prisma.airdropConfig.updateMany({
+            data: {
+              totalCommunityPoints: {
+                increment: referralTask.points
+              }
+            }
+          });
+        }
+      }
+    }
+  }
 };
