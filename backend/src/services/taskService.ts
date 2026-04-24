@@ -28,6 +28,7 @@ export interface TaskWithStatus {
   updatedAt: Date;
   status: string | null;
   completedAt: Date | null;
+  linkOpenedAt: Date | null;
   pointsAwarded: number | null;
   referralCount?: number;
 }
@@ -201,7 +202,8 @@ export const getTasksForUser = async (userId: string): Promise<TaskWithStatus[]>
         select: {
           status: true,
           completedAt: true,
-          pointsAwarded: true
+          pointsAwarded: true,
+          linkOpenedAt: true
         }
       }
     },
@@ -259,7 +261,8 @@ export const getTasksForUser = async (userId: string): Promise<TaskWithStatus[]>
       status,
       completedAt,
       pointsAwarded,
-      referralCount: validReferralCount
+      referralCount: validReferralCount,
+      linkOpenedAt: task.userTasks[0]?.linkOpenedAt || null
     };
   }));
 };
@@ -273,7 +276,8 @@ export const getTaskById = async (taskId: string, userId: string): Promise<TaskW
         select: {
           status: true,
           completedAt: true,
-          pointsAwarded: true
+          pointsAwarded: true,
+          linkOpenedAt: true
         }
       }
     }
@@ -287,6 +291,7 @@ export const getTaskById = async (taskId: string, userId: string): Promise<TaskW
   let status = task.userTasks[0]?.status || 'NOT_STARTED';
   let completedAt = task.userTasks[0]?.completedAt || null;
   let pointsAwarded = task.userTasks[0]?.pointsAwarded || null;
+  let linkOpenedAt = task.userTasks[0]?.linkOpenedAt || null;
 
   if (task.taskType === 'REFERRAL') {
     const referralResult = await completeReferralTaskIfEligible(task, userId, validReferralCount);
@@ -324,7 +329,8 @@ export const getTaskById = async (taskId: string, userId: string): Promise<TaskW
     status,
     completedAt,
     pointsAwarded,
-    referralCount: validReferralCount
+    referralCount: validReferralCount,
+    linkOpenedAt
   };
 };
 
@@ -354,6 +360,13 @@ export const completeTask = async (taskId: string, userId: string): Promise<Task
 
   if (existingUserTask && existingUserTask.status === 'COMPLETED') {
     throw new ValidationError('Ya has completado esta tarea');
+  }
+
+  // Check if link needs to be opened for EXTERNAL_LINK and AUTO_COMPLETE tasks
+  if (task.actionUrl && (task.taskType === 'EXTERNAL_LINK' || task.taskType === 'AUTO_COMPLETE')) {
+    if (!existingUserTask || !existingUserTask.linkOpenedAt) {
+      throw new ValidationError('Debes abrir el enlace antes de completar esta tarea');
+    }
   }
 
   // Crear o actualizar la relación user-task
@@ -423,7 +436,84 @@ export const completeTask = async (taskId: string, userId: string): Promise<Task
     updatedAt: task.updatedAt,
     status: userTask.status,
     completedAt: userTask.completedAt,
-    pointsAwarded: userTask.pointsAwarded
+    pointsAwarded: userTask.pointsAwarded,
+    linkOpenedAt: userTask.linkOpenedAt
+  };
+};
+
+export const openLink = async (taskId: string, userId: string): Promise<TaskWithStatus> => {
+  const task = await prisma.task.findUnique({
+    where: { id: taskId }
+  });
+
+  if (!task) {
+    throw new NotFoundError('Tarea no encontrada');
+  }
+
+  if (!task.active) {
+    throw new ValidationError('Esta tarea no está disponible');
+  }
+
+  // Check if user has started this task
+  const userTask = await prisma.userTask.findUnique({
+    where: {
+      userId_taskId: {
+        userId,
+        taskId
+      }
+    }
+  });
+
+  if (!userTask || userTask.status !== 'IN_PROGRESS') {
+    throw new ValidationError('Debes iniciar la tarea primero');
+  }
+
+  // Only allow for tasks that require link opening
+  if (!task.actionUrl || (task.taskType !== 'EXTERNAL_LINK' && task.taskType !== 'AUTO_COMPLETE')) {
+    throw new ValidationError('Esta tarea no requiere abrir enlaces');
+  }
+
+  // Update the linkOpenedAt timestamp
+  const updatedUserTask = await prisma.userTask.update({
+    where: {
+      userId_taskId: {
+        userId,
+        taskId
+      }
+    },
+    data: {
+      linkOpenedAt: new Date()
+    }
+  });
+
+  return {
+    id: task.id,
+    title: task.title,
+    description: task.description,
+    points: task.points,
+    deadline: task.deadline,
+    taskType: task.taskType,
+    actionUrl: task.actionUrl,
+    verificationType: task.verificationType,
+    verificationMethod: task.verificationMethod,
+    platform: task.platform,
+    requiredTarget: task.requiredTarget,
+    requiredValue: task.requiredValue,
+    requiresProof: task.requiresProof,
+    weekNumber: task.weekNumber,
+    startDate: task.startDate,
+    endDate: task.endDate,
+    timeLimit: task.timeLimit,
+    referralTarget: task.referralTarget,
+    requiredReferralActions: task.requiredReferralActions,
+    active: task.active,
+    verificationData: parseVerificationData(task.verificationData),
+    createdAt: task.createdAt,
+    updatedAt: task.updatedAt,
+    status: updatedUserTask.status,
+    completedAt: updatedUserTask.completedAt,
+    pointsAwarded: updatedUserTask.pointsAwarded,
+    linkOpenedAt: updatedUserTask.linkOpenedAt
   };
 };
 
@@ -499,7 +589,8 @@ export const startTask = async (taskId: string, userId: string): Promise<TaskWit
     updatedAt: task.updatedAt,
     status: userTask.status,
     completedAt: userTask.completedAt,
-    pointsAwarded: userTask.pointsAwarded
+    pointsAwarded: userTask.pointsAwarded,
+    linkOpenedAt: userTask.linkOpenedAt
   };
 };
 
@@ -618,7 +709,8 @@ export const submitTaskForReview = async (
     updatedAt: task.updatedAt,
     status: userTask.status,
     completedAt: userTask.completedAt,
-    pointsAwarded: userTask.pointsAwarded
+    pointsAwarded: userTask.pointsAwarded,
+    linkOpenedAt: userTask.linkOpenedAt
   };
 };
 

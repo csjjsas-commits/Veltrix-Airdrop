@@ -64,6 +64,13 @@ export const MissionVerificationModal = ({
     }
   };
 
+  const handleOpenLink = async () => {
+    const success = await openLink(task);
+    if (success) {
+      // Link opened successfully
+    }
+  };
+
   const canComplete = () => {
     if (task.taskType === 'EXTERNAL_LINK' || task.taskType === 'AUTO_COMPLETE') {
       return task.actionUrl ? currentState.linkOpened : true;
@@ -175,23 +182,31 @@ export const MissionVerificationModal = ({
             <div className="space-y-4">
               {task.actionUrl && (
                 <div className="space-y-3">
-                  <div className="rounded-3xl border border-brand-neonCyan/30 bg-brand-neonCyan/10 px-4 py-3">
-                    <p className="text-sm text-brand-neonCyan font-medium">
-                      ✓ Enlace abierto automáticamente
-                    </p>
-                    <p className="text-xs text-brand-softGray mt-1">
-                      El enlace se abrió en una nueva pestaña. Completa la acción y regresa para verificar.
-                    </p>
-                  </div>
+                  {!currentState.linkOpened ? (
+                    <div className="rounded-3xl border border-brand-electricBlue/30 bg-brand-electricBlue/10 px-4 py-3">
+                      <p className="text-sm text-brand-electricBlue font-medium">
+                        🔗 Debes abrir el enlace primero
+                      </p>
+                      <p className="text-xs text-brand-softGray mt-1">
+                        Haz click en "Abrir enlace" para completar la acción requerida.
+                      </p>
+                    </div>
+                  ) : (
+                    <div className="rounded-3xl border border-brand-neonCyan/30 bg-brand-neonCyan/10 px-4 py-3">
+                      <p className="text-sm text-brand-neonCyan font-medium">
+                        ✓ Enlace abierto
+                      </p>
+                      <p className="text-xs text-brand-softGray mt-1">
+                        Has abierto el enlace. Ahora puedes verificar y completar la tarea.
+                      </p>
+                    </div>
+                  )}
                   <button
-                    onClick={async () => {
-                      if (task.actionUrl) {
-                        window.open(task.actionUrl, '_blank');
-                      }
-                    }}
-                    className="w-full rounded-3xl bg-brand-graphite/70 px-4 py-3 text-sm font-semibold text-brand-softGray hover:bg-brand-graphite/50 transition"
+                    onClick={handleOpenLink}
+                    disabled={currentState.isLoading || currentState.linkOpened}
+                    className="w-full rounded-3xl bg-brand-electricBlue px-4 py-3 text-sm font-semibold text-brand-blackVoid transition hover:bg-brand-electricBlue/80 disabled:opacity-50 disabled:cursor-not-allowed"
                   >
-                    Abrir enlace de nuevo
+                    {currentState.isLoading ? 'Abriendo...' : currentState.linkOpened ? 'Enlace abierto' : 'Abrir enlace'}
                   </button>
                 </div>
               )}
@@ -222,7 +237,7 @@ export const MissionVerificationModal = ({
                     ? 'Verificando...'
                     : !canComplete()
                     ? 'Abrir enlace primero'
-                    : 'Verificar y completar'}
+                    : 'Confirmar y completar misión'}
                 </button>
               </div>
             </div>

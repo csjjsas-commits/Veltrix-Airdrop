@@ -11,7 +11,8 @@ import {
   getUserRank,
   TaskWithStatus,
   UserStats,
-  DashboardData
+  DashboardData,
+  openLink
 } from '../services/taskService';
 import { VerificationService, VerificationRequest } from '../services/verificationService';
 import { taskIdSchema, submitTaskSchema } from '../schemas/taskSchema';
@@ -85,6 +86,36 @@ export const getUserRankHandler = async (req: Request, res: Response): Promise<v
   }
 };
 
+export const startTaskHandler = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const { id } = req.params;
+    const userId = req.user!.userId;
+
+    // Validar ID de tarea
+    const { id: taskId } = taskIdSchema.parse({ id });
+
+    const task: TaskWithStatus = await startTask(taskId, userId);
+
+    res.json({
+      success: true,
+      data: task
+    });
+  } catch (error) {
+    console.error('Error starting task:', error);
+    if (error instanceof ZodError) {
+      res.status(400).json({
+        success: false,
+        message: 'ID de tarea inválido'
+      });
+    } else {
+      res.status(500).json({
+        success: false,
+        message: 'Error interno del servidor'
+      });
+    }
+  }
+};
+
 export const completeTaskHandler = async (req: Request, res: Response): Promise<void> => {
   try {
     const { id } = req.params;
@@ -126,17 +157,17 @@ export const completeTaskHandler = async (req: Request, res: Response): Promise<
   }
 };
 
-export const startTaskHandler = async (req: Request, res: Response): Promise<void> => {
+export const openLinkHandler = async (req: Request, res: Response): Promise<void> => {
   try {
     const { id } = req.params;
     const userId = req.user!.userId;
 
     const { id: taskId } = taskIdSchema.parse({ id });
-    const task: TaskWithStatus = await startTask(taskId, userId);
+    const task: TaskWithStatus = await openLink(taskId, userId);
 
     res.json({
       success: true,
-      message: 'Tarea iniciada',
+      message: 'Enlace registrado como abierto',
       data: task
     });
   } catch (error) {
@@ -157,7 +188,7 @@ export const startTaskHandler = async (req: Request, res: Response): Promise<voi
       return;
     }
 
-    console.error('Error starting task:', error);
+    console.error('Error opening link:', error);
     res.status(500).json({
       success: false,
       message: 'Error interno del servidor'

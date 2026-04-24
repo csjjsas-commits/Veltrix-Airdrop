@@ -8,7 +8,8 @@ import {
   getUserStatsHandler,
   getUserDashboardHandler,
   getUserRankHandler,
-  startTaskHandler
+  startTaskHandler,
+  openLinkHandler
 } from '../controllers/taskController';
 import { authMiddleware } from '../middleware/auth';
 import { submitLimiter, taskCompleteLimiter } from '../middleware/rateLimiter';
@@ -47,6 +48,9 @@ router.post(
   taskCompleteLimiter,
   startTaskHandler
 );
+
+// POST /api/tasks/:id/open-link - Registrar que el usuario abrió el enlace
+router.post('/:id/open-link', taskCompleteLimiter, openLinkHandler);
 
 // POST /api/tasks/:id/submit - Enviar tarea manual para revisión
 router.post(
