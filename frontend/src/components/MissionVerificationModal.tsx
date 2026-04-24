@@ -83,23 +83,33 @@ export const MissionVerificationModal = ({
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 px-4 py-6">
       <div className="w-full max-w-2xl rounded-[2rem] border border-brand-electricBlue/20 bg-brand-deepBlue/95 p-8 shadow-2xl shadow-brand-blackVoid/70">
-        <div className="mb-6 flex items-center justify-between gap-4">
-          <div>
-            <h2 className="text-3xl font-semibold text-brand-pureWhite">
-              {modalMode === 'manual' ? 'Enviar Prueba' :
-               modalMode === 'wallet' ? 'Conectar Wallet' :
-               'Verificar Misión'}
-            </h2>
-            <p className="mt-2 text-sm text-brand-softGray">
-              {modalMode === 'manual'
-                ? 'Proporciona una breve prueba de tu envío.'
-                : modalMode === 'wallet'
-                ? 'Conecta tu wallet y completa la tarea.'
-                : task.actionUrl
-                ? 'Abre el enlace externo y verifica tu acción para completar la misión.'
-                : 'Completa la acción requerida para finalizar la misión.'}
-            </p>
-          </div>
+  const getModalTitle = (task: UserTask) => {
+    switch (task.taskType) {
+      case 'MANUAL_SUBMIT':
+        return 'Enviar Prueba';
+      case 'WALLET_ACTION':
+        return 'Conectar Wallet';
+      case 'EXTERNAL_LINK':
+      case 'AUTO_COMPLETE':
+        return 'Verificar Misión';
+      default:
+        return 'Verificar Misión';
+    }
+  };
+
+  const getModalDescription = (task: UserTask) => {
+    switch (task.taskType) {
+      case 'MANUAL_SUBMIT':
+        return 'Proporciona una breve prueba de tu envío.';
+      case 'WALLET_ACTION':
+        return 'Conecta tu wallet y completa la tarea.';
+      case 'EXTERNAL_LINK':
+      case 'AUTO_COMPLETE':
+        return 'Abre el enlace externo y verifica tu acción para completar la misión.';
+      default:
+        return 'Completa la acción requerida para finalizar la misión.';
+    }
+  };
           <button
             onClick={onClose}
             className="rounded-full border border-brand-graphite/70 bg-brand-blackVoid/80 px-4 py-2 text-sm text-brand-softGray transition hover:border-brand-electricBlue"
@@ -187,60 +197,42 @@ export const MissionVerificationModal = ({
                   {!currentState.linkOpened && !task.linkOpenedAt ? (
                     <div className="rounded-3xl border border-brand-electricBlue/30 bg-brand-electricBlue/10 px-4 py-3">
                       <p className="text-sm text-brand-electricBlue font-medium">
-                        🔗 Debes abrir el enlace primero
+                        🔗 Debes abrir el enlace para completar la misión
                       </p>
                       <p className="text-xs text-brand-softGray mt-1">
-                        Haz click en "Abrir enlace" para completar la acción requerida.
+                        Haz click en el botón para abrir el enlace y completar la acción requerida.
                       </p>
                     </div>
                   ) : (
                     <div className="rounded-3xl border border-brand-neonCyan/30 bg-brand-neonCyan/10 px-4 py-3">
                       <p className="text-sm text-brand-neonCyan font-medium">
-                        ✓ Enlace abierto
+                        ✓ Enlace abierto - Listo para confirmar
                       </p>
                       <p className="text-xs text-brand-softGray mt-1">
-                        Has abierto el enlace. Ahora puedes verificar y completar la tarea.
+                        Has completado la acción. Confirma para finalizar la misión.
                       </p>
                     </div>
                   )}
-                  <button
-                    onClick={handleOpenLink}
-                    disabled={currentState.isLoading || currentState.linkOpened || !!task.linkOpenedAt}
-                    className="w-full rounded-3xl bg-brand-electricBlue px-4 py-3 text-sm font-semibold text-brand-blackVoid transition hover:bg-brand-electricBlue/80 disabled:opacity-50 disabled:cursor-not-allowed"
-                  >
-                    {currentState.isLoading ? 'Abriendo...' : (currentState.linkOpened || !!task.linkOpenedAt) ? 'Enlace abierto' : 'Abrir enlace'}
-                  </button>
                 </div>
               )}
-              <p className="text-sm text-brand-softGray">
-                {task.actionUrl
-                  ? (currentState.linkOpened || !!task.linkOpenedAt)
-                    ? 'Has abierto el enlace. Ahora puedes verificar y completar la tarea.'
-                    : 'Primero abre el enlace externo, completa la acción requerida, luego regresa aquí para verificar.'
-                  : 'Completa la acción requerida y presiona verificar para confirmar.'}
-              </p>
-              {currentState.error && <p className="text-sm text-red-400">{currentState.error}</p>}
               <div className="flex gap-3">
-                {task.status !== 'IN_PROGRESS' && (
+                {!currentState.linkOpened && !task.linkOpenedAt ? (
                   <button
-                    onClick={handleStart}
+                    onClick={handleOpenLink}
                     disabled={currentState.isLoading}
-                    className="rounded-3xl bg-brand-electricBlue px-5 py-3 text-sm font-semibold text-brand-blackVoid transition hover:bg-brand-electricBlue/80 disabled:opacity-50"
+                    className="w-full rounded-3xl bg-brand-electricBlue px-5 py-3 text-sm font-semibold text-brand-blackVoid transition hover:bg-brand-electricBlue/80 disabled:opacity-50"
                   >
-                    {currentState.isLoading ? 'Iniciando...' : 'Iniciar'}
+                    {currentState.isLoading ? 'Abriendo enlace...' : 'Abrir enlace'}
+                  </button>
+                ) : (
+                  <button
+                    onClick={handleComplete}
+                    disabled={currentState.isLoading}
+                    className="w-full rounded-3xl bg-brand-neonCyan px-5 py-3 text-sm font-semibold text-brand-blackVoid transition hover:bg-brand-electricBlue disabled:opacity-50"
+                  >
+                    {currentState.isLoading ? 'Confirmando...' : 'Confirma y completar'}
                   </button>
                 )}
-                <button
-                  onClick={handleComplete}
-                  disabled={currentState.isLoading || task.status !== 'IN_PROGRESS' || !canComplete()}
-                  className="rounded-3xl bg-brand-neonCyan px-5 py-3 text-sm font-semibold text-brand-blackVoid transition hover:bg-brand-electricBlue disabled:opacity-50"
-                >
-                  {currentState.isLoading
-                    ? 'Verificando...'
-                    : !canComplete()
-                    ? 'Abrir enlace primero'
-                    : 'Confirmar y completar misión'}
-                </button>
               </div>
             </div>
           )}

@@ -109,9 +109,12 @@ export const DashboardPage = () => {
   const handleMissionStart = async (task: UserTask) => {
     if (task.status === 'COMPLETED') return;
 
-    // For external link and auto-complete tasks, show modal first (link will be opened from modal)
+    // For external link and auto-complete tasks, start the task and show modal
     if (task.taskType === 'EXTERNAL_LINK' || task.taskType === 'AUTO_COMPLETE') {
-      showModal(task);
+      const startedTask = await startMission(task);
+      if (startedTask) {
+        showModal(startedTask);
+      }
       return;
     }
 
