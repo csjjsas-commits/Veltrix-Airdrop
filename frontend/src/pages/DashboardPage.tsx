@@ -16,7 +16,7 @@ export const DashboardPage = () => {
   const { token } = useAuth();
   const { navigation } = useAnalytics();
   const navigate = useNavigate();
-  const { state: missionState, resetState: resetMissionState } = useMissionAction();
+  const { state: missionState, resetState: resetMissionState, startMission, completeMission } = useMissionAction();
   const [dashboard, setDashboard] = useState<DashboardData | null>(null);
   const [availableTasks, setAvailableTasks] = useState<UserTask[]>([]);
   const [error, setError] = useState('');
@@ -105,9 +105,18 @@ export const DashboardPage = () => {
   const handleMissionStart = async (task: UserTask) => {
     if (task.status === 'COMPLETED') return;
 
-    // For tasks that need verification, show modal
-    if (task.taskType === 'EXTERNAL_LINK' || task.taskType === 'AUTO_COMPLETE' ||
-        task.taskType === 'MANUAL_SUBMIT' || task.taskType === 'WALLET_ACTION') {
+    // For external link and auto-complete tasks, call startMission which opens the link
+    if (task.taskType === 'EXTERNAL_LINK' || task.taskType === 'AUTO_COMPLETE') {
+      const startedTask = await startMission(task);
+      if (startedTask) {
+        // Show modal after link is opened
+        showModal(startedTask);
+      }
+      return;
+    }
+
+    // For manual submit and wallet tasks, just show the modal
+    if (task.taskType === 'MANUAL_SUBMIT' || task.taskType === 'WALLET_ACTION') {
       showModal(task);
       return;
     }
@@ -137,7 +146,7 @@ export const DashboardPage = () => {
         break;
       default:
         // For auto-complete tasks without actionUrl, complete immediately
-        await completeTask(token!, task.id);
+        await completeMission(task);
         break;
     }
   };

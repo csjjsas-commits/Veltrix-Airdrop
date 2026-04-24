@@ -184,8 +184,12 @@ export const MissionVerificationModal = ({
                     </p>
                   </div>
                   <button
-                    onClick={async () => await openLink(task)}
-                    className="w-full rounded-3xl bg-brand-graphite/70 px-4 py-3 text-sm font-semibold text-brand-softGray hover:bg-brand-graphite/50"
+                    onClick={async () => {
+                      if (task.actionUrl) {
+                        window.open(task.actionUrl, '_blank');
+                      }
+                    }}
+                    className="w-full rounded-3xl bg-brand-graphite/70 px-4 py-3 text-sm font-semibold text-brand-softGray hover:bg-brand-graphite/50 transition"
                   >
                     Abrir enlace de nuevo
                   </button>

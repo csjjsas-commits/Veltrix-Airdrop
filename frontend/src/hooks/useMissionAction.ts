@@ -96,12 +96,6 @@ export const useMissionAction = () => {
   const completeMission = useCallback(async (task: UserTask): Promise<UserTask | null> => {
     if (!token) return null;
 
-    // Check if link needs to be opened first
-    if (task.actionUrl && (task.taskType === 'EXTERNAL_LINK' || task.taskType === 'AUTO_COMPLETE') && !state.linkOpened) {
-      setState(prev => ({ ...prev, error: 'Debes abrir el enlace primero' }));
-      return null;
-    }
-
     setState(prev => ({ ...prev, isLoading: true, error: '' }));
 
     try {
@@ -126,7 +120,7 @@ export const useMissionAction = () => {
     } finally {
       setState(prev => ({ ...prev, isLoading: false }));
     }
-  }, [token, state.linkOpened, state.linkOpenedAt, taskAnalytics]);
+  }, [token, state.linkOpenedAt, taskAnalytics]);
 
   const submitProof = useCallback(async (task: UserTask, proof: string): Promise<UserTask | null> => {
     if (!token) return null;
