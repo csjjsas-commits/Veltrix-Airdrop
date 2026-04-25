@@ -24,7 +24,9 @@ export const TurnstileWidget = ({ onVerify, resetTrigger }: TurnstileWidgetProps
 
   useEffect(() => {
     if (!SITE_KEY) {
-      setStatusMessage('Captcha no configurado: define VITE_TURNSTILE_SITE_KEY en frontend/.env');
+      setStatusMessage(
+        'Captcha no configurado: define VITE_TURNSTILE_SITE_KEY en frontend/.env y verifica tu configuración de Turnstile en Cloudflare.'
+      );
       return;
     }
 
