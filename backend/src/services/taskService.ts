@@ -22,6 +22,7 @@ export interface TaskWithStatus {
   timeLimit: number | null;
   referralTarget: string | null;
   requiredReferralActions: number | null;
+  referralRequiredTaskId: string | null;
   active: boolean;
   verificationData: any;
   createdAt: Date;
@@ -254,6 +255,7 @@ export const getTasksForUser = async (userId: string): Promise<TaskWithStatus[]>
       timeLimit: task.timeLimit,
       referralTarget: task.referralTarget,
       requiredReferralActions: task.requiredReferralActions,
+      referralRequiredTaskId: task.referralRequiredTaskId,
       active: task.active,
       verificationData: parseVerificationData(task.verificationData),
       createdAt: task.createdAt,
