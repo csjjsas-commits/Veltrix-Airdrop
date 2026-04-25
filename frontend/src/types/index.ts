@@ -66,6 +66,7 @@ export interface UserTask {
   timeLimit: number | null;
   referralTarget: string | null;
   requiredReferralActions: number | null;
+  referralRequiredTaskId: string | null;
   active: boolean;
   verificationData: any;
   createdAt: string;

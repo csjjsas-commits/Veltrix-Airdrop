@@ -66,11 +66,14 @@ model Task {
   timeLimit              Int?
   referralTarget         String?
   requiredReferralActions Int?              @default(0)
+  referralRequiredTaskId  String?
   active                 Boolean           @default(true)
   verificationData       String?
   createdAt              DateTime          @default(now())
   updatedAt              DateTime          @updatedAt
   userTasks              UserTask[]
+  referralRequiredTask   Task?             @relation("ReferralRequiredTask", fields: [referralRequiredTaskId], references: [id])
+  requiredByReferralTasks Task[]           @relation("ReferralRequiredTask")
 }
 
 model UserTask {

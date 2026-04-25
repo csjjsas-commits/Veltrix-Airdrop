@@ -261,6 +261,15 @@ export const MissionVerificationModal = ({
                 </div>
               )}
               
+              {task.referralRequiredTaskId && (
+                <div className="rounded-3xl border border-brand-electricBlue/30 bg-brand-electricBlue/10 p-5">
+                  <p className="text-sm uppercase tracking-[0.3em] text-brand-electricBlue mb-3">Requisito Adicional</p>
+                  <p className="text-sm text-brand-softGray">
+                    Los referidos deben completar una tarea específica para contar como referidos válidos.
+                  </p>
+                </div>
+              )}
+              
               {currentState.error && <p className="text-sm text-red-400">{currentState.error}</p>}
               
               <div className="flex gap-3">

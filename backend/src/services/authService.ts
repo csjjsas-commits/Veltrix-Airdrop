@@ -89,31 +89,52 @@ export const register = async (data: RegisterInput) => {
         data: {
           referrerId: inviter.id,
           referredUserId: user.id,
-          taskId: task.id
+          taskId: task.id,
+          taskCompleted: !task.referralRequiredTaskId // Only complete immediately if no required task
         }
       });
 
-      // Update referral count for the referrer's user task
-      await prisma.userTask.upsert({
-        where: {
-          userId_taskId: {
+      // Only increment referral count if no required task or if task is already completed
+      if (!task.referralRequiredTaskId) {
+        await prisma.userTask.upsert({
+          where: {
+            userId_taskId: {
+              userId: inviter.id,
+              taskId: task.id
+            }
+          },
+          update: {
+            referralCount: {
+              increment: 1
+            }
+          },
+          create: {
             userId: inviter.id,
-            taskId: task.id
+            taskId: task.id,
+            status: 'PENDING',
+            referralCount: 1,
+            pointsAwarded: 0
           }
-        },
-        update: {
-          referralCount: {
-            increment: 1
+        });
+      } else {
+        // Create UserTask entry if it doesn't exist
+        await prisma.userTask.upsert({
+          where: {
+            userId_taskId: {
+              userId: inviter.id,
+              taskId: task.id
+            }
+          },
+          update: {},
+          create: {
+            userId: inviter.id,
+            taskId: task.id,
+            status: 'PENDING',
+            referralCount: 0,
+            pointsAwarded: 0
           }
-        },
-        create: {
-          userId: inviter.id,
-          taskId: task.id,
-          status: 'PENDING',
-          referralCount: 1,
-          pointsAwarded: 0
-        }
-      });
+        });
+      }
     }
   }
 

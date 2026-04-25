@@ -404,6 +404,9 @@ export const completeTask = async (taskId: string, userId: string): Promise<Task
   // Handle referral actions if user was referred
   await handleReferralCompletion(userId, taskId);
 
+  // Activate pending referrals if this task was required for any referral tasks
+  await activatePendingReferrals(userId, taskId);
+
   // Actualizar puntos totales de la comunidad
   await prisma.airdropConfig.updateMany({
     data: {
@@ -433,6 +436,7 @@ export const completeTask = async (taskId: string, userId: string): Promise<Task
     timeLimit: task.timeLimit,
     referralTarget: task.referralTarget,
     requiredReferralActions: task.requiredReferralActions,
+    referralRequiredTaskId: task.referralRequiredTaskId,
     active: task.active,
     verificationData: parseVerificationData(task.verificationData),
     createdAt: task.createdAt,
@@ -1002,6 +1006,116 @@ export const handleReferralCompletion = async (userId: string, taskId: string): 
             }
           });
         }
+      }
+    }
+  }
+};
+
+export const activatePendingReferrals = async (userId: string, completedTaskId: string): Promise<void> => {
+  // Find referral tasks that require this task as a prerequisite
+  const referralTasks = await prisma.task.findMany({
+    where: {
+      taskType: 'REFERRAL',
+      referralRequiredTaskId: completedTaskId
+    }
+  });
+
+  for (const referralTask of referralTasks) {
+    // Find pending referral actions for this user and referral task
+    const pendingActions = await prisma.referralAction.findMany({
+      where: {
+        referredUserId: userId,
+        taskId: referralTask.id,
+        taskCompleted: false
+      },
+      include: {
+        referrer: true
+      }
+    });
+
+    for (const action of pendingActions) {
+      // Mark the referral action as completed
+      await prisma.referralAction.update({
+        where: { id: action.id },
+        data: {
+          taskCompleted: true,
+          completedAt: new Date()
+        }
+      });
+
+      // Increment referral count for the referrer
+      await prisma.userTask.upsert({
+        where: {
+          userId_taskId: {
+            userId: action.referrerId,
+            taskId: referralTask.id
+          }
+        },
+        update: {
+          referralCount: {
+            increment: 1
+          }
+        },
+        create: {
+          userId: action.referrerId,
+          taskId: referralTask.id,
+          status: 'PENDING',
+          referralCount: 1,
+          pointsAwarded: 0
+        }
+      });
+
+      // Check if referrer has completed all required referral actions
+      const completedActions = await prisma.referralAction.count({
+        where: {
+          referrerId: action.referrerId,
+          taskId: referralTask.id,
+          taskCompleted: true
+        }
+      });
+
+      const requiredActions = referralTask.requiredReferralActions || 1;
+      if (completedActions >= requiredActions) {
+        // Complete the referral task for the referrer
+        await prisma.userTask.upsert({
+          where: {
+            userId_taskId: {
+              userId: action.referrerId,
+              taskId: referralTask.id
+            }
+          },
+          update: {
+            status: 'COMPLETED',
+            completedAt: new Date(),
+            pointsAwarded: referralTask.points
+          },
+          create: {
+            userId: action.referrerId,
+            taskId: referralTask.id,
+            status: 'COMPLETED',
+            completedAt: new Date(),
+            pointsAwarded: referralTask.points
+          }
+        });
+
+        // Update referrer's points
+        await prisma.user.update({
+          where: { id: action.referrerId },
+          data: {
+            points: {
+              increment: referralTask.points
+            }
+          }
+        });
+
+        // Update community points
+        await prisma.airdropConfig.updateMany({
+          data: {
+            totalCommunityPoints: {
+              increment: referralTask.points
+            }
+          }
+        });
       }
     }
   }
