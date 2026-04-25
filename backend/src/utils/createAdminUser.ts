@@ -1,8 +1,8 @@
 import * as bcrypt from 'bcrypt';
-import { PrismaClient } from '@prisma/client';
+import prisma from './prismaClient';
 import { env } from './env';
 
-export const createAdminUser = async (prisma: PrismaClient) => {
+const run = async () => {
   if (!env.ADMIN_EMAIL || !env.ADMIN_PASSWORD || !env.ADMIN_NAME) {
     throw new Error(
       'Faltan variables de entorno obligatorias: ADMIN_EMAIL, ADMIN_PASSWORD y ADMIN_NAME.'
@@ -31,3 +31,12 @@ export const createAdminUser = async (prisma: PrismaClient) => {
 
   console.log(`Administrador creado correctamente: ${env.ADMIN_EMAIL}`);
 };
+
+run()
+  .catch((error) => {
+    console.error('Error creando el administrador inicial:', error);
+    process.exit(1);
+  })
+  .finally(async () => {
+    await prisma.$disconnect();
+  });
