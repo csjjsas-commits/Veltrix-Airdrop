@@ -92,6 +92,28 @@ export const register = async (data: RegisterInput) => {
           taskId: task.id
         }
       });
+
+      // Update referral count for the referrer's user task
+      await prisma.userTask.upsert({
+        where: {
+          userId_taskId: {
+            userId: inviter.id,
+            taskId: task.id
+          }
+        },
+        update: {
+          referralCount: {
+            increment: 1
+          }
+        },
+        create: {
+          userId: inviter.id,
+          taskId: task.id,
+          status: 'PENDING',
+          referralCount: 1,
+          pointsAwarded: 0
+        }
+      });
     }
   }
 

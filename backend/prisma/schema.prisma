@@ -89,6 +89,7 @@ model UserTask {
   lastCheckedAt       DateTime?
   externalId          String?
   linkOpenedAt        DateTime?
+  referralCount       Int       @default(0)
 
   @@unique([userId, taskId])
 }

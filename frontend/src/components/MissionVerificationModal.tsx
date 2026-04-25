@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { UserTask } from '../types';
 import { useMissionAction, MissionVerificationModalProps } from '../hooks/useMissionAction';
+import { useAuth } from '../hooks/useAuth';
 
 export const MissionVerificationModal = ({
   task,
@@ -12,6 +13,18 @@ export const MissionVerificationModal = ({
   const [proof, setProof] = useState('');
   const [walletAddress, setWalletAddress] = useState('');
   const { startMission, openLink, completeMission, submitProof, connectWallet, state } = useMissionAction();
+  const { user } = useAuth();
+
+  const copyReferralLink = async () => {
+    if (!user?.referralCode) return;
+    const referralUrl = `${window.location.origin}/register?ref=${user.referralCode}`;
+    try {
+      await navigator.clipboard.writeText(referralUrl);
+      // Could add a toast notification here
+    } catch (err) {
+      console.error('Failed to copy:', err);
+    }
+  };
 
   if (!isOpen || !task) return null;
 
@@ -23,6 +36,8 @@ export const MissionVerificationModal = ({
         return 'manual';
       case 'WALLET_ACTION':
         return 'wallet';
+      case 'REFERRAL':
+        return 'referral';
       case 'EXTERNAL_LINK':
       case 'AUTO_COMPLETE':
         return 'verify';
@@ -86,6 +101,8 @@ export const MissionVerificationModal = ({
         return 'Enviar Prueba';
       case 'WALLET_ACTION':
         return 'Conectar Wallet';
+      case 'REFERRAL':
+        return 'Invitar Amigos';
       case 'EXTERNAL_LINK':
       case 'AUTO_COMPLETE':
         return 'Verificar Misión';
@@ -100,6 +117,8 @@ export const MissionVerificationModal = ({
         return 'Proporciona una breve prueba de tu envío.';
       case 'WALLET_ACTION':
         return 'Conecta tu wallet y completa la tarea.';
+      case 'REFERRAL':
+        return 'Comparte tu enlace de referido con amigos. La tarea se completará automáticamente cuando invites a suficientes personas.';
       case 'EXTERNAL_LINK':
       case 'AUTO_COMPLETE':
         return 'Abre el enlace externo y verifica tu acción para completar la misión.';
@@ -195,6 +214,71 @@ export const MissionVerificationModal = ({
                   className="rounded-3xl bg-brand-neonCyan px-5 py-3 text-sm font-semibold text-brand-blackVoid transition hover:bg-brand-electricBlue disabled:opacity-50"
                 >
                   {currentState.isLoading ? 'Conectando...' : 'Completar conexión'}
+                </button>
+              </div>
+            </div>
+          )}
+
+          {modalMode === 'referral' && (
+            <div className="space-y-4">
+              {user?.referralCode && (
+                <div className="rounded-3xl border border-brand-graphite/70 bg-brand-blackVoid/75 p-5">
+                  <p className="text-sm uppercase tracking-[0.3em] text-brand-neonCyan mb-3">Tu Código de Referido</p>
+                  <div className="flex items-center gap-3">
+                    <code className="flex-1 rounded-xl bg-brand-deepBlue px-4 py-3 text-center font-mono text-lg text-brand-pureWhite">
+                      {user.referralCode}
+                    </code>
+                    <button
+                      onClick={copyReferralLink}
+                      className="rounded-xl bg-brand-electricBlue px-4 py-3 text-sm font-semibold text-brand-blackVoid transition hover:bg-brand-electricBlue/80"
+                    >
+                      Copiar Enlace
+                    </button>
+                  </div>
+                  <p className="mt-3 text-xs text-brand-softGray">
+                    Comparte este enlace con tus amigos. Se registrarán automáticamente con tu referido.
+                  </p>
+                </div>
+              )}
+              
+              {task.requiredReferralActions && (
+                <div className="rounded-3xl border border-brand-graphite/70 bg-brand-blackVoid/75 p-5">
+                  <p className="text-sm uppercase tracking-[0.3em] text-brand-neonCyan mb-3">Progreso</p>
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm text-brand-softGray">
+                      Referidos: {task.referralCount || 0} / {task.requiredReferralActions}
+                    </span>
+                    <span className="text-sm font-semibold text-brand-pureWhite">
+                      {Math.min(((task.referralCount || 0) / task.requiredReferralActions) * 100, 100).toFixed(0)}%
+                    </span>
+                  </div>
+                  <div className="mt-2 h-2 rounded-full bg-brand-graphite/50">
+                    <div
+                      className="h-full rounded-full bg-brand-neonCyan transition-all duration-300"
+                      style={{ width: `${Math.min(((task.referralCount || 0) / task.requiredReferralActions) * 100, 100)}%` }}
+                    />
+                  </div>
+                </div>
+              )}
+              
+              {currentState.error && <p className="text-sm text-red-400">{currentState.error}</p>}
+              
+              <div className="flex gap-3">
+                {task.status !== 'IN_PROGRESS' && (
+                  <button
+                    onClick={handleStart}
+                    disabled={currentState.isLoading}
+                    className="rounded-3xl bg-brand-electricBlue px-5 py-3 text-sm font-semibold text-brand-blackVoid transition hover:bg-brand-electricBlue/80 disabled:opacity-50"
+                  >
+                    {currentState.isLoading ? 'Iniciando...' : 'Iniciar Invitaciones'}
+                  </button>
+                )}
+                <button
+                  onClick={handleComplete}
+                  disabled={currentState.isLoading || task.status !== 'IN_PROGRESS' || (task.referralCount || 0) < (task.requiredReferralActions || 0)}
+                  className="rounded-3xl bg-brand-neonCyan px-5 py-3 text-sm font-semibold text-brand-blackVoid transition hover:bg-brand-electricBlue disabled:opacity-50"
+                >
+                  {currentState.isLoading ? 'Completando...' : 'Completar Misión'}
                 </button>
               </div>
             </div>
