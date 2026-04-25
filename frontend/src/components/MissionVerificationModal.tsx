@@ -129,10 +129,10 @@ export const MissionVerificationModal = ({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 px-4 py-6">
-      <div className="w-full max-w-2xl rounded-[2rem] border border-brand-electricBlue/20 bg-brand-deepBlue/95 p-8 shadow-2xl shadow-brand-blackVoid/70">
-        <div className="mb-6 flex items-center justify-between gap-4">
+      <div className="w-full max-w-2xl max-h-[90vh] rounded-[2rem] border border-brand-electricBlue/20 bg-brand-deepBlue/95 p-4 sm:p-8 shadow-2xl shadow-brand-blackVoid/70 overflow-y-auto">
+        <div className="mb-4 sm:mb-6 flex items-center justify-between gap-4">
           <div>
-            <h2 className="text-3xl font-semibold text-brand-pureWhite">
+            <h2 className="text-2xl sm:text-3xl font-semibold text-brand-pureWhite">
               {getModalTitle(task)}
             </h2>
             <p className="mt-2 text-sm text-brand-softGray">
@@ -141,7 +141,7 @@ export const MissionVerificationModal = ({
           </div>
           <button
             onClick={onClose}
-            className="rounded-full border border-brand-graphite/70 bg-brand-blackVoid/80 px-4 py-2 text-sm text-brand-softGray transition hover:border-brand-electricBlue"
+            className="rounded-full border border-brand-graphite/70 bg-brand-blackVoid/80 px-3 py-2 sm:px-4 text-sm text-brand-softGray transition hover:border-brand-electricBlue"
           >
             Cerrar
           </button>
@@ -220,35 +220,35 @@ export const MissionVerificationModal = ({
           )}
 
           {modalMode === 'referral' && (
-            <div className="space-y-4">
+            <div className="space-y-3 sm:space-y-4">
               {user?.referralCode && (
-                <div className="rounded-3xl border border-brand-graphite/70 bg-brand-blackVoid/75 p-5">
-                  <p className="text-sm uppercase tracking-[0.3em] text-brand-neonCyan mb-3">Tu Código de Referido</p>
-                  <div className="flex items-center gap-3">
-                    <code className="flex-1 rounded-xl bg-brand-deepBlue px-4 py-3 text-center font-mono text-lg text-brand-pureWhite">
+                <div className="rounded-2xl sm:rounded-3xl border border-brand-graphite/70 bg-brand-blackVoid/75 p-3 sm:p-5">
+                  <p className="text-xs sm:text-sm uppercase tracking-[0.3em] text-brand-neonCyan mb-2 sm:mb-3">Tu Código de Referido</p>
+                  <div className="flex items-center gap-2 sm:gap-3">
+                    <code className="flex-1 rounded-xl bg-brand-deepBlue px-3 py-2 sm:px-4 sm:py-3 text-center font-mono text-sm sm:text-lg text-brand-pureWhite">
                       {user.referralCode}
                     </code>
                     <button
                       onClick={copyReferralLink}
-                      className="rounded-xl bg-brand-electricBlue px-4 py-3 text-sm font-semibold text-brand-blackVoid transition hover:bg-brand-electricBlue/80"
+                      className="rounded-xl bg-brand-electricBlue px-3 py-2 sm:px-4 sm:py-3 text-xs sm:text-sm font-semibold text-brand-blackVoid transition hover:bg-brand-electricBlue/80"
                     >
                       Copiar Enlace
                     </button>
                   </div>
-                  <p className="mt-3 text-xs text-brand-softGray">
+                  <p className="mt-2 sm:mt-3 text-xs text-brand-softGray">
                     Comparte este enlace con tus amigos. Se registrarán automáticamente con tu referido.
                   </p>
                 </div>
               )}
               
               {task.requiredReferralActions && (
-                <div className="rounded-3xl border border-brand-graphite/70 bg-brand-blackVoid/75 p-5">
-                  <p className="text-sm uppercase tracking-[0.3em] text-brand-neonCyan mb-3">Progreso</p>
+                <div className="rounded-2xl sm:rounded-3xl border border-brand-graphite/70 bg-brand-blackVoid/75 p-3 sm:p-5">
+                  <p className="text-xs sm:text-sm uppercase tracking-[0.3em] text-brand-neonCyan mb-2 sm:mb-3">Progreso</p>
                   <div className="flex items-center justify-between">
-                    <span className="text-sm text-brand-softGray">
+                    <span className="text-xs sm:text-sm text-brand-softGray">
                       Referidos: {task.referralCount || 0} / {task.requiredReferralActions}
                     </span>
-                    <span className="text-sm font-semibold text-brand-pureWhite">
+                    <span className="text-xs sm:text-sm font-semibold text-brand-pureWhite">
                       {Math.min(((task.referralCount || 0) / task.requiredReferralActions) * 100, 100).toFixed(0)}%
                     </span>
                   </div>
@@ -262,22 +262,22 @@ export const MissionVerificationModal = ({
               )}
               
               {task.referralRequiredTaskId && (
-                <div className="rounded-3xl border border-brand-electricBlue/30 bg-brand-electricBlue/10 p-5">
-                  <p className="text-sm uppercase tracking-[0.3em] text-brand-electricBlue mb-3">Requisito Adicional</p>
-                  <p className="text-sm text-brand-softGray">
+                <div className="rounded-2xl sm:rounded-3xl border border-brand-electricBlue/30 bg-brand-electricBlue/10 p-3 sm:p-5">
+                  <p className="text-xs sm:text-sm uppercase tracking-[0.3em] text-brand-electricBlue mb-2 sm:mb-3">Requisito Adicional</p>
+                  <p className="text-xs sm:text-sm text-brand-softGray">
                     Los referidos deben completar una tarea específica para contar como referidos válidos.
                   </p>
                 </div>
               )}
               
-              {currentState.error && <p className="text-sm text-red-400">{currentState.error}</p>}
+              {currentState.error && <p className="text-xs sm:text-sm text-red-400">{currentState.error}</p>}
               
-              <div className="flex gap-3">
+              <div className="flex gap-2 sm:gap-3">
                 {task.status !== 'IN_PROGRESS' && (
                   <button
                     onClick={handleStart}
                     disabled={currentState.isLoading}
-                    className="rounded-3xl bg-brand-electricBlue px-5 py-3 text-sm font-semibold text-brand-blackVoid transition hover:bg-brand-electricBlue/80 disabled:opacity-50"
+                    className="rounded-2xl sm:rounded-3xl bg-brand-electricBlue px-3 py-2 sm:px-5 sm:py-3 text-xs sm:text-sm font-semibold text-brand-blackVoid transition hover:bg-brand-electricBlue/80 disabled:opacity-50"
                   >
                     {currentState.isLoading ? 'Iniciando...' : 'Iniciar Invitaciones'}
                   </button>
@@ -285,7 +285,7 @@ export const MissionVerificationModal = ({
                 <button
                   onClick={handleComplete}
                   disabled={currentState.isLoading || task.status !== 'IN_PROGRESS' || (task.referralCount || 0) < (task.requiredReferralActions || 0)}
-                  className="rounded-3xl bg-brand-neonCyan px-5 py-3 text-sm font-semibold text-brand-blackVoid transition hover:bg-brand-electricBlue disabled:opacity-50"
+                  className="rounded-2xl sm:rounded-3xl bg-brand-neonCyan px-3 py-2 sm:px-5 sm:py-3 text-xs sm:text-sm font-semibold text-brand-blackVoid transition hover:bg-brand-electricBlue disabled:opacity-50"
                 >
                   {currentState.isLoading ? 'Completando...' : 'Completar Misión'}
                 </button>

@@ -10,8 +10,6 @@ import { StatsGrid } from '../components/dashboard/StatsGrid';
 import { MissionCard } from '../components/dashboard/MissionCard';
 import { MissionVerificationModal } from '../components/MissionVerificationModal';
 import { SkeletonCard } from '../components/ui/SkeletonCard';
-import { WalletPanel } from '../components/dashboard/WalletPanel';
-import { ReferralPanel } from '../components/dashboard/ReferralPanel';
 import { motion } from 'framer-motion';
 
 export const DashboardPage = () => {
@@ -202,10 +200,6 @@ export const DashboardPage = () => {
           )}
 
           <StatsGrid stats={dashboard?.stats ?? { totalPoints: 0, completedTasks: 0, pendingTasks: 0, estimatedTokens: '0' }} />
-
-          <WalletPanel />
-
-          <ReferralPanel />
 
           <motion.section
             initial={{ opacity: 0, y: 20 }}
