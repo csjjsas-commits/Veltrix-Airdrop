@@ -72,7 +72,6 @@ export const DashboardPage = () => {
 
   const showModal = (task: UserTask) => {
     setModalTask(task);
-    resetMissionState();
   };
 
   const closeModal = () => {
@@ -110,9 +109,19 @@ export const DashboardPage = () => {
 
   const handleMissionStart = async (task: UserTask) => {
     if (task.status === 'COMPLETED') return;
+    resetMissionState();
 
     // For external link and auto-complete tasks, start the task and show modal
     if (task.taskType === 'EXTERNAL_LINK' || task.taskType === 'AUTO_COMPLETE') {
+      const startedTask = await startMission(task);
+      if (startedTask) {
+        showModal(startedTask);
+      }
+      return;
+    }
+
+    // For referral tasks, start the task and show the referral modal
+    if (task.taskType === 'REFERRAL') {
       const startedTask = await startMission(task);
       if (startedTask) {
         showModal(startedTask);

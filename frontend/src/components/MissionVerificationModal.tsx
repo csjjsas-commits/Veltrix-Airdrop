@@ -118,7 +118,7 @@ export const MissionVerificationModal = ({
       case 'WALLET_ACTION':
         return 'Conecta tu wallet y completa la tarea.';
       case 'REFERRAL':
-        return 'Comparte tu enlace de referido con amigos. La tarea se completará automáticamente cuando invites a suficientes personas.';
+        return 'Comparte tu enlace de referido con amigos. El sistema valida cuando el referido completa la tarea requerida y la recompensa se aplica según la configuración de la tarea de referido.';
       case 'EXTERNAL_LINK':
       case 'AUTO_COMPLETE':
         return 'Abre el enlace externo y verifica tu acción para completar la misión.';

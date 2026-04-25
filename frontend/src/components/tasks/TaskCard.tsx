@@ -124,10 +124,10 @@ export const TaskCard = ({ task, onTaskUpdate, onTaskAction }: Props) => {
       return (
         <button
           onClick={() => onTaskAction ? onTaskAction(task) : handleStart(task.actionUrl || undefined)}
-          disabled={!task.actionUrl || isStarting}
+          disabled={task.taskType === 'EXTERNAL_LINK' ? !task.actionUrl || isStarting : isStarting}
           className="rounded-full bg-brand-neonCyan/10 px-4 py-2 text-brand-neonCyan hover:bg-brand-neonCyan/20 disabled:opacity-50"
         >
-          {isStarting ? 'Iniciando...' : task.status === 'IN_PROGRESS' ? 'Continuar' : task.actionUrl ? 'Abrir enlace' : 'Acción externa'}
+          {isStarting ? 'Iniciando...' : task.status === 'IN_PROGRESS' ? 'Continuar' : task.taskType === 'REFERRAL' ? 'Invitar' : task.actionUrl ? 'Abrir enlace' : 'Acción externa'}
         </button>
       );
     }

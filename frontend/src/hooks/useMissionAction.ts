@@ -45,11 +45,11 @@ export const useMissionAction = () => {
     setState(prev => ({ ...prev, isLoading: true, error: '' }));
 
     try {
-      const updatedTask = await startTask(token, task.id);
+      let updatedTask = await startTask(token, task.id);
 
       // For tasks with actionUrl, automatically open link and track it
       if (task.actionUrl && (task.taskType === 'EXTERNAL_LINK' || task.taskType === 'AUTO_COMPLETE')) {
-        await apiOpenLink(token, task.id);
+        updatedTask = await apiOpenLink(token, task.id);
         
         // Open link with fallback for mobile devices
         const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
@@ -79,6 +79,9 @@ export const useMissionAction = () => {
           }
         }
       }
+      
+      taskAnalytics.started(task.id, task.title || 'Unknown Task');
+      return updatedTask;
 
       taskAnalytics.started(task.id, task.title || 'Unknown Task');
       return updatedTask;
@@ -134,15 +137,20 @@ export const useMissionAction = () => {
     try {
       let updatedTask: UserTask;
 
-      if (task.taskType === 'AUTO_COMPLETE' || task.taskType === 'INTERNAL_ACTION') {
+      if (
+        task.taskType === 'AUTO_COMPLETE' ||
+        task.taskType === 'INTERNAL_ACTION' ||
+        task.taskType === 'EXTERNAL_LINK'
+      ) {
         updatedTask = await completeTask(token, task.id);
-      } else {
-        // For other task types, use verification
+      } else if (task.verificationType && task.verificationType !== 'MANUAL') {
         updatedTask = await verifyTask(token, task.id, {
           verificationType: task.verificationType,
           verificationData: task.verificationData,
           linkOpenedAt: state.linkOpenedAt?.toISOString()
         });
+      } else {
+        updatedTask = await completeTask(token, task.id);
       }
 
       taskAnalytics.completed(task.id, task.title || 'Unknown Task', task.points);

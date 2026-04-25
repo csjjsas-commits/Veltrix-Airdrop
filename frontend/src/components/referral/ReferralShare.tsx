@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Button } from '../ui/Button';
 import { API_BASE } from '../../services/api';
+import { useAuth } from '../../hooks/useAuth';
 
 interface ReferralStats {
   totalReferred: number;
@@ -21,21 +22,27 @@ export const ReferralShare: React.FC = () => {
   const [referralCode, setReferralCode] = useState<string | null>(null);
   const [referralLink, setReferralLink] = useState<string | null>(null);
   const [stats, setStats] = useState<ReferralStats | null>(null);
+  const { token } = useAuth();
   const [loading, setLoading] = useState(true);
   const [copied, setCopied] = useState(false);
 
   useEffect(() => {
     loadReferralData();
-  }, []);
+  }, [token]);
 
   const loadReferralData = async () => {
+    if (!token) {
+      setLoading(false);
+      return;
+    }
+
     try {
       const [codeRes, statsRes] = await Promise.all([
         fetch(`${API_BASE}/referral/code`, {
-          headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
+          headers: { 'Authorization': `Bearer ${token}` }
         }),
         fetch(`${API_BASE}/referral/stats`, {
-          headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
+          headers: { 'Authorization': `Bearer ${token}` }
         })
       ]);
 
@@ -120,7 +127,8 @@ export const ReferralShare: React.FC = () => {
         )}
 
         <p className="text-sm text-gray-500 mt-4">
-          📢 Share your referral code to invite friends. When they register and complete their first task, you both earn rewards!
+          📢 Share your referral code to invite friends. Your friends will be marked as referred when they register with this link, and the referral is counted when they complete at least one task.
+          Los puntos que recibe cada uno dependen de las tareas que completen: el referido gana los puntos de su propia misión, y tú ganas la recompensa configurada en la tarea de referido.
         </p>
       </div>
 
