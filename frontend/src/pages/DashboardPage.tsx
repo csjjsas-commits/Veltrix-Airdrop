@@ -7,6 +7,7 @@ import { getDashboard, getTasks, completeTask } from '../services/api';
 import { DashboardData, UserTask } from '../types';
 import { HeroPanel } from '../components/dashboard/HeroPanel';
 import { StatsGrid } from '../components/dashboard/StatsGrid';
+import { WalletPanel } from '../components/dashboard/WalletPanel';
 import { MissionCard } from '../components/dashboard/MissionCard';
 import { MissionVerificationModal } from '../components/MissionVerificationModal';
 import { SkeletonCard } from '../components/ui/SkeletonCard';
