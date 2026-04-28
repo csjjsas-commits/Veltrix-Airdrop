@@ -65,8 +65,9 @@ export const TareasPage = () => {
   const referralTask = tasks.find(t => t.taskType === 'REFERRAL');
   const regularTasks = tasks.filter(t => t.taskType !== 'REFERRAL');
 
-  // Check if there's an incomplete required task (non-referral only)
-  const incompleteRequiredTask = regularTasks.find(t => t.isRequired && t.status !== 'COMPLETED');
+  // Find incomplete required tasks and keep required tasks first
+  const incompleteRequiredTasks = regularTasks.filter(t => t.isRequired && t.status !== 'COMPLETED');
+  const activeRequiredTask = incompleteRequiredTasks[0] || null;
 
   const filteredTasks = activePlatform === 'all'
     ? sortTasks(regularTasks)
@@ -175,10 +176,10 @@ export const TareasPage = () => {
               animate={{ opacity: 1 }}
               transition={{ duration: 0.5 }}
             >
-              {incompleteRequiredTask && (
+              {activeRequiredTask && (
                 <div className="rounded-lg border border-amber-900/50 bg-amber-950/30 p-4 text-amber-200 text-sm">
-                  <p className="font-semibold">⚠️ Tarea Obligatoria</p>
-                  <p className="mt-1 text-xs">Completa la tarea "<strong>{incompleteRequiredTask.title}</strong>" para desbloquear las demás tareas.</p>
+                  <p className="font-semibold">⚠️ Tarea obligatoria pendiente</p>
+                  <p className="mt-1 text-xs">Completa la tarea "<strong>{activeRequiredTask.title}</strong>" para desbloquear las demás tareas.</p>
                 </div>
               )}
               {filteredTasks.length > 0 ? (
@@ -189,7 +190,7 @@ export const TareasPage = () => {
                     onTaskUpdate={handleTaskUpdate}
                     onTaskAction={handleReferralAction}
                     onOpenModal={handleOpenModal}
-                    isBlocked={!!incompleteRequiredTask && task.id !== incompleteRequiredTask.id}
+                    isBlocked={!!activeRequiredTask && !task.isRequired}
                   />
                 ))
               ) : (
