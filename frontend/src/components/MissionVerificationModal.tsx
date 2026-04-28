@@ -75,38 +75,17 @@ export const MissionVerificationModal = ({
           <div className="space-y-3">
             <div className="flex items-center gap-3">
               <div className="flex h-12 w-12 items-center justify-center rounded-3xl bg-violet-500/15 text-2xl text-violet-300">
-                <span className="text-xl">#</span>
+                {getPlatformIcon(task.platform) || <span className="text-xl">#</span>}
               </div>
               <div>
                 <p className="text-xs uppercase tracking-[0.28em] text-violet-300/70">TaskDrop</p>
-                <h2 className="text-2xl font-semibold text-white">{task.title}</h2>
+                <h2 className="text-2xl font-semibold text-white">Verificar Tarea</h2>
               </div>
             </div>
+            <p className="text-sm font-semibold text-white">{task.title}</p>
             <p className="max-w-xl text-sm leading-6 text-slate-300">
-              {task.actionUrl
-                ? 'Completa el paso 1 desde el enlace y luego ingresa tu usuario para verificar la misión.'
-                : 'Ingresa tu handle para verificar tu misión y completar el proceso.'}
+              {task.description || 'Completa el paso 1 desde el enlace y luego ingresa tu usuario para verificar la misión.'}
             </p>
-            {task.actionUrl && (
-              <div className="mt-4 rounded-3xl border border-slate-800 bg-slate-900/95 p-4">
-                <div className="flex items-center gap-3">
-                  <div className="flex h-12 w-12 items-center justify-center rounded-3xl bg-violet-500/10 text-violet-300">
-                    <FaExternalLinkAlt className="h-5 w-5" />
-                  </div>
-                  <div className="min-w-0">
-                    <p className="text-xs uppercase tracking-[0.35em] text-slate-400">Paso 1: Completá la acción</p>
-                    <a
-                      href={task.actionUrl}
-                      target="_blank"
-                      rel="noreferrer"
-                      className="mt-1 block truncate text-sm font-semibold text-white hover:text-violet-300"
-                    >
-                      {task.actionUrl}
-                    </a>
-                  </div>
-                </div>
-              </div>
-            )}
           </div>
 
           <button
@@ -117,25 +96,40 @@ export const MissionVerificationModal = ({
           </button>
         </div>
 
-        <div className="rounded-[2rem] border border-slate-800 bg-slate-900/95 p-6">
-          <label className="mb-3 block text-sm font-semibold uppercase tracking-[0.18em] text-slate-400">
-            Handle requerido
-          </label>
-          <input
-            value={verificationHandle}
-            onChange={(e) => setVerificationHandle(e.target.value)}
-            placeholder="@tuusuario"
-            className="w-full rounded-3xl border border-slate-800 bg-slate-950 px-4 py-4 text-white placeholder:text-slate-500 outline-none focus:border-violet-400 focus:ring-2 focus:ring-violet-500/20"
-          />
-          {currentState.error && <p className="mt-3 text-sm text-red-400">{currentState.error}</p>}
+        <div className="space-y-4">
+          {task.actionUrl && (
+            <div className="rounded-[1.75rem] border border-slate-800 bg-slate-900/95 p-5">
+              <p className="text-xs uppercase tracking-[0.35em] text-slate-400 mb-3">Paso 1: completá la acción</p>
+              <a
+                href={task.actionUrl}
+                target="_blank"
+                rel="noreferrer"
+                className="inline-flex w-full items-center gap-3 rounded-3xl bg-slate-950 px-4 py-4 text-sm font-semibold text-white transition hover:bg-slate-900"
+              >
+                <FaExternalLinkAlt className="h-4 w-4 text-violet-300" />
+                <span className="truncate">Abrir acción</span>
+              </a>
+            </div>
+          )}
 
-          <div className="mt-6 flex flex-col gap-3 sm:flex-row">
+          <div className="rounded-[1.75rem] border border-slate-800 bg-slate-900/95 p-5">
+            <p className="text-xs uppercase tracking-[0.35em] text-slate-400 mb-3">Paso 2: Ingresa tu usuario en {task.platform ?? 'la plataforma'}</p>
+            <input
+              value={verificationHandle}
+              onChange={(e) => setVerificationHandle(e.target.value)}
+              placeholder="@tuusuario"
+              className="w-full rounded-3xl border border-slate-800 bg-slate-950 px-4 py-4 text-white placeholder:text-slate-500 outline-none focus:border-violet-400 focus:ring-2 focus:ring-violet-500/20"
+            />
+            {currentState.error && <p className="mt-3 text-sm text-red-400">{currentState.error}</p>}
+          </div>
+
+          <div className="flex flex-col gap-3 sm:flex-row">
             <button
               onClick={handleVerificationSubmit}
               disabled={!canSubmit}
               className="inline-flex min-h-[56px] flex-1 items-center justify-center rounded-3xl bg-violet-500 px-6 py-4 text-sm font-semibold text-white transition hover:bg-violet-400 disabled:cursor-not-allowed disabled:opacity-50"
             >
-              {currentState.isLoading ? 'Confirmando...' : 'Confirmar y Verificar'}
+              {currentState.isLoading ? 'Confirmando...' : 'Verificar automáticamente'}
             </button>
             <button
               onClick={onClose}

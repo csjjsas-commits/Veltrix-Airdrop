@@ -104,7 +104,7 @@ export const TaskListItem = ({ task, onTaskUpdate, onTaskAction, onOpenModal }: 
     if (task.status === 'COMPLETED') return '✓ Completada';
     if (task.status === 'PENDING') return 'En revisión';
     if (task.taskType === 'REFERRAL') return task.status === 'IN_PROGRESS' ? 'Continuar' : 'Invitar';
-    if (task.taskType === 'EXTERNAL_LINK') return task.status === 'IN_PROGRESS' ? 'Continuar' : 'Abrir';
+    if (task.taskType === 'EXTERNAL_LINK') return task.status === 'IN_PROGRESS' ? 'Continuar' : 'Completar';
     if (task.taskType === 'WALLET_ACTION') return 'Conectar';
     return 'Completar';
   };
@@ -122,40 +122,42 @@ export const TaskListItem = ({ task, onTaskUpdate, onTaskAction, onOpenModal }: 
           <div className="min-w-0 flex-1">
             <h4 className="text-lg font-semibold text-white truncate">{task.title}</h4>
             <p className="mt-2 text-sm leading-6 text-slate-400 truncate">{task.description || 'Completa esta misión para ganar puntos'}</p>
-            <div className="mt-3 space-y-2">
-              <div className="flex flex-wrap gap-2">
-                <span className="rounded-full border border-slate-800 bg-slate-900/80 px-3 py-2 text-xs font-semibold uppercase tracking-[0.25em] text-slate-500">{task.points} pts</span>
-                {task.endDate && !isCompleted && <CountdownBadge endDate={task.endDate} className="text-slate-400" />}
-              </div>
-              {task.actionUrl && (
-                <a
-                  href={task.actionUrl}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="inline-flex items-center gap-2 text-xs font-semibold text-violet-300 hover:text-violet-200"
-                >
-                  <FaExternalLinkAlt className="h-3 w-3" />
-                  {task.actionUrl}
-                </a>
-              )}
+            <div className="mt-3">
+              <span className="rounded-full border border-slate-800 bg-slate-900/80 px-3 py-2 text-xs font-semibold uppercase tracking-[0.25em] text-slate-500">{task.points} pts</span>
             </div>
           </div>
         </div>
 
         <div className="flex shrink-0 flex-col items-end gap-2">
-          <button
-            onClick={handleAction}
-            disabled={isDisabled}
-            className={`rounded-full px-5 py-3 text-sm font-semibold transition whitespace-nowrap ${
-              isCompleted
-                ? 'bg-slate-800 text-slate-500 cursor-not-allowed'
-                : 'bg-violet-500 text-white hover:bg-violet-400 disabled:opacity-50 disabled:cursor-not-allowed'
-            }`}
-          >
-            {isProcessing ? 'Procesando...' : getButtonText()}
-          </button>
+          <div className="flex items-center gap-2">
+            {task.actionUrl && (
+              <a
+                href={task.actionUrl}
+                target="_blank"
+                rel="noreferrer"
+                className="inline-flex items-center gap-2 rounded-full border border-slate-800 bg-slate-900/95 px-3 py-2 text-xs font-semibold text-violet-300 transition hover:bg-slate-900 hover:text-violet-200"
+              >
+                <FaExternalLinkAlt className="h-3 w-3" />
+                Abrir
+              </a>
+            )}
+            <button
+              onClick={handleAction}
+              disabled={isDisabled}
+              className={`rounded-full px-5 py-3 text-sm font-semibold transition whitespace-nowrap ${
+                isCompleted
+                  ? 'bg-slate-800 text-slate-500 cursor-not-allowed'
+                  : 'bg-violet-500 text-white hover:bg-violet-400 disabled:opacity-50 disabled:cursor-not-allowed'
+              }`}
+            >
+              {isProcessing ? 'Procesando...' : getButtonText()}
+            </button>
+          </div>
           {timeRemaining && (
             <span className="text-xs font-mono text-yellow-400">{timeRemaining}</span>
+          )}
+          {task.endDate && !isCompleted && (
+            <CountdownBadge endDate={task.endDate} className="text-slate-400" />
           )}
         </div>
       </div>
