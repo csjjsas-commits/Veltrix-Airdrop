@@ -34,9 +34,7 @@ const normalizeTaskForm = (task: UserTask | null) => {
       taskTitle: '',
       taskPoints: 120,
       taskDesc: '',
-      taskType: 'AUTO_COMPLETE' as TaskType,
       actionUrl: '',
-      requiresProof: false,
       weekNumber: '',
       startDate: '',
       endDate: '',
@@ -44,6 +42,10 @@ const normalizeTaskForm = (task: UserTask | null) => {
       referralTarget: '',
       requiredReferralActions: 0,
       taskActive: true,
+      taskPlatform: 'x' as const,
+      taskAction: 'seguir' as const,
+      taskAccount: '',
+      taskMandatory: false,
       editingTask: null
     };
   }
@@ -52,9 +54,7 @@ const normalizeTaskForm = (task: UserTask | null) => {
     taskTitle: task.title ?? '',
     taskPoints: task.points ?? 120,
     taskDesc: task.description ?? '',
-    taskType: (task.taskType ?? 'AUTO_COMPLETE') as TaskType,
     actionUrl: task.actionUrl ?? '',
-    requiresProof: Boolean(task.requiresProof),
     weekNumber: task.weekNumber ? String(task.weekNumber) : '',
     startDate: task.startDate ? task.startDate.split('T')[0] : '',
     endDate: task.endDate ? task.endDate.split('T')[0] : '',
@@ -62,6 +62,10 @@ const normalizeTaskForm = (task: UserTask | null) => {
     referralTarget: task.referralTarget ?? '',
     requiredReferralActions: task.requiredReferralActions ?? 0,
     taskActive: Boolean(task.active),
+    taskPlatform: (task.platform ?? (task.taskType === 'REFERRAL' ? 'referral' : 'x')) as 'instagram' | 'x' | 'telegram' | 'youtube' | 'referral',
+    taskAction: 'seguir' as const,
+    taskAccount: task.verificationData?.username ?? '',
+    taskMandatory: Boolean(task.requiresProof),
     editingTask: task
   };
 };
@@ -77,10 +81,7 @@ export const AdminPanel = () => {
   const [taskTitle, setTaskTitle] = useState<string>('');
   const [taskPoints, setTaskPoints] = useState<number>(120);
   const [taskDesc, setTaskDesc] = useState<string>('');
-  const [taskType, setTaskType] = useState<TaskType>('AUTO_COMPLETE');
-  const [verificationMethod] = useState<VerificationMethod>('SYSTEM_AUTOMATIC');
   const [actionUrl, setActionUrl] = useState<string>('');
-  const [requiresProof, setRequiresProof] = useState<boolean>(false);
   const [weekNumber, setWeekNumber] = useState<string>('');
   const [startDate, setStartDate] = useState<string>('');
   const [endDate, setEndDate] = useState<string>('');
@@ -88,6 +89,11 @@ export const AdminPanel = () => {
   const [referralTarget, setReferralTarget] = useState<string>('');
   const [requiredReferralActions, setRequiredReferralActions] = useState<number>(0);
   const [taskActive, setTaskActive] = useState<boolean>(true);
+  const [taskPlatform, setTaskPlatform] = useState<'instagram' | 'x' | 'telegram' | 'youtube' | 'referral'>('x');
+  const [taskAction, setTaskAction] = useState<'seguir' | 'me gusta' | 'compartir' | 'ver video' | 'comentar' | 'suscribirse' | 'unirse'>('seguir');
+  const [taskAccount, setTaskAccount] = useState<string>('');
+  const [taskMandatory, setTaskMandatory] = useState<boolean>(false);
+  const [isTaskModalOpen, setIsTaskModalOpen] = useState<boolean>(false);
   const [editingTask, setEditingTask] = useState<UserTask | null>(null);
   const [message, setMessage] = useState('');
 
@@ -158,9 +164,7 @@ export const AdminPanel = () => {
     setTaskTitle(normalized.taskTitle);
     setTaskPoints(normalized.taskPoints);
     setTaskDesc(normalized.taskDesc);
-    setTaskType(normalized.taskType);
     setActionUrl(normalized.actionUrl);
-    setRequiresProof(normalized.requiresProof);
     setWeekNumber(normalized.weekNumber);
     setStartDate(normalized.startDate);
     setEndDate(normalized.endDate);
@@ -168,8 +172,17 @@ export const AdminPanel = () => {
     setReferralTarget(normalized.referralTarget);
     setRequiredReferralActions(normalized.requiredReferralActions);
     setTaskActive(normalized.taskActive);
+    setTaskPlatform(normalized.taskPlatform);
+    setTaskAction(normalized.taskAction);
+    setTaskAccount(normalized.taskAccount);
+    setTaskMandatory(normalized.taskMandatory);
     setEditingTask(null);
     setMessage('');
+  };
+
+  const closeTaskModal = () => {
+    setIsTaskModalOpen(false);
+    resetTaskForm();
   };
 
   const getTaskPayload = (): TaskPayload => {
@@ -178,22 +191,23 @@ export const AdminPanel = () => {
     
     // Validate parsed week number
     const validWeekNumber = parsedWeekNumber && !isNaN(parsedWeekNumber) ? parsedWeekNumber : null;
+    const isReferral = taskPlatform === 'referral';
 
     const payload = {
       title: taskTitle,
       description: taskDesc || undefined,
       points: taskPoints,
       deadline: null,
-      taskType,
+      taskType: isReferral ? ('REFERRAL' as TaskType) : ('AUTO_COMPLETE' as TaskType),
       actionUrl: actionUrl || null,
-      verificationMethod,
-      requiresProof,
+      verificationMethod: isReferral ? ('REFERRAL_VALIDATION' as VerificationMethod) : ('SYSTEM_AUTOMATIC' as VerificationMethod),
+      requiresProof: taskMandatory,
       weekNumber: validWeekNumber,
       startDate: startDate || null,
       endDate: endDate || null,
       timeLimit: parseTimeLimit(timeLimitStr),
-      referralTarget: referralTarget || null,
-      requiredReferralActions: requiredReferralActions > 0 ? requiredReferralActions : null,
+      referralTarget: isReferral ? referralTarget || null : null,
+      requiredReferralActions: isReferral && requiredReferralActions > 0 ? requiredReferralActions : null,
       active: taskActive
     };
     console.log('📤 [TASK PAYLOAD]', JSON.stringify(payload, null, 2));
@@ -217,6 +231,7 @@ export const AdminPanel = () => {
       }
 
       resetTaskForm();
+      setIsTaskModalOpen(false);
       await fetchAdminData();
       window.dispatchEvent(new Event('tasksUpdated'));
     } catch (err: any) {
@@ -232,9 +247,7 @@ export const AdminPanel = () => {
     setTaskTitle(normalized.taskTitle);
     setTaskDesc(normalized.taskDesc);
     setTaskPoints(normalized.taskPoints);
-    setTaskType(normalized.taskType);
     setActionUrl(normalized.actionUrl);
-    setRequiresProof(normalized.requiresProof);
     setWeekNumber(normalized.weekNumber);
     setStartDate(normalized.startDate);
     setEndDate(normalized.endDate);
@@ -242,15 +255,33 @@ export const AdminPanel = () => {
     setReferralTarget(normalized.referralTarget);
     setRequiredReferralActions(normalized.requiredReferralActions);
     setTaskActive(normalized.taskActive);
+    setTaskPlatform(normalized.taskPlatform);
+    setTaskAction(normalized.taskAction);
+    setTaskAccount(normalized.taskAccount);
+    setTaskMandatory(normalized.taskMandatory);
+    setIsTaskModalOpen(true);
   };
 
   return (
     <main className="min-h-screen bg-brand-blackVoid text-brand-pureWhite">
       <section className="mx-auto max-w-7xl px-6 py-10">
         <div className="mb-8 rounded-[2rem] border border-brand-graphite/70 bg-brand-deepBlue/90 p-10 shadow-brand-soft">
-          <p className="text-sm uppercase tracking-[0.35em] text-brand-neonCyan">Panel admin</p>
-          <h1 className="mt-4 text-5xl font-semibold text-brand-pureWhite">Gestión del ecosistema</h1>
-          <p className="mt-3 max-w-3xl text-brand-softGray">Administra tareas, envíos y la configuración de token pool desde un panel limpio y sofisticado.</p>
+          <div className="flex flex-col gap-6 md:flex-row md:items-start md:justify-between">
+            <div>
+              <p className="text-sm uppercase tracking-[0.35em] text-brand-neonCyan">Panel admin</p>
+              <h1 className="mt-4 text-5xl font-semibold text-brand-pureWhite">Gestión del ecosistema</h1>
+              <p className="mt-3 max-w-3xl text-brand-softGray">Administra tareas, envíos y la configuración de token pool desde un panel limpio y sofisticado.</p>
+            </div>
+            <button
+              onClick={() => {
+                resetTaskForm();
+                setIsTaskModalOpen(true);
+              }}
+              className="inline-flex items-center justify-center rounded-3xl bg-brand-neonCyan px-6 py-3 text-sm font-semibold text-brand-blackVoid transition hover:bg-brand-electricBlue"
+            >
+              + Nueva tarea
+            </button>
+          </div>
         </div>
 
         {message && (
@@ -262,144 +293,20 @@ export const AdminPanel = () => {
         <div className="grid gap-6 xl:grid-cols-[0.9fr_1.1fr]">
           <div className="space-y-6">
             <div className="rounded-3xl border border-brand-graphite/70 bg-brand-graphite/80 p-6 shadow-xl shadow-brand-blackVoid/20">
-              <h2 className="text-2xl font-semibold text-brand-pureWhite">{editingTask ? 'Editar tarea' : 'Nueva tarea'}</h2>
-              <div className="mt-6 grid gap-4">
-                <input
-                  value={taskTitle}
-                  onChange={(e) => setTaskTitle(e.target.value)}
-                  placeholder="Título de tarea"
-                  className="w-full rounded-2xl border border-brand-graphite/70 bg-brand-blackVoid/80 px-4 py-3 text-brand-pureWhite outline-none focus:border-brand-neonCyan"
-                />
-                <textarea
-                  value={taskDesc}
-                  onChange={(e) => setTaskDesc(e.target.value)}
-                  placeholder="Descripción opcional"
-                  className="w-full rounded-2xl border border-brand-graphite/70 bg-brand-blackVoid/80 px-4 py-3 text-brand-pureWhite outline-none focus:border-brand-neonCyan"
-                  rows={4}
-                />
-                <div className="grid gap-4 md:grid-cols-2">
-                  <div className="space-y-3">
-                    <label className="block text-sm text-brand-softGray">Tipo de tarea</label>
-                    <select
-                      value={taskType}
-                      onChange={(e) => setTaskType(e.target.value as TaskType)}
-                      className="w-full rounded-2xl border border-brand-graphite/70 bg-brand-blackVoid/80 px-4 py-3 text-brand-pureWhite outline-none focus:border-brand-neonCyan"
-                    >
-                      <option value="INTERNAL_ACTION">Acción interna</option>
-                      <option value="EXTERNAL_LINK">Enlace externo</option>
-                      <option value="MANUAL_SUBMIT">Envío manual</option>
-                      <option value="REFERRAL">Referido</option>
-                      <option value="AUTO_COMPLETE">Autocompletar</option>
-                      <option value="WALLET_ACTION">Acción wallet</option>
-                    </select>
-                  </div>
-                  <div className="space-y-3">
-                    <label className="block text-sm text-brand-softGray">Método de verificación</label>
-                    <div className="w-full rounded-2xl border border-brand-graphite/70 bg-brand-blackVoid/80 px-4 py-3 text-brand-softGray">
-                      Sistema automático
-                    </div>
-                  </div>
+              <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+                <div>
+                  <h2 className="text-2xl font-semibold text-brand-pureWhite">Gestión de tareas</h2>
+                  <p className="mt-2 text-sm text-brand-softGray">Crea, edita y administra tareas desde un modal centralizado.</p>
                 </div>
-                <input
-                  type="url"
-                  value={actionUrl}
-                  onChange={(e) => setActionUrl(e.target.value)}
-                  placeholder="Action URL (opcional)"
-                  className="w-full rounded-2xl border border-brand-graphite/70 bg-brand-blackVoid/80 px-4 py-3 text-brand-pureWhite outline-none focus:border-brand-neonCyan"
-                />
-                <div className="grid gap-4 md:grid-cols-2">
-                  <div className="space-y-3">
-                    <label className="flex items-center gap-3 text-sm text-brand-softGray">
-                      <input
-                        type="checkbox"
-                        checked={requiresProof}
-                        onChange={(e) => setRequiresProof(e.target.checked)}
-                        className="h-4 w-4 rounded border-brand-graphite/70 bg-brand-blackVoid/80 text-brand-neonCyan"
-                      />
-                      Requiere prueba
-                    </label>
-                  </div>
-                  <div className="space-y-3">
-                    <label className="block text-sm text-brand-softGray">Activo</label>
-                    <select
-                      value={taskActive ? 'true' : 'false'}
-                      onChange={(e) => setTaskActive(e.target.value === 'true')}
-                      className="w-full rounded-2xl border border-brand-graphite/70 bg-brand-blackVoid/80 px-4 py-3 text-brand-pureWhite outline-none focus:border-brand-neonCyan"
-                    >
-                      <option value="true">Activo</option>
-                      <option value="false">Inactivo</option>
-                    </select>
-                  </div>
-                </div>
-                <div className="grid gap-4 md:grid-cols-2">
-                  <input
-                    type="number"
-                    min={1}
-                    value={weekNumber}
-                    onChange={(e) => setWeekNumber(e.target.value)}
-                    placeholder="Semana #"
-                    className="w-full rounded-2xl border border-brand-graphite/70 bg-brand-blackVoid/80 px-4 py-3 text-brand-pureWhite outline-none focus:border-brand-neonCyan"
-                  />
-                  <input
-                    type="time"
-                    step={1}
-                    value={timeLimitStr}
-                    onChange={(e) => setTimeLimitStr(e.target.value)}
-                    placeholder="Límite de tiempo (HH:MM:SS)"
-                    className="w-full rounded-2xl border border-brand-graphite/70 bg-brand-blackVoid/80 px-4 py-3 text-brand-pureWhite outline-none focus:border-brand-neonCyan"
-                  />
-                </div>
-                <div className="grid gap-4 md:grid-cols-2">
-                  <input
-                    type="date"
-                    value={startDate}
-                    onChange={(e) => setStartDate(e.target.value)}
-                    className="w-full rounded-2xl border border-brand-graphite/70 bg-brand-blackVoid/80 px-4 py-3 text-brand-pureWhite outline-none focus:border-brand-neonCyan"
-                  />
-                  <input
-                    type="date"
-                    value={endDate}
-                    onChange={(e) => setEndDate(e.target.value)}
-                    className="w-full rounded-2xl border border-brand-graphite/70 bg-brand-blackVoid/80 px-4 py-3 text-brand-pureWhite outline-none focus:border-brand-neonCyan"
-                  />
-                </div>
-                <input
-                  value={referralTarget}
-                  onChange={(e) => setReferralTarget(e.target.value)}
-                  placeholder="Objetivo de referido (opcional)"
-                  className="w-full rounded-2xl border border-brand-graphite/70 bg-brand-blackVoid/80 px-4 py-3 text-brand-pureWhite outline-none focus:border-brand-neonCyan"
-                />
-                <input
-                  type="number"
-                  min={0}
-                  value={requiredReferralActions}
-                  onChange={(e) => setRequiredReferralActions(Number(e.target.value))}
-                  placeholder="Acciones de referido requeridas"
-                  className="w-full rounded-2xl border border-brand-graphite/70 bg-brand-blackVoid/80 px-4 py-3 text-brand-pureWhite outline-none focus:border-brand-neonCyan"
-                />
-                <div className="flex flex-wrap gap-4">
-                  <input
-                    type="number"
-                    min={1}
-                    value={taskPoints}
-                    onChange={(e) => setTaskPoints(Number(e.target.value))}
-                    className="w-full rounded-2xl border border-brand-graphite/70 bg-brand-blackVoid/80 px-4 py-3 text-brand-pureWhite outline-none md:w-48 focus:border-brand-neonCyan"
-                  />
-                  <button
-                    onClick={handleSaveTask}
-                    className="rounded-2xl bg-brand-neonCyan px-5 py-3 text-sm font-semibold text-brand-blackVoid transition hover:bg-brand-electricBlue"
-                  >
-                    {editingTask ? 'Guardar cambios' : 'Crear tarea'}
-                  </button>
-                  {editingTask && (
-                    <button
-                      onClick={resetTaskForm}
-                      className="rounded-2xl border border-brand-graphite/70 bg-brand-blackVoid/80 px-5 py-3 text-sm font-semibold text-brand-softGray transition hover:border-brand-neonCyan"
-                    >
-                      Cancelar
-                    </button>
-                  )}
-                </div>
+                <button
+                  onClick={() => {
+                    resetTaskForm();
+                    setIsTaskModalOpen(true);
+                  }}
+                  className="rounded-3xl bg-brand-neonCyan px-5 py-3 text-sm font-semibold text-brand-blackVoid transition hover:bg-brand-electricBlue"
+                >
+                  + Nueva tarea
+                </button>
               </div>
             </div>
 
@@ -512,6 +419,122 @@ export const AdminPanel = () => {
             <AnalyticsDashboard metrics={analyticsMetrics} loading={!analyticsMetrics} />
           </div>
         </div>
+
+        {isTaskModalOpen && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 px-4 py-6">
+            <div className="w-full max-w-3xl overflow-hidden rounded-[2rem] border border-brand-graphite/80 bg-brand-deepBlue/95 p-8 shadow-2xl shadow-brand-blackVoid/80">
+              <div className="flex items-start justify-between gap-4">
+                <div>
+                  <p className="text-xs uppercase tracking-[0.35em] text-brand-neonCyan">{editingTask ? 'Editar tarea' : 'Nueva tarea'}</p>
+                  <h2 className="mt-2 text-3xl font-semibold text-brand-pureWhite">{editingTask ? 'Actualizar tarea' : 'Crear nueva tarea'}</h2>
+                </div>
+                <button
+                  type="button"
+                  onClick={closeTaskModal}
+                  className="rounded-full border border-brand-graphite/70 bg-brand-blackVoid/80 px-4 py-3 text-2xl text-brand-softGray transition hover:text-brand-pureWhite"
+                >
+                  ×
+                </button>
+              </div>
+
+              <div className="mt-6 grid gap-4">
+                <input
+                  value={taskTitle}
+                  onChange={(e) => setTaskTitle(e.target.value)}
+                  placeholder="Título de la tarea"
+                  className="w-full rounded-3xl border border-brand-graphite/70 bg-brand-blackVoid/80 px-4 py-4 text-brand-pureWhite outline-none focus:border-brand-neonCyan"
+                />
+                <textarea
+                  value={taskDesc}
+                  onChange={(e) => setTaskDesc(e.target.value)}
+                  placeholder="Descripción breve"
+                  className="w-full rounded-3xl border border-brand-graphite/70 bg-brand-blackVoid/80 px-4 py-4 text-brand-pureWhite outline-none focus:border-brand-neonCyan"
+                  rows={4}
+                />
+                <div className="grid gap-4 md:grid-cols-2">
+                  <div className="space-y-3">
+                    <label className="block text-sm text-brand-softGray">Plataforma</label>
+                    <select
+                      value={taskPlatform}
+                      onChange={(e) => setTaskPlatform(e.target.value as typeof taskPlatform)}
+                      className="w-full rounded-3xl border border-brand-graphite/70 bg-brand-blackVoid/80 px-4 py-4 text-brand-pureWhite outline-none focus:border-brand-neonCyan"
+                    >
+                      <option value="instagram">Instagram</option>
+                      <option value="x">X</option>
+                      <option value="telegram">Telegram</option>
+                      <option value="youtube">YouTube</option>
+                      <option value="referral">Referidos</option>
+                    </select>
+                  </div>
+                  <div className="space-y-3">
+                    <label className="block text-sm text-brand-softGray">Acción</label>
+                    <select
+                      value={taskAction}
+                      onChange={(e) => setTaskAction(e.target.value as typeof taskAction)}
+                      className="w-full rounded-3xl border border-brand-graphite/70 bg-brand-blackVoid/80 px-4 py-4 text-brand-pureWhite outline-none focus:border-brand-neonCyan"
+                    >
+                      <option value="seguir">Seguir</option>
+                      <option value="me gusta">Me gusta</option>
+                      <option value="compartir">Compartir</option>
+                      <option value="ver video">Ver video</option>
+                      <option value="comentar">Comentar</option>
+                      <option value="suscribirse">Suscribirse</option>
+                      <option value="unirse">Unirse</option>
+                    </select>
+                  </div>
+                </div>
+                <input
+                  type="url"
+                  value={actionUrl}
+                  onChange={(e) => setActionUrl(e.target.value)}
+                  placeholder="Enlace de acción (opcional)"
+                  className="w-full rounded-3xl border border-brand-graphite/70 bg-brand-blackVoid/80 px-4 py-4 text-brand-pureWhite outline-none focus:border-brand-neonCyan"
+                />
+                <input
+                  value={taskAccount}
+                  onChange={(e) => setTaskAccount(e.target.value)}
+                  placeholder="Usuario / canal (ej. @usuario)"
+                  className="w-full rounded-3xl border border-brand-graphite/70 bg-brand-blackVoid/80 px-4 py-4 text-brand-pureWhite outline-none focus:border-brand-neonCyan"
+                />
+                <div className="grid gap-4 md:grid-cols-2 items-end">
+                  <div className="space-y-3">
+                    <label className="block text-sm text-brand-softGray">Puntos</label>
+                    <input
+                      type="number"
+                      min={1}
+                      value={taskPoints}
+                      onChange={(e) => setTaskPoints(Number(e.target.value))}
+                      className="w-full rounded-3xl border border-brand-graphite/70 bg-brand-blackVoid/80 px-4 py-4 text-brand-pureWhite outline-none focus:border-brand-neonCyan"
+                    />
+                  </div>
+                  <label className="flex items-center justify-between rounded-3xl border border-brand-graphite/70 bg-brand-blackVoid/80 px-4 py-4 text-sm text-brand-softGray">
+                    <span>Tarea obligatoria</span>
+                    <input
+                      type="checkbox"
+                      checked={taskMandatory}
+                      onChange={(e) => setTaskMandatory(e.target.checked)}
+                      className="h-5 w-5 rounded border-brand-graphite/70 bg-brand-blackVoid/80 text-brand-neonCyan"
+                    />
+                  </label>
+                </div>
+                <div className="flex flex-wrap items-center gap-4 pt-2">
+                  <button
+                    onClick={handleSaveTask}
+                    className="rounded-3xl bg-brand-neonCyan px-6 py-4 text-sm font-semibold text-brand-blackVoid transition hover:bg-brand-electricBlue"
+                  >
+                    {editingTask ? 'Guardar cambios' : 'Crear tarea'}
+                  </button>
+                  <button
+                    onClick={closeTaskModal}
+                    className="rounded-3xl border border-brand-graphite/70 bg-brand-blackVoid/80 px-6 py-4 text-sm font-semibold text-brand-softGray transition hover:border-brand-neonCyan"
+                  >
+                    Cancelar
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
       </section>
     </main>
   );
