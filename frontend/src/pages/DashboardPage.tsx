@@ -1,14 +1,11 @@
 import { useEffect, useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { FaInstagram, FaTelegramPlane, FaTwitter, FaYoutube, FaTrophy, FaTasks, FaStar } from 'react-icons/fa';
+import { FaInstagram, FaTelegramPlane, FaTwitter, FaYoutube, FaTasks, FaStar, FaCheckCircle, FaClock, FaBolt } from 'react-icons/fa';
 import { useAuth } from '../hooks/useAuth';
 import { useAnalytics } from '../hooks/useAnalytics';
 import { useMissionAction } from '../hooks/useMissionAction';
-import { getDashboard, getTasks, getLeaderboard } from '../services/api';
-import { DashboardData, UserTask, LeaderboardEntry } from '../types';
-import { HeroPanel } from '../components/dashboard/HeroPanel';
-import { StatsGrid } from '../components/dashboard/StatsGrid';
-import { WalletPanel } from '../components/dashboard/WalletPanel';
+import { getDashboard, getTasks } from '../services/api';
+import { DashboardData, UserTask } from '../types';
 import { MissionVerificationModal } from '../components/MissionVerificationModal';
 import { SkeletonCard } from '../components/ui/SkeletonCard';
 import { motion } from 'framer-motion';
@@ -20,7 +17,6 @@ export const DashboardPage = () => {
   const { state: missionState, resetState: resetMissionState, startMission, completeMission } = useMissionAction();
   const [dashboard, setDashboard] = useState<DashboardData | null>(null);
   const [availableTasks, setAvailableTasks] = useState<UserTask[]>([]);
-  const [leaderboard, setLeaderboard] = useState<LeaderboardEntry[]>([]);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(true);
   const [actionLoading, setActionLoading] = useState(false);
@@ -54,15 +50,13 @@ export const DashboardPage = () => {
     setLoading(true);
 
     try {
-      const [dashboardData, tasksData, leaderboardData] = await Promise.all([
+      const [dashboardData, tasksData] = await Promise.all([
         getDashboard(token),
-        getTasks(token),
-        getLeaderboard(token)
+        getTasks(token)
       ]);
 
       setDashboard(dashboardData);
       setAvailableTasks(tasksData);
-      setLeaderboard(leaderboardData);
       setError('');
     } catch (err) {
       setError('No se pudo cargar el panel');
@@ -100,6 +94,15 @@ export const DashboardPage = () => {
     ));
     setModalTask(null);
   };
+
+  const progressValue = dashboard?.stats.progressToNextLevel ?? 0;
+  const userLevel = dashboard?.stats.level ?? 1;
+  const userPoints = dashboard?.stats.totalPoints ?? 0;
+  const completedTasks = dashboard?.stats.completedTasks ?? 0;
+  const pendingTasks = dashboard?.stats.pendingTasks ?? 0;
+  const totalNetworkPoints = dashboard?.stats.totalUsers ?? 0;
+  const participation = dashboard?.stats.percentile ?? 0;
+  const estimatedTokens = dashboard?.stats.estimatedTokens ?? '0';
 
   const getMissionCategory = (task: UserTask) => {
     switch (task.taskType) {
@@ -198,138 +201,148 @@ export const DashboardPage = () => {
 
   return (
     <div className="min-h-screen bg-slate-950 text-white">
-      <main className="pt-8">
-        <div className="mx-auto max-w-7xl px-6">
-          <HeroPanel dashboard={dashboard} loading={loading} />
+      <main>
+        <div className="mx-auto max-w-7xl px-4 py-6 md:px-6">
+          <div className="mb-6">
+            <p className="text-sm font-semibold uppercase tracking-[0.28em] text-slate-400">
+              Welcome back, Veltrix CEO
+            </p>
+            <h1 className="mt-3 text-3xl font-semibold text-white">Dashboard</h1>
+          </div>
+
+          <div className="rounded-2xl border border-slate-800 bg-slate-900/90 p-4 md:p-5">
+            <div className="flex flex-col gap-3">
+              <div className="flex items-center justify-between gap-4">
+                <p className="text-sm text-slate-400">Progress to next level</p>
+                <p className="text-sm text-slate-400">{progressValue}%</p>
+              </div>
+              <div className="h-2 w-full overflow-hidden rounded-full bg-slate-800">
+                <div
+                  className="h-full rounded-full bg-gradient-to-r from-violet-400 to-purple-500 transition-all"
+                  style={{ width: `${progressValue}%` }}
+                />
+              </div>
+            </div>
+          </div>
 
           {error && (
             <motion.div
               initial={{ opacity: 0, y: -20 }}
               animate={{ opacity: 1, y: 0 }}
-              className="mb-8 rounded-xl border border-red-500/20 bg-red-900/20 p-4"
+              className="mt-5 rounded-2xl border border-red-500/20 bg-red-900/20 p-4"
             >
-              <p className="text-red-400">{error}</p>
+              <p className="text-sm text-red-300">{error}</p>
             </motion.div>
           )}
 
-          <div className="grid gap-8 lg:grid-cols-2">
-            {/* Left Column - Stats */}
-            <div className="space-y-6">
-              <StatsGrid stats={dashboard?.stats ?? { totalPoints: 0, completedTasks: 0, pendingTasks: 0, estimatedTokens: '0' }} />
-
-              {/* User Position */}
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="rounded-2xl border border-slate-800 bg-slate-900/90 p-6"
-              >
-                <div className="flex items-center gap-4">
-                  <div className="flex h-12 w-12 items-center justify-center rounded-full bg-violet-500/20 text-violet-300">
-                    <FaStar size={20} />
+          <div className="mt-6 grid gap-6 md:grid-cols-3">
+            <div className="md:col-span-2 space-y-6">
+              <div className="grid gap-4 grid-cols-2 md:grid-cols-4">
+                <div className="aspect-square rounded-xl bg-gray-800 p-4 flex flex-col justify-between">
+                  <div className="flex items-center justify-center rounded-2xl bg-violet-500/15 p-3 text-violet-300">
+                    <FaStar size={22} />
                   </div>
                   <div>
-                    <p className="text-sm text-slate-400">Tu Posición</p>
-                    <p className="text-2xl font-bold text-white">
-                    #{leaderboard.findIndex(entry => entry.id === user?.id) + 1 || 'N/A'}
-                    </p>
+                    <p className="text-3xl font-semibold text-white">{userPoints.toLocaleString()}</p>
+                    <p className="mt-2 text-xs text-slate-400">Mis Puntos</p>
                   </div>
                 </div>
-              </motion.div>
+                <div className="aspect-square rounded-xl bg-gray-800 p-4 flex flex-col justify-between">
+                  <div className="flex items-center justify-center rounded-2xl bg-violet-500/15 p-3 text-violet-300">
+                    <FaCheckCircle size={22} />
+                  </div>
+                  <div>
+                    <p className="text-3xl font-semibold text-white">{completedTasks}</p>
+                    <p className="mt-2 text-xs text-slate-400">Completadas</p>
+                  </div>
+                </div>
+                <div className="aspect-square rounded-xl bg-gray-800 p-4 flex flex-col justify-between">
+                  <div className="flex items-center justify-center rounded-2xl bg-violet-500/15 p-3 text-violet-300">
+                    <FaClock size={22} />
+                  </div>
+                  <div>
+                    <p className="text-3xl font-semibold text-white">{pendingTasks}</p>
+                    <p className="mt-2 text-xs text-slate-400">Pendientes</p>
+                  </div>
+                </div>
+                <div className="aspect-square rounded-xl bg-gray-800 p-4 flex flex-col justify-between">
+                  <div className="flex items-center justify-center rounded-2xl bg-violet-500/15 p-3 text-violet-300">
+                    <FaBolt size={22} />
+                  </div>
+                  <div>
+                    <p className="text-3xl font-semibold text-white">{userLevel}</p>
+                    <p className="mt-2 text-xs text-slate-400">Nivel</p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="rounded-2xl border border-slate-800 bg-slate-900/90 p-5">
+                <div className="flex items-center justify-between gap-4 mb-4">
+                  <div>
+                    <h2 className="text-lg font-semibold text-white">Tareas Recientes</h2>
+                    <p className="text-sm text-slate-400">Últimas tareas activas para completar.</p>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => navigate('/tareas')}
+                    className="text-sm font-semibold text-violet-300 hover:text-violet-200"
+                  >
+                    {'Ver todas →'}
+                  </button>
+                </div>
+
+                <div className="space-y-2">
+                  {availableTasks.slice(0, 4).map(task => (
+                    <div key={task.id} className="rounded-2xl border border-slate-800 bg-slate-900/80 p-4 flex items-center gap-3">
+                      <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-slate-800 text-violet-300">
+                        {getPlatformIcon(task)}
+                      </div>
+                      <div className="min-w-0 flex-1">
+                        <p className="text-sm font-semibold text-white truncate">{task.title}</p>
+                        <p className="mt-1 text-xs text-slate-400 line-clamp-2">{task.description || 'Completa esta misión para ganar puntos.'}</p>
+                      </div>
+                      <div className="text-right">
+                        <span className="inline-flex items-center rounded-full bg-violet-500/10 px-3 py-1 text-xs font-semibold text-violet-300">
+                          +{task.points} pts
+                        </span>
+                      </div>
+                    </div>
+                  ))}
+
+                  {availableTasks.length === 0 && (
+                    <div className="rounded-2xl border border-slate-800 bg-slate-900/80 p-6 text-center text-slate-400">
+                      No hay tareas disponibles
+                    </div>
+                  )}
+                </div>
+              </div>
             </div>
 
-            {/* Right Column - Recent Tasks & Leaderboard */}
             <div className="space-y-6">
-              {/* Recent Tasks */}
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="rounded-2xl border border-slate-800 bg-slate-900/90 p-6"
-              >
-                <div className="flex items-center gap-3 mb-4">
-                  <FaTasks className="text-violet-300" size={20} />
-                  <h3 className="text-lg font-semibold text-white">Tareas Recientes</h3>
-                </div>
-                <div className="space-y-3">
-                  {availableTasks.slice(0, 3).map(task => (
-                    <div key={task.id} className="flex items-center justify-between rounded-lg bg-slate-800/50 p-3">
-                      <div className="flex items-center gap-3">
-                        <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-slate-700 text-violet-300">
-                          {getPlatformIcon(task)}
-                        </div>
-                        <div>
-                          <p className="text-sm font-medium text-white">{task.title}</p>
-                          <p className="text-xs text-slate-400">+{task.points} pts</p>
-                        </div>
-                      </div>
-                      <span className={`text-xs px-2 py-1 rounded-full ${
-                        task.status === 'COMPLETED' ? 'bg-green-500/20 text-green-400' :
-                        task.status === 'IN_PROGRESS' ? 'bg-yellow-500/20 text-yellow-400' :
-                        'bg-slate-500/20 text-slate-400'
-                      }`}>
-                        {task.status === 'COMPLETED' ? 'Completada' :
-                         task.status === 'IN_PROGRESS' ? 'En Progreso' : 'Pendiente'}
-                      </span>
-                    </div>
-                  ))}
-                  {availableTasks.length === 0 && (
-                    <p className="text-sm text-slate-400 text-center py-4">No hay tareas disponibles</p>
-                  )}
-                </div>
-                <button
-                  onClick={() => navigate('/tareas')}
-                  className="mt-4 w-full rounded-lg bg-violet-500 py-2 text-sm font-medium text-white hover:bg-violet-400 transition"
-                >
-                  Ver Todas las Tareas
-                </button>
-              </motion.div>
+              <div className="rounded-2xl border border-violet-500/20 bg-gradient-to-b from-purple-900/20 to-black p-6 shadow-[0_20px_60px_rgba(88,28,135,0.20)]">
+                <p className="text-xs font-semibold uppercase tracking-[0.36em] text-violet-300">VELX AIRDROP</p>
+                <h2 className="mt-4 text-3xl font-semibold text-white">Tokens Estimados</h2>
+                <p className="mt-8 text-5xl font-bold text-violet-300">{estimatedTokens} VELX</p>
 
-              {/* Top 5 Leaderboard */}
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.1 }}
-                className="rounded-2xl border border-slate-800 bg-slate-900/90 p-6"
-              >
-                <div className="flex items-center gap-3 mb-4">
-                  <FaTrophy className="text-yellow-500" size={20} />
-                  <h3 className="text-lg font-semibold text-white">Top 5</h3>
+                <div className="mt-8 grid gap-3 sm:grid-cols-3">
+                  <div className="rounded-2xl bg-white/5 p-4 text-center">
+                    <p className="text-sm text-slate-400">Tus Puntos</p>
+                    <p className="mt-2 text-lg font-semibold text-white">{userPoints.toLocaleString()}</p>
+                  </div>
+                  <div className="rounded-2xl bg-white/5 p-4 text-center">
+                    <p className="text-sm text-slate-400">Puntos Totales Red</p>
+                    <p className="mt-2 text-lg font-semibold text-white">{totalNetworkPoints.toLocaleString()}</p>
+                  </div>
+                  <div className="rounded-2xl bg-white/5 p-4 text-center">
+                    <p className="text-sm text-slate-400">Participación (%)</p>
+                    <p className="mt-2 text-lg font-semibold text-white">{participation}%</p>
+                  </div>
                 </div>
-                <div className="space-y-3">
-                  {leaderboard.slice(0, 5).map((entry, index) => (
-                    <div key={entry.id} className="flex items-center justify-between">
-                      <div className="flex items-center gap-3">
-                        <span className={`text-sm font-bold ${
-                          index === 0 ? 'text-yellow-500' :
-                          index === 1 ? 'text-gray-400' :
-                          index === 2 ? 'text-amber-600' : 'text-slate-400'
-                        }`}>
-                          #{index + 1}
-                        </span>
-                        <div>
-                          <p className="text-sm font-medium text-white">{entry.name}</p>
-                          <p className="text-xs text-slate-400">@{entry.email}</p>
-                        </div>
-                      </div>
-                      <span className="text-sm font-semibold text-violet-400">
-                        {entry.points.toLocaleString()}
-                      </span>
-                    </div>
-                  ))}
-                  {leaderboard.length === 0 && (
-                    <p className="text-sm text-slate-400 text-center py-4">No hay datos disponibles</p>
-                  )}
-                </div>
-                <button
-                  onClick={() => navigate('/ranking')}
-                  className="mt-4 w-full rounded-lg bg-slate-700 py-2 text-sm font-medium text-white hover:bg-slate-600 transition"
-                >
-                  Ver Ranking Completo
-                </button>
-              </motion.div>
+
+                <p className="mt-6 text-xs text-slate-500">Pool total: 50,000,000 VELX</p>
+              </div>
             </div>
           </div>
-
-          <WalletPanel />
         </div>
       </main>
 

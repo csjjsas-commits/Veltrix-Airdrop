@@ -11,6 +11,7 @@ import {
   getAllTasks,
   createTask,
   updateTask,
+  deleteTask,
   updateTaskStatus,
   getPendingSubmissions,
   reviewSubmission,
@@ -159,6 +160,33 @@ export const updateTaskStatusHandler = async (req: Request, res: Response): Prom
     res.status(500).json({
       success: false,
       message: 'Error interno del servidor'
+    });
+  }
+};
+
+export const deleteTaskHandler = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const { id } = req.params;
+    
+    await deleteTask(id);
+
+    res.json({
+      success: true,
+      message: 'Tarea eliminada exitosamente'
+    });
+  } catch (error) {
+    if (error instanceof ValidationError) {
+      res.status(400).json({
+        success: false,
+        message: error.message
+      });
+      return;
+    }
+
+    console.error('❌ [Delete task error]', error);
+    res.status(500).json({
+      success: false,
+      message: error instanceof Error ? error.message : 'Error interno del servidor'
     });
   }
 };

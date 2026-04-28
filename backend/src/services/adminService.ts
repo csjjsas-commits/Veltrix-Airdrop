@@ -166,6 +166,36 @@ export const updateTaskStatus = async (taskId: string, data: TaskStatusInput): P
   });
 };
 
+// Task Deletion
+export const deleteTask = async (taskId: string): Promise<void> => {
+  try {
+    console.log(`🗑️ [deleteTask] Deleting task ${taskId}`);
+    
+    const task = await prisma.task.findUnique({
+      where: { id: taskId }
+    });
+
+    if (!task) {
+      throw new NotFoundError('Tarea no encontrada');
+    }
+
+    // Delete associated user tasks first
+    await prisma.userTask.deleteMany({
+      where: { taskId }
+    });
+
+    // Then delete the task
+    await prisma.task.delete({
+      where: { id: taskId }
+    });
+
+    console.log(`✅ [deleteTask] Task ${taskId} deleted successfully`);
+  } catch (error) {
+    console.error(`❌ [deleteTask] Error deleting task ${taskId}:`, error);
+    throw error;
+  }
+};
+
 // Submission Management
 export const getPendingSubmissions = async (): Promise<SubmissionWithDetails[]> => {
   const submissions = await prisma.userTask.findMany({

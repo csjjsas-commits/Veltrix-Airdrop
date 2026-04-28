@@ -3,6 +3,7 @@ import {
   getTasks,
   createTaskHandler,
   updateTaskHandler,
+  deleteTaskHandler,
   updateTaskStatusHandler,
   getSubmissions,
   reviewSubmissionHandler,
@@ -23,6 +24,7 @@ router.use(adminMiddleware);
 router.get('/tasks', getTasks);
 router.post('/tasks', createTaskHandler);
 router.put('/tasks/:id', updateTaskHandler);
+router.delete('/tasks/:id', deleteTaskHandler);
 router.patch('/tasks/:id/status', updateTaskStatusHandler);
 
 // Submission Management Routes
