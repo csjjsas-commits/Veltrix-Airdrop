@@ -4,7 +4,7 @@ import { completeTask, startTask } from '../../services/api';
 import { UserTask } from '../../types';
 import { CountdownBadge } from './CountdownBadge';
 import { useAnalytics } from '../../hooks/useAnalytics';
-import { FaInstagram, FaTelegramPlane, FaTwitter, FaYoutube, FaUsers } from 'react-icons/fa';
+import { FaInstagram, FaTelegramPlane, FaTwitter, FaYoutube, FaUsers, FaExternalLinkAlt } from 'react-icons/fa';
 
 interface Props {
   task: UserTask;
@@ -57,15 +57,21 @@ export const TaskListItem = ({ task, onTaskUpdate, onTaskAction, onOpenModal }: 
     setIsProcessing(true);
 
     try {
-      if (task.taskType === 'EXTERNAL_LINK') {
+      if (task.taskType === 'EXTERNAL_LINK' || task.taskType === 'WALLET_ACTION') {
         const updatedTask = await startTask(token, task.id);
         if (onTaskUpdate) {
           onTaskUpdate(updatedTask);
         }
-        if (task.actionUrl) {
+        if (task.taskType === 'EXTERNAL_LINK' && task.actionUrl) {
           window.open(task.actionUrl, '_blank');
         }
-      } else if (task.taskType === 'REFERRAL') {
+        if (onOpenModal && updatedTask) {
+          onOpenModal(updatedTask);
+        }
+        return;
+      }
+
+      if (task.taskType === 'REFERRAL') {
         const updatedTask = await startTask(token, task.id);
         if (onTaskUpdate) {
           onTaskUpdate(updatedTask);
@@ -73,15 +79,18 @@ export const TaskListItem = ({ task, onTaskUpdate, onTaskAction, onOpenModal }: 
         if (onTaskAction) {
           onTaskAction(task);
         }
-      } else if (task.taskType === 'WALLET_ACTION') {
-        const updatedTask = await startTask(token, task.id);
-        if (onTaskUpdate) {
-          onTaskUpdate(updatedTask);
-        }
-      } else {
+        return;
+      }
+
+      if (task.taskType === 'MANUAL_SUBMIT') {
         if (onOpenModal) {
           onOpenModal(task);
         }
+        return;
+      }
+
+      if (onOpenModal) {
+        onOpenModal(task);
       }
     } catch (error) {
       console.error('Error processing task:', error);
@@ -113,10 +122,22 @@ export const TaskListItem = ({ task, onTaskUpdate, onTaskAction, onOpenModal }: 
           <div className="min-w-0 flex-1">
             <h4 className="text-lg font-semibold text-white truncate">{task.title}</h4>
             <p className="mt-2 text-sm leading-6 text-slate-400 truncate">{task.description || 'Completa esta misión para ganar puntos'}</p>
-            <div className="mt-3 flex flex-wrap gap-2 text-xs font-semibold uppercase tracking-[0.25em] text-slate-500">
-              <span className="rounded-full border border-slate-800 bg-slate-900/80 px-3 py-2">{task.points} pts</span>
-              <span className="rounded-full border border-slate-800 bg-slate-900/80 px-3 py-2">{task.taskType.replace('_', ' ')}</span>
-              {task.endDate && !isCompleted && <CountdownBadge endDate={task.endDate} />}
+            <div className="mt-3 space-y-2">
+              <div className="flex flex-wrap gap-2">
+                <span className="rounded-full border border-slate-800 bg-slate-900/80 px-3 py-2 text-xs font-semibold uppercase tracking-[0.25em] text-slate-500">{task.points} pts</span>
+                {task.endDate && !isCompleted && <CountdownBadge endDate={task.endDate} className="text-slate-400" />}
+              </div>
+              {task.actionUrl && (
+                <a
+                  href={task.actionUrl}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="inline-flex items-center gap-2 text-xs font-semibold text-violet-300 hover:text-violet-200"
+                >
+                  <FaExternalLinkAlt className="h-3 w-3" />
+                  {task.actionUrl}
+                </a>
+              )}
             </div>
           </div>
         </div>

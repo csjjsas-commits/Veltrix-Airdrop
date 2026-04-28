@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { FaExternalLinkAlt } from 'react-icons/fa';
 import { useMissionAction, MissionVerificationModalProps } from '../hooks/useMissionAction';
 
 const platformIcons: Record<string, JSX.Element> = {
@@ -82,8 +83,30 @@ export const MissionVerificationModal = ({
               </div>
             </div>
             <p className="max-w-xl text-sm leading-6 text-slate-300">
-              Ingresa tu handle para verificar tu misión y completar el proceso.
+              {task.actionUrl
+                ? 'Completa el paso 1 desde el enlace y luego ingresa tu usuario para verificar la misión.'
+                : 'Ingresa tu handle para verificar tu misión y completar el proceso.'}
             </p>
+            {task.actionUrl && (
+              <div className="mt-4 rounded-3xl border border-slate-800 bg-slate-900/95 p-4">
+                <div className="flex items-center gap-3">
+                  <div className="flex h-12 w-12 items-center justify-center rounded-3xl bg-violet-500/10 text-violet-300">
+                    <FaExternalLinkAlt className="h-5 w-5" />
+                  </div>
+                  <div className="min-w-0">
+                    <p className="text-xs uppercase tracking-[0.35em] text-slate-400">Paso 1: Completá la acción</p>
+                    <a
+                      href={task.actionUrl}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="mt-1 block truncate text-sm font-semibold text-white hover:text-violet-300"
+                    >
+                      {task.actionUrl}
+                    </a>
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
 
           <button

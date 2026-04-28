@@ -1,11 +1,12 @@
 import { useEffect, useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { FaInstagram, FaTelegramPlane, FaTwitter, FaYoutube, FaTasks, FaStar, FaCheckCircle, FaClock, FaBolt } from 'react-icons/fa';
+import { FaInstagram, FaTelegramPlane, FaTwitter, FaYoutube, FaTasks, FaStar, FaCheckCircle, FaClock, FaBolt, FaExternalLinkAlt } from 'react-icons/fa';
 import { useAuth } from '../hooks/useAuth';
 import { useAnalytics } from '../hooks/useAnalytics';
 import { useMissionAction } from '../hooks/useMissionAction';
 import { getDashboard, getTasks } from '../services/api';
 import { DashboardData, UserTask } from '../types';
+import { CountdownBadge } from '../components/tasks/CountdownBadge';
 import { MissionVerificationModal } from '../components/MissionVerificationModal';
 import { SkeletonCard } from '../components/ui/SkeletonCard';
 import { motion } from 'framer-motion';
@@ -285,15 +286,27 @@ export const DashboardPage = () => {
                         <div className="min-w-0 flex-1">
                           <p className="text-sm font-semibold text-white truncate">{task.title}</p>
                           <p className="mt-1 text-xs text-slate-400 truncate">{task.description || 'Completa esta misión'}</p>
+                          {task.actionUrl && (
+                            <a
+                              href={task.actionUrl}
+                              target="_blank"
+                              rel="noreferrer"
+                              className="mt-2 inline-flex items-center gap-2 text-xs font-semibold text-violet-300 hover:text-violet-200"
+                            >
+                              <FaExternalLinkAlt className="h-3 w-3" />
+                              {task.actionUrl}
+                            </a>
+                          )}
                           <span className="mt-2 inline-flex items-center rounded-full bg-violet-500/10 px-3 py-1 text-xs font-semibold text-violet-300">
                             +{task.points} pts
                           </span>
                         </div>
                       </div>
+                      <div className="flex shrink-0 flex-col items-end gap-2">
                       <button
                         onClick={() => setModalTask(task)}
                         disabled={task.status === 'COMPLETED' || task.status === 'PENDING'}
-                        className={`flex-shrink-0 rounded-full px-4 py-2 text-xs font-semibold transition whitespace-nowrap ${
+                        className={`rounded-full px-4 py-2 text-xs font-semibold transition whitespace-nowrap ${
                           task.status === 'COMPLETED'
                             ? 'bg-slate-800 text-slate-500 cursor-not-allowed'
                             : 'bg-violet-500 text-white hover:bg-violet-400 disabled:opacity-50'
@@ -301,7 +314,11 @@ export const DashboardPage = () => {
                       >
                         {task.status === 'COMPLETED' ? '✓ Completada' : 'Completar'}
                       </button>
+                      {task.endDate && task.status !== 'COMPLETED' && (
+                        <CountdownBadge endDate={task.endDate} className="text-slate-400" />
+                      )}
                     </div>
+                  </div>
                   ))}
 
                   {availableTasks.length === 0 && (
