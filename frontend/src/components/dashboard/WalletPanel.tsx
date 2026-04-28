@@ -54,7 +54,7 @@ export const WalletPanel = () => {
         <div className="flex-1">
           <h3 className="text-lg font-semibold text-brand-pureWhite mb-2">Agregar Wallet Address</h3>
           <p className="text-sm text-brand-softGray mb-4">
-            Agrega tu dirección de wallet Ethereum para participar en el airdrop y completar tareas automáticamente.
+            Agrega tu dirección de wallet BSC para participar en el airdrop y completar tareas automáticamente.
           </p>
 
           <form onSubmit={handleSubmit} className="space-y-3">

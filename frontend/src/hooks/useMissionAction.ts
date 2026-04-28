@@ -166,8 +166,8 @@ export const useMissionAction = () => {
   const submitProof = useCallback(async (task: UserTask, proof: string): Promise<UserTask | null> => {
     if (!token) return null;
 
-    if (proof.trim().length < 20) {
-      setState(prev => ({ ...prev, error: 'La prueba debe tener al menos 20 caracteres' }));
+    if (!proof.trim()) {
+      setState(prev => ({ ...prev, error: 'El usuario / handle es requerido' }));
       return null;
     }
 

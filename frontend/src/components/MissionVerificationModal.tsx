@@ -1,7 +1,38 @@
 import { useState } from 'react';
-import { UserTask } from '../types';
 import { useMissionAction, MissionVerificationModalProps } from '../hooks/useMissionAction';
-import { useAuth } from '../hooks/useAuth';
+
+const platformIcons: Record<string, JSX.Element> = {
+  instagram: (
+    <svg viewBox="0 0 24 24" className="h-12 w-12 text-white" fill="currentColor" aria-hidden="true">
+      <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z" />
+    </svg>
+  ),
+  x: (
+    <svg viewBox="0 0 24 24" className="h-12 w-12 text-white" fill="currentColor" aria-hidden="true">
+      <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
+    </svg>
+  ),
+  telegram: (
+    <svg viewBox="0 0 24 24" className="h-12 w-12 text-white" fill="currentColor" aria-hidden="true">
+      <path d="M12 2C6.477 2 2 6.477 2 12s4.477 10 10 10 10-4.477 10-10S17.523 2 12 2zm4.75 8.05l-3.727 3.83c-.287.295-.32.295-.63.205l-1.75-.65-1.1 1.05c-.15.15-.27.31-.58.31l.21-2.98 5.43-4.91c.24-.21-.05-.33-.37-.12L7.41 11.25l-2.95-.92c-.64-.2-.65.16-.14.44l7.27 2.28 1.75 5.9c.33 1.17 1.12 1.48 2.11.92.97-.56 4.25-3.08 5.39-3.75.9-.52.52-.82-.18-.55L12.9 14.78l-1.82-1.05 4.62-4.9c.35-.36.67-.16.48.2z" />
+    </svg>
+  ),
+  youtube: (
+    <svg viewBox="0 0 24 24" className="h-12 w-12 text-white" fill="currentColor" aria-hidden="true">
+      <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814z" />
+      <path d="M9.545 15.568V8.432L15.818 12z" fill="#060606" />
+    </svg>
+  )
+};
+
+const getPlatformIcon = (platform?: string) => {
+  if (!platform) return null;
+  return platformIcons[platform.toLowerCase()] || (
+    <div className="flex h-12 w-12 items-center justify-center rounded-full bg-white text-sm font-semibold text-slate-950">
+      {platform.slice(0, 2).toUpperCase()}
+    </div>
+  );
+};
 
 export const MissionVerificationModal = ({
   task,
@@ -10,335 +41,86 @@ export const MissionVerificationModal = ({
   onTaskComplete,
   state: externalState
 }: MissionVerificationModalProps) => {
-  const [proof, setProof] = useState('');
-  const [walletAddress, setWalletAddress] = useState('');
-  const { startMission, openLink, completeMission, submitProof, connectWallet, state } = useMissionAction();
-  const { user } = useAuth();
-
-  const copyReferralLink = async () => {
-    if (!user?.referralCode) return;
-    const referralUrl = `${window.location.origin}/register?ref=${user.referralCode}`;
-    try {
-      await navigator.clipboard.writeText(referralUrl);
-      // Could add a toast notification here
-    } catch (err) {
-      console.error('Failed to copy:', err);
-    }
-  };
+  const [verificationHandle, setVerificationHandle] = useState('');
+  const { submitProof, connectWallet, state } = useMissionAction();
 
   if (!isOpen || !task) return null;
 
   const currentState = externalState || state;
+  const canSubmit = verificationHandle.trim().length > 0 && !currentState.isLoading;
 
-  const getModalMode = (task: UserTask) => {
-    switch (task.taskType) {
-      case 'MANUAL_SUBMIT':
-        return 'manual';
-      case 'WALLET_ACTION':
-        return 'wallet';
-      case 'REFERRAL':
-        return 'referral';
-      case 'EXTERNAL_LINK':
-      case 'AUTO_COMPLETE':
-        return 'verify';
-      default:
-        return 'verify';
+  const handleVerificationSubmit = async () => {
+    if (!task || !verificationHandle.trim()) return;
+
+    let updatedTask = null;
+
+    if (task.taskType === 'WALLET_ACTION') {
+      updatedTask = await connectWallet(task, verificationHandle.trim());
+    } else {
+      updatedTask = await submitProof(task, verificationHandle.trim());
     }
-  };
 
-  const modalMode = getModalMode(task);
-
-  const handleStart = async () => {
-    const updatedTask = await startMission(task);
     if (updatedTask) {
       onTaskComplete(updatedTask);
-    }
-  };
-
-  const handleComplete = async () => {
-    const updatedTask = await completeMission(task);
-    if (updatedTask) {
-      onTaskComplete(updatedTask);
+      setVerificationHandle('');
       onClose();
-    }
-  };
-
-  const handleSubmitProof = async () => {
-    const updatedTask = await submitProof(task, proof);
-    if (updatedTask) {
-      onTaskComplete(updatedTask);
-      onClose();
-    }
-  };
-
-  const handleConnectWallet = async () => {
-    const updatedTask = await connectWallet(task, walletAddress);
-    if (updatedTask) {
-      onTaskComplete(updatedTask);
-      onClose();
-    }
-  };
-
-  const handleOpenLink = async () => {
-    const updatedTask = await openLink(task);
-    if (updatedTask) {
-      // Update the task in parent component
-      onTaskComplete(updatedTask);
-    }
-  };
-
-  const canComplete = () => {
-    if (task.taskType === 'EXTERNAL_LINK' || task.taskType === 'AUTO_COMPLETE') {
-      // Check both local state and task data
-      return task.actionUrl ? (currentState.linkOpened || !!task.linkOpenedAt) : true;
-    }
-    return true;
-  };
-
-  const getModalTitle = (task: UserTask) => {
-    switch (task.taskType) {
-      case 'MANUAL_SUBMIT':
-        return 'Enviar Prueba';
-      case 'WALLET_ACTION':
-        return 'Conectar Wallet';
-      case 'REFERRAL':
-        return 'Invitar Amigos';
-      case 'EXTERNAL_LINK':
-      case 'AUTO_COMPLETE':
-        return 'Verificar Misión';
-      default:
-        return 'Verificar Misión';
-    }
-  };
-
-  const getModalDescription = (task: UserTask) => {
-    switch (task.taskType) {
-      case 'MANUAL_SUBMIT':
-        return 'Proporciona una breve prueba de tu envío.';
-      case 'WALLET_ACTION':
-        return 'Conecta tu wallet y completa la tarea.';
-      case 'REFERRAL':
-        return 'Comparte tu enlace de referido con amigos. El sistema valida cuando el referido completa la tarea requerida y la recompensa se aplica según la configuración de la tarea de referido.';
-      case 'EXTERNAL_LINK':
-      case 'AUTO_COMPLETE':
-        return 'Abre el enlace externo y verifica tu acción para completar la misión.';
-      default:
-        return 'Completa la acción requerida para finalizar la misión.';
     }
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 px-4 py-6">
-      <div className="w-full max-w-2xl max-h-[90vh] rounded-[2rem] border border-brand-electricBlue/20 bg-brand-deepBlue/95 p-4 sm:p-8 shadow-2xl shadow-brand-blackVoid/70 overflow-y-auto">
-        <div className="mb-4 sm:mb-6 flex items-center justify-between gap-4">
-          <div>
-            <h2 className="text-2xl sm:text-3xl font-semibold text-brand-pureWhite">
-              {getModalTitle(task)}
-            </h2>
-            <p className="mt-2 text-sm text-brand-softGray">
-              {getModalDescription(task)}
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/90 px-4 py-6">
+      <div className="w-full max-w-xl rounded-[2rem] border border-slate-800 bg-slate-950/95 p-6 shadow-2xl shadow-black/80">
+        <div className="mb-6 flex items-start justify-between gap-4">
+          <div className="space-y-3">
+            <div className="flex items-center gap-3">
+              <div className="flex h-12 w-12 items-center justify-center rounded-3xl bg-violet-500/15 text-2xl text-violet-300">
+                <span className="text-xl">#</span>
+              </div>
+              <div>
+                <p className="text-xs uppercase tracking-[0.28em] text-violet-300/70">TaskDrop</p>
+                <h2 className="text-2xl font-semibold text-white">{task.title}</h2>
+              </div>
+            </div>
+            <p className="max-w-xl text-sm leading-6 text-slate-300">
+              Ingresa tu handle para verificar tu misión y completar el proceso.
             </p>
           </div>
+
           <button
             onClick={onClose}
-            className="rounded-full border border-brand-graphite/70 bg-brand-blackVoid/80 px-3 py-2 sm:px-4 text-sm text-brand-softGray transition hover:border-brand-electricBlue"
+            className="rounded-full border border-slate-700 bg-slate-900 px-3 py-2 text-sm text-slate-300 transition hover:border-violet-400 hover:text-white"
           >
             Cerrar
           </button>
         </div>
 
-        <div className="space-y-5">
-          <div className="rounded-3xl border border-brand-graphite/70 bg-brand-blackVoid/75 p-5 text-brand-softGray">
-            <p className="text-sm uppercase tracking-[0.3em] text-brand-neonCyan">Misión</p>
-            <h3 className="mt-3 text-xl font-semibold text-brand-pureWhite">{task.title}</h3>
-            <p className="mt-2 text-sm leading-6">{task.description || 'Proporciona los detalles requeridos para finalizar esta misión.'}</p>
-            {task.points && (
-              <p className="mt-3 text-sm text-brand-neonCyan font-semibold">
-                Recompensa: +{task.points} puntos
-              </p>
-            )}
+        <div className="rounded-[2rem] border border-slate-800 bg-slate-900/95 p-6">
+          <label className="mb-3 block text-sm font-semibold uppercase tracking-[0.18em] text-slate-400">
+            Handle requerido
+          </label>
+          <input
+            value={verificationHandle}
+            onChange={(e) => setVerificationHandle(e.target.value)}
+            placeholder="@tuusuario"
+            className="w-full rounded-3xl border border-slate-800 bg-slate-950 px-4 py-4 text-white placeholder:text-slate-500 outline-none focus:border-violet-400 focus:ring-2 focus:ring-violet-500/20"
+          />
+          {currentState.error && <p className="mt-3 text-sm text-red-400">{currentState.error}</p>}
+
+          <div className="mt-6 flex flex-col gap-3 sm:flex-row">
+            <button
+              onClick={handleVerificationSubmit}
+              disabled={!canSubmit}
+              className="inline-flex min-h-[56px] flex-1 items-center justify-center rounded-3xl bg-violet-500 px-6 py-4 text-sm font-semibold text-white transition hover:bg-violet-400 disabled:cursor-not-allowed disabled:opacity-50"
+            >
+              {currentState.isLoading ? 'Confirmando...' : 'Confirmar y Verificar'}
+            </button>
+            <button
+              onClick={onClose}
+              className="inline-flex min-h-[56px] items-center justify-center rounded-3xl border border-slate-700 bg-slate-950 px-6 py-4 text-sm font-semibold text-slate-300 transition hover:border-slate-500 hover:text-white"
+            >
+              Cancelar
+            </button>
           </div>
-
-          {modalMode === 'manual' && (
-            <div className="space-y-4">
-              <textarea
-                value={proof}
-                onChange={(e) => setProof(e.target.value)}
-                placeholder="Describe lo que completaste..."
-                className="w-full min-h-[160px] rounded-3xl border border-brand-graphite/70 bg-brand-blackVoid/80 px-4 py-4 text-brand-pureWhite outline-none focus:border-brand-neonCyan"
-              />
-              {currentState.error && <p className="text-sm text-red-400">{currentState.error}</p>}
-              <div className="flex gap-3">
-                {task.status !== 'IN_PROGRESS' && (
-                  <button
-                    onClick={handleStart}
-                    disabled={currentState.isLoading}
-                    className="rounded-3xl bg-brand-electricBlue px-5 py-3 text-sm font-semibold text-brand-blackVoid transition hover:bg-brand-electricBlue/80 disabled:opacity-50"
-                  >
-                    {currentState.isLoading ? 'Iniciando...' : 'Iniciar'}
-                  </button>
-                )}
-                <button
-                  onClick={handleSubmitProof}
-                  disabled={currentState.isLoading || task.status !== 'IN_PROGRESS'}
-                  className="rounded-3xl bg-brand-neonCyan px-5 py-3 text-sm font-semibold text-brand-blackVoid transition hover:bg-brand-electricBlue disabled:opacity-50"
-                >
-                  {currentState.isLoading ? 'Enviando...' : 'Enviar prueba y completar'}
-                </button>
-              </div>
-            </div>
-          )}
-
-          {modalMode === 'wallet' && (
-            <div className="space-y-4">
-              <input
-                value={walletAddress}
-                onChange={(e) => setWalletAddress(e.target.value)}
-                placeholder="Dirección de wallet o nota de conexión"
-                className="w-full rounded-3xl border border-brand-graphite/70 bg-brand-blackVoid/80 px-4 py-3 text-brand-pureWhite outline-none focus:border-brand-neonCyan"
-              />
-              {currentState.error && <p className="text-sm text-red-400">{currentState.error}</p>}
-              <div className="flex gap-3">
-                {task.status !== 'IN_PROGRESS' && (
-                  <button
-                    onClick={handleStart}
-                    disabled={currentState.isLoading}
-                    className="rounded-3xl bg-brand-electricBlue px-5 py-3 text-sm font-semibold text-brand-blackVoid transition hover:bg-brand-electricBlue/80 disabled:opacity-50"
-                  >
-                    {currentState.isLoading ? 'Iniciando...' : 'Iniciar'}
-                  </button>
-                )}
-                <button
-                  onClick={handleConnectWallet}
-                  disabled={currentState.isLoading || task.status !== 'IN_PROGRESS'}
-                  className="rounded-3xl bg-brand-neonCyan px-5 py-3 text-sm font-semibold text-brand-blackVoid transition hover:bg-brand-electricBlue disabled:opacity-50"
-                >
-                  {currentState.isLoading ? 'Conectando...' : 'Completar conexión'}
-                </button>
-              </div>
-            </div>
-          )}
-
-          {modalMode === 'referral' && (
-            <div className="space-y-3 sm:space-y-4">
-              {user?.referralCode && (
-                <div className="rounded-2xl sm:rounded-3xl border border-brand-graphite/70 bg-brand-blackVoid/75 p-3 sm:p-5">
-                  <p className="text-xs sm:text-sm uppercase tracking-[0.3em] text-brand-neonCyan mb-2 sm:mb-3">Tu Código de Referido</p>
-                  <div className="flex items-center gap-2 sm:gap-3">
-                    <code className="flex-1 rounded-xl bg-brand-deepBlue px-3 py-2 sm:px-4 sm:py-3 text-center font-mono text-sm sm:text-lg text-brand-pureWhite">
-                      {user.referralCode}
-                    </code>
-                    <button
-                      onClick={copyReferralLink}
-                      className="rounded-xl bg-brand-electricBlue px-3 py-2 sm:px-4 sm:py-3 text-xs sm:text-sm font-semibold text-brand-blackVoid transition hover:bg-brand-electricBlue/80"
-                    >
-                      Copiar Enlace
-                    </button>
-                  </div>
-                  <p className="mt-2 sm:mt-3 text-xs text-brand-softGray">
-                    Comparte este enlace con tus amigos. Se registrarán automáticamente con tu referido.
-                  </p>
-                </div>
-              )}
-              
-              {task.requiredReferralActions && (
-                <div className="rounded-2xl sm:rounded-3xl border border-brand-graphite/70 bg-brand-blackVoid/75 p-3 sm:p-5">
-                  <p className="text-xs sm:text-sm uppercase tracking-[0.3em] text-brand-neonCyan mb-2 sm:mb-3">Progreso</p>
-                  <div className="flex items-center justify-between">
-                    <span className="text-xs sm:text-sm text-brand-softGray">
-                      Referidos: {task.referralCount || 0} / {task.requiredReferralActions}
-                    </span>
-                    <span className="text-xs sm:text-sm font-semibold text-brand-pureWhite">
-                      {Math.min(((task.referralCount || 0) / task.requiredReferralActions) * 100, 100).toFixed(0)}%
-                    </span>
-                  </div>
-                  <div className="mt-2 h-2 rounded-full bg-brand-graphite/50">
-                    <div
-                      className="h-full rounded-full bg-brand-neonCyan transition-all duration-300"
-                      style={{ width: `${Math.min(((task.referralCount || 0) / task.requiredReferralActions) * 100, 100)}%` }}
-                    />
-                  </div>
-                </div>
-              )}
-              
-              {task.referralRequiredTaskId && (
-                <div className="rounded-2xl sm:rounded-3xl border border-brand-electricBlue/30 bg-brand-electricBlue/10 p-3 sm:p-5">
-                  <p className="text-xs sm:text-sm uppercase tracking-[0.3em] text-brand-electricBlue mb-2 sm:mb-3">Requisito Adicional</p>
-                  <p className="text-xs sm:text-sm text-brand-softGray">
-                    Los referidos deben completar una tarea específica para contar como referidos válidos.
-                  </p>
-                </div>
-              )}
-              
-              {currentState.error && <p className="text-xs sm:text-sm text-red-400">{currentState.error}</p>}
-              
-              <div className="flex gap-2 sm:gap-3">
-                {task.status !== 'IN_PROGRESS' && (
-                  <button
-                    onClick={handleStart}
-                    disabled={currentState.isLoading}
-                    className="rounded-2xl sm:rounded-3xl bg-brand-electricBlue px-3 py-2 sm:px-5 sm:py-3 text-xs sm:text-sm font-semibold text-brand-blackVoid transition hover:bg-brand-electricBlue/80 disabled:opacity-50"
-                  >
-                    {currentState.isLoading ? 'Iniciando...' : 'Iniciar Invitaciones'}
-                  </button>
-                )}
-                <button
-                  onClick={handleComplete}
-                  disabled={currentState.isLoading || task.status !== 'IN_PROGRESS' || (task.referralCount || 0) < (task.requiredReferralActions || 0)}
-                  className="rounded-2xl sm:rounded-3xl bg-brand-neonCyan px-3 py-2 sm:px-5 sm:py-3 text-xs sm:text-sm font-semibold text-brand-blackVoid transition hover:bg-brand-electricBlue disabled:opacity-50"
-                >
-                  {currentState.isLoading ? 'Completando...' : 'Completar Misión'}
-                </button>
-              </div>
-            </div>
-          )}
-
-          {modalMode === 'verify' && (
-            <div className="space-y-4">
-              {task.actionUrl && (
-                <div className="space-y-3">
-                  {!currentState.linkOpened && !task.linkOpenedAt ? (
-                    <div className="rounded-3xl border border-brand-electricBlue/30 bg-brand-electricBlue/10 px-4 py-3">
-                      <p className="text-sm text-brand-electricBlue font-medium">
-                        🔗 Debes abrir el enlace para completar la misión
-                      </p>
-                      <p className="text-xs text-brand-softGray mt-1">
-                        Haz click en el botón para abrir el enlace y completar la acción requerida.
-                      </p>
-                    </div>
-                  ) : (
-                    <div className="rounded-3xl border border-brand-neonCyan/30 bg-brand-neonCyan/10 px-4 py-3">
-                      <p className="text-sm text-brand-neonCyan font-medium">
-                        ✓ Enlace abierto - Listo para confirmar
-                      </p>
-                      <p className="text-xs text-brand-softGray mt-1">
-                        Has completado la acción. Confirma para finalizar la misión.
-                      </p>
-                    </div>
-                  )}
-                </div>
-              )}
-              <div className="flex gap-3">
-                {!currentState.linkOpened && !task.linkOpenedAt ? (
-                  <button
-                    onClick={handleOpenLink}
-                    disabled={currentState.isLoading}
-                    className="w-full rounded-3xl bg-brand-electricBlue px-5 py-3 text-sm font-semibold text-brand-blackVoid transition hover:bg-brand-electricBlue/80 disabled:opacity-50"
-                  >
-                    {currentState.isLoading ? 'Abriendo enlace...' : 'Abrir enlace'}
-                  </button>
-                ) : (
-                  <button
-                    onClick={handleComplete}
-                    disabled={currentState.isLoading}
-                    className="w-full rounded-3xl bg-brand-neonCyan px-5 py-3 text-sm font-semibold text-brand-blackVoid transition hover:bg-brand-electricBlue disabled:opacity-50"
-                  >
-                    {currentState.isLoading ? 'Confirmando...' : 'Confirma y completar'}
-                  </button>
-                )}
-              </div>
-            </div>
-          )}
         </div>
       </div>
     </div>
