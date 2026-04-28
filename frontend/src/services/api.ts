@@ -115,8 +115,8 @@ export const saveWallet = async (walletAddress: string): Promise<{ user: UserInf
   const token = localStorage.getItem('airdrop_auth') ? JSON.parse(localStorage.getItem('airdrop_auth')!).token : '';
   return request<{ user: UserInfo }>('/auth/wallet', 'POST', { walletAddress }, token);
 };
-export const getLeaderboard = async (token: string): Promise<LeaderboardEntry[]> => {
-  return request<LeaderboardEntry[]>('/admin/leaderboard', 'GET', undefined, token);
+export const deleteAdminTask = async (token: string, taskId: string): Promise<void> => {
+  return request<void>(`/admin/tasks/${taskId}`, 'DELETE', undefined, token);
 };
 export const getAnalyticsMetrics = async (token: string): Promise<AnalyticsMetrics> => {
   return request<AnalyticsMetrics>('/analytics/metrics', 'GET', undefined, token);
@@ -148,4 +148,8 @@ export const getDiscordConnectUrl = async (token: string): Promise<string> => {
 
 export const getDiscordStatus = async (token: string): Promise<{ connected: boolean; discordId?: string; discordUsername?: string; discordDiscriminator?: string }> => {
   return request('/auth/discord/status', 'GET', undefined, token);
+};
+
+export const getLeaderboard = async (token: string): Promise<LeaderboardEntry[]> => {
+  return request<LeaderboardEntry[]>('/admin/leaderboard', 'GET', undefined, token);
 };

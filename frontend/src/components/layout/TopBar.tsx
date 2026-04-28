@@ -8,7 +8,8 @@ export const TopBar = () => {
 
   const navItems = [
     { label: 'Dashboard', path: '/dashboard' },
-    { label: 'Tareas', path: '/tasks' },
+    { label: 'Tareas', path: '/tareas' },
+    { label: 'Ranking', path: '/ranking' },
     ...(user?.role === 'ADMIN' ? [{ label: 'Admin', path: '/admin' }] : [])
   ];
 

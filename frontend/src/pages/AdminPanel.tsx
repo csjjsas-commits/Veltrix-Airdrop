@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { useAuth } from '../hooks/useAuth';
 import {
   createAdminTask,
+  deleteAdminTask,
   getAdminConfig,
   getAdminStats,
   getAdminTasks,
@@ -234,35 +235,28 @@ export const AdminPanel = () => {
       timeLimit: parseTimeLimit(timeLimitStr),
       referralTarget: isReferral ? referralTarget || null : null,
       requiredReferralActions: isReferral && requiredReferralActions > 0 ? requiredReferralActions : null,
-      active: taskActive
+      active: taskActive,
+      platform: taskPlatform
     };
     console.log('📤 [TASK PAYLOAD]', JSON.stringify(payload, null, 2));
     return payload;
   };
 
-  const handleSaveTask = async () => {
+  const handleDeleteTask = async (taskId: string) => {
     if (!token) return;
 
+    if (!confirm('¿Estás seguro de que quieres eliminar esta tarea? Esta acción no se puede deshacer.')) {
+      return;
+    }
+
     try {
-      const taskData = getTaskPayload();
-
-      if (editingTask) {
-        console.log('🔄 Updating task:', editingTask.id);
-        await updateAdminTask(token, editingTask.id, taskData);
-        setMessage('Tarea actualizada');
-      } else {
-        console.log('➕ Creating new task');
-        await createAdminTask(token, taskData);
-        setMessage('Tarea creada');
-      }
-
-      resetTaskForm();
-      setIsTaskModalOpen(false);
+      await deleteAdminTask(token, taskId);
+      setMessage('Tarea eliminada');
       await fetchAdminData();
       window.dispatchEvent(new Event('tasksUpdated'));
     } catch (err: any) {
-      const errorMsg = err?.message || (editingTask ? 'No se pudo actualizar la tarea' : 'No se pudo crear la tarea');
-      console.error('❌ [SAVE TASK ERROR]', err);
+      const errorMsg = err?.message || 'No se pudo eliminar la tarea';
+      console.error('❌ [DELETE TASK ERROR]', err);
       setMessage(errorMsg);
     }
   };
@@ -291,6 +285,33 @@ export const AdminPanel = () => {
   const handleForceApprove = (submissionId: string) => {
     setOverriddenSubmissions(prev => new Set(prev).add(submissionId));
     setMessage(`Aprobación manual forzada para envío ${submissionId}`);
+  };
+
+  const handleSaveTask = async () => {
+    if (!token) return;
+
+    try {
+      const taskData = getTaskPayload();
+
+      if (editingTask) {
+        console.log('🔄 Updating task:', editingTask.id);
+        await updateAdminTask(token, editingTask.id, taskData);
+        setMessage('Tarea actualizada');
+      } else {
+        console.log('➕ Creating new task');
+        await createAdminTask(token, taskData);
+        setMessage('Tarea creada');
+      }
+
+      resetTaskForm();
+      setIsTaskModalOpen(false);
+      await fetchAdminData();
+      window.dispatchEvent(new Event('tasksUpdated'));
+    } catch (err: any) {
+      const errorMsg = err?.message || (editingTask ? 'No se pudo actualizar la tarea' : 'No se pudo crear la tarea');
+      console.error('❌ [SAVE TASK ERROR]', err);
+      setMessage(errorMsg);
+    }
   };
 
   return (
@@ -412,6 +433,7 @@ export const AdminPanel = () => {
                         {task.active ? <FiEyeOff className="w-4 h-4" /> : <FiEye className="w-4 h-4" />}
                       </button>
                       <button
+                        onClick={() => handleDeleteTask(task.id)}
                         className="rounded-lg bg-gray-800 p-2 text-gray-400 transition hover:bg-red-900/40 hover:text-red-400"
                         title="Eliminar"
                       >
