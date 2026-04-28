@@ -736,6 +736,18 @@ export const AdminPanel = () => {
                   </div>
                 </div>
 
+                {/* Time Limit */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-300 mb-2">Límite de tiempo (opcional)</label>
+                  <p className="mb-2 text-xs text-gray-500">Formato: HH:MM:SS (ej: 01:30:00 para 1 hora 30 minutos)</p>
+                  <input
+                    value={timeLimitStr}
+                    onChange={(e) => setTimeLimitStr(e.target.value)}
+                    placeholder="HH:MM:SS"
+                    className="w-full rounded-xl border border-gray-700/40 bg-gray-800/60 px-4 py-3 text-white outline-none focus:border-purple-400"
+                  />
+                </div>
+
                 {/* Status Toggle */}
                 <div className="flex items-center gap-3 rounded-xl border border-gray-700/40 bg-gray-800/60 px-4 py-3">
                   <label className="text-sm font-medium text-gray-300">Estado:</label>
