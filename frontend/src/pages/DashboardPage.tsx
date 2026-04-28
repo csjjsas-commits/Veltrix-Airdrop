@@ -1,5 +1,7 @@
 import { useEffect, useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { FaInstagram, FaTelegramPlane, FaTwitter, FaYoutube } from 'react-icons/fa';
+import { FiArrowUpRight } from 'react-icons/fi';
 import { useAuth } from '../hooks/useAuth';
 import { useAnalytics } from '../hooks/useAnalytics';
 import { useMissionAction } from '../hooks/useMissionAction';
@@ -8,7 +10,6 @@ import { DashboardData, UserTask } from '../types';
 import { HeroPanel } from '../components/dashboard/HeroPanel';
 import { StatsGrid } from '../components/dashboard/StatsGrid';
 import { WalletPanel } from '../components/dashboard/WalletPanel';
-import { MissionCard } from '../components/dashboard/MissionCard';
 import { MissionVerificationModal } from '../components/MissionVerificationModal';
 import { SkeletonCard } from '../components/ui/SkeletonCard';
 import { motion } from 'framer-motion';
@@ -25,6 +26,72 @@ export const DashboardPage = () => {
   const [actionLoading, setActionLoading] = useState(false);
   const [modalTask, setModalTask] = useState<UserTask | null>(null);
   const [inProgressTasks, setInProgressTasks] = useState<Record<string, boolean>>({});
+  const [activePlatform, setActivePlatform] = useState<'all' | 'instagram' | 'x' | 'telegram' | 'youtube'>('all');
+
+  const platformTabs = [
+    { key: 'all', label: 'Todas' },
+    { key: 'instagram', label: 'Instagram' },
+    { key: 'x', label: 'X' },
+    { key: 'telegram', label: 'Telegram' },
+    { key: 'youtube', label: 'YouTube' }
+  ] as const;
+
+  const getPlatformKey = (task: UserTask) => {
+    const platform = task.platform?.toString().toLowerCase();
+    if (platform === 'twitter') return 'x';
+    if (platform === 'youtube') return 'youtube';
+    if (platform === 'telegram') return 'telegram';
+    if (platform === 'instagram') return 'instagram';
+    return 'x';
+  };
+
+  const getPlatformIcon = (task: UserTask) => {
+    const key = getPlatformKey(task);
+    switch (key) {
+      case 'instagram':
+        return <FaInstagram size={22} className="text-violet-300" />;
+      case 'telegram':
+        return <FaTelegramPlane size={22} className="text-violet-300" />;
+      case 'youtube':
+        return <FaYoutube size={22} className="text-violet-300" />;
+      default:
+        return <FaTwitter size={22} className="text-violet-300" />;
+    }
+  };
+
+  const getPlatformLabel = (task: UserTask) => {
+    const key = getPlatformKey(task);
+    switch (key) {
+      case 'instagram':
+        return 'INSTAGRAM';
+      case 'telegram':
+        return 'TELEGRAM';
+      case 'youtube':
+        return 'YOUTUBE';
+      default:
+        return 'X';
+    }
+  };
+
+  const getActionLabel = (task: UserTask) => {
+    const key = getPlatformKey(task);
+    switch (key) {
+      case 'instagram':
+      case 'x':
+        return 'SEGUIR';
+      case 'telegram':
+        return 'UNIRSE';
+      case 'youtube':
+        return 'VER';
+      default:
+        return 'COMPLETAR';
+    }
+  };
+
+  const filteredTasks = availableTasks.filter((task) => {
+    if (activePlatform === 'all') return true;
+    return getPlatformKey(task) === activePlatform;
+  });
 
   const fetchDashboardData = useCallback(async () => {
     if (!token) return;
@@ -220,35 +287,93 @@ export const DashboardPage = () => {
             </div>
 
             <div className="mt-8">
-              {availableTasks.length === 0 ? (
+              <div className="mb-6 flex flex-wrap items-center gap-3">
+                {platformTabs.map((tab) => (
+                  <button
+                    key={tab.key}
+                    onClick={() => setActivePlatform(tab.key)}
+                    className={`rounded-full px-4 py-2 text-sm font-semibold transition ${
+                      activePlatform === tab.key
+                        ? 'bg-violet-500 text-white shadow-sm shadow-violet-500/20'
+                        : 'bg-slate-900 text-slate-300 hover:bg-slate-800'
+                    }`}
+                  >
+                    {tab.label}
+                  </button>
+                ))}
+              </div>
+
+              {filteredTasks.length === 0 ? (
                 <div className="rounded-2xl border border-brand-electricBlue/20 bg-brand-blackVoid/80 p-10 text-center text-brand-softGray">
                   <p className="text-xl font-semibold text-brand-pureWhite">No active missions available</p>
                   <p className="mt-3">The ecosystem is currently updating, check back soon for new objectives.</p>
                 </div>
               ) : (
-                <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-                  {availableTasks.slice(0, 6).map((task) => (
-                    <MissionCard
-                      key={task.id}
-                      id={task.id}
-                      title={task.title}
-                      description={task.description || 'Complete this objective to earn rewards'}
-                      reward={`+${task.points} XP`}
-                      difficulty="Medium"
-                      progress={task.taskType === 'REFERRAL' ? (task.referralCount || 0) : undefined}
-                      maxProgress={task.taskType === 'REFERRAL' ? (task.requiredReferralActions || 1) : undefined}
-                      status={
-                        task.status === 'COMPLETED'
-                          ? 'completed'
-                          : task.status === 'IN_PROGRESS'
-                          ? 'in-progress'
-                          : inProgressTasks[task.id]
-                          ? 'in-progress'
-                          : 'available'
-                      }
-                      onStart={() => handleMissionStart(task)}
-                    />
-                  ))}
+                <div className="space-y-4">
+                  {filteredTasks.slice(0, 6).map((task) => {
+                    const platformLabel = getPlatformLabel(task);
+                    const actionLabel = getActionLabel(task);
+                    const isCompleted = task.status === 'COMPLETED';
+                    const isInProgress = task.status === 'IN_PROGRESS' || inProgressTasks[task.id];
+
+                    return (
+                      <motion.div
+                        key={task.id}
+                        initial={{ opacity: 0, y: 16 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        className="flex flex-col rounded-3xl border border-slate-800 bg-slate-900/90 p-5 shadow-xl shadow-slate-950/20 sm:flex-row sm:items-center sm:justify-between"
+                      >
+                        <div className="flex items-center gap-4">
+                          <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-slate-800 text-violet-300 shadow-inner shadow-black/20">
+                            {getPlatformIcon(task)}
+                          </div>
+                          <div className="min-w-0">
+                            <p className="text-xs uppercase tracking-[0.24em] text-slate-400">
+                              {platformLabel} / {actionLabel}
+                            </p>
+                            <h3 className="mt-1 text-lg font-semibold text-white line-clamp-1">
+                              {task.title}
+                            </h3>
+                            <p className="mt-2 text-sm leading-6 text-slate-400 line-clamp-2">
+                              {task.description || 'Completa esta misión para ganar puntos.'}
+                            </p>
+                            <p className="mt-3 flex items-center gap-2 text-sm font-semibold text-amber-300">
+                              <span className="text-base">★</span>
+                              +{task.points} pts
+                            </p>
+                          </div>
+                        </div>
+
+                        <div className="mt-4 flex flex-col items-start gap-3 sm:mt-0 sm:items-end">
+                          {task.actionUrl ? (
+                            <a
+                              href={task.actionUrl}
+                              target="_blank"
+                              rel="noreferrer"
+                              className="inline-flex items-center gap-2 text-sm font-semibold text-slate-300 transition hover:text-white"
+                            >
+                              Abrir
+                              <FiArrowUpRight size={14} />
+                            </a>
+                          ) : (
+                            <div className="text-xs uppercase tracking-[0.24em] text-slate-500">Link no disponible</div>
+                          )}
+
+                          <button
+                            onClick={() => handleMissionStart(task)}
+                            disabled={isCompleted}
+                            className={`inline-flex min-w-[152px] items-center justify-center rounded-2xl px-5 py-3 text-sm font-semibold transition ${
+                              isCompleted
+                                ? 'cursor-not-allowed bg-slate-800 text-slate-500'
+                                : 'bg-violet-500 text-white hover:bg-violet-400'
+                            }`}
+                          >
+                            {isCompleted ? 'Completada' : isInProgress ? 'En Revisión' : 'Completar'}
+                          </button>
+                        </div>
+                      </motion.div>
+                    );
+                  })}
                 </div>
               )}
             </div>

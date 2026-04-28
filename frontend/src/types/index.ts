@@ -68,6 +68,7 @@ export interface UserTask {
   requiredReferralActions: number | null;
   referralRequiredTaskId: string | null;
   active: boolean;
+  platform?: string;
   verificationData: any;
   createdAt: string;
   updatedAt: string;
