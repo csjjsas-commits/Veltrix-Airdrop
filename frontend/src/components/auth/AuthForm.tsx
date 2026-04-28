@@ -34,8 +34,11 @@ export const AuthForm = ({ mode }: AuthFormProps) => {
     setLoading(true);
 
     try {
-      console.log('Iniciando flujo de Google Auth');
-      // Aquí se puede agregar la integración real con Google.
+      showToast({
+        type: 'info',
+        title: 'Google Sign-In',
+        description: 'La integración con Google aún no está disponible. Estamos trabajando en ello.'
+      });
     } catch (err) {
       console.error('Google auth error', err);
       setErrorMessage('Error al conectar con Google');
@@ -134,7 +137,7 @@ export const AuthForm = ({ mode }: AuthFormProps) => {
                   type="email"
                   value={email}
                   onChange={e => setEmail(e.target.value)}
-                  placeholder="Juan@veltrix.com"
+                  placeholder="usuario@tuemail.com"
                   required
                   className="w-full rounded-3xl border border-slate-800/80 bg-slate-900/90 px-4 py-3 pl-12 text-white outline-none transition focus:border-cyan-300 focus:ring-2 focus:ring-cyan-300/20"
                 />
@@ -149,7 +152,7 @@ export const AuthForm = ({ mode }: AuthFormProps) => {
                   type="password"
                   value={password}
                   onChange={e => setPassword(e.target.value)}
-                  placeholder="*************"
+                  placeholder="Contraseña"
                   required
                   className="w-full rounded-3xl border border-slate-800/80 bg-slate-900/90 px-4 py-3 pl-12 text-white outline-none transition focus:border-cyan-300 focus:ring-2 focus:ring-cyan-300/20"
                 />

@@ -1,4 +1,4 @@
-import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
+import { BrowserRouter, Navigate, Route, Routes, useLocation } from 'react-router-dom';
 import { AuthProvider, useAuth } from './hooks/useAuth';
 import { AnalyticsProvider } from './components/analytics/AnalyticsProvider';
 import { usePageTracking } from './hooks/useAnalytics';
@@ -31,10 +31,12 @@ const AdminRoute = ({ children }: { children: JSX.Element }) => {
 
 const AppContent = () => {
   usePageTracking();
+  const location = useLocation();
+  const isAuthRoute = location.pathname === '/login' || location.pathname === '/register';
 
   return (
     <div className="min-h-screen bg-brand-blackVoid text-brand-pureWhite">
-      <TopBar />
+      {!isAuthRoute && <TopBar />}
       <Routes>
         <Route path="/login" element={<AuthPage />} />
         <Route path="/register" element={<AuthPage />} />
