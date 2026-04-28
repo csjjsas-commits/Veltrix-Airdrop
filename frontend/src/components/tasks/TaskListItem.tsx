@@ -1,51 +1,86 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useAuth } from '../../hooks/useAuth';
 import { completeTask, startTask } from '../../services/api';
 import { UserTask } from '../../types';
 import { CountdownBadge } from './CountdownBadge';
 import { useAnalytics } from '../../hooks/useAnalytics';
+import { FaInstagram, FaTelegramPlane, FaTwitter, FaYoutube, FaUsers } from 'react-icons/fa';
 
 interface Props {
   task: UserTask;
   onTaskUpdate?: (updatedTask: UserTask) => void;
   onTaskAction?: (task: UserTask) => void;
+  onOpenModal?: (task: UserTask) => void;
 }
 
 const getPlatformIcon = (platform?: string, taskType?: string) => {
-  if (taskType === 'REFERRAL') return '👥';
+  if (taskType === 'REFERRAL') return <FaUsers size={20} className="text-violet-300" />;
   const p = platform?.toLowerCase();
-  if (p === 'instagram') return '📷';
-  if (p === 'twitter' || p === 'x') return '𝕏';
-  if (p === 'youtube') return '▶️';
-  if (p === 'telegram') return '✈️';
-  return '⭐';
+  if (p === 'instagram') return <FaInstagram size={20} className="text-violet-300" />;
+  if (p === 'twitter' || p === 'x') return <FaTwitter size={20} className="text-violet-300" />;
+  if (p === 'youtube') return <FaYoutube size={20} className="text-violet-300" />;
+  if (p === 'telegram') return <FaTelegramPlane size={20} className="text-violet-300" />;
+  return <FaTwitter size={20} className="text-violet-300" />;
 };
 
-export const TaskListItem = ({ task, onTaskUpdate, onTaskAction }: Props) => {
+export const TaskListItem = ({ task, onTaskUpdate, onTaskAction, onOpenModal }: Props) => {
   const [isProcessing, setIsProcessing] = useState(false);
+  const [timeRemaining, setTimeRemaining] = useState<string>('');
   const { token } = useAuth();
   const { task: taskAnalytics } = useAnalytics();
+
+  useEffect(() => {
+    if (task.timeLimit && task.status === 'IN_PROGRESS' && task.createdAt) {
+      const interval = setInterval(() => {
+        const now = new Date().getTime();
+        const startTime = new Date(task.createdAt!).getTime();
+        const elapsed = now - startTime;
+        const limitMs = task.timeLimit! * 60 * 1000;
+        const remaining = limitMs - elapsed;
+
+        if (remaining <= 0) {
+          setTimeRemaining('00:00:00');
+          clearInterval(interval);
+        } else {
+          const hours = Math.floor(remaining / (1000 * 60 * 60));
+          const minutes = Math.floor((remaining % (1000 * 60 * 60)) / (1000 * 60));
+          const seconds = Math.floor((remaining % (1000 * 60)) / 1000);
+          setTimeRemaining(`${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`);
+        }
+      }, 1000);
+      return () => clearInterval(interval);
+    }
+  }, [task.timeLimit, task.status, task.createdAt]);
 
   const handleAction = async () => {
     if (!token) return;
     setIsProcessing(true);
 
     try {
-      if (task.taskType === 'EXTERNAL_LINK' || task.taskType === 'REFERRAL' || task.taskType === 'WALLET_ACTION') {
+      if (task.taskType === 'EXTERNAL_LINK') {
         const updatedTask = await startTask(token, task.id);
         if (onTaskUpdate) {
           onTaskUpdate(updatedTask);
         }
-        if (task.actionUrl && task.taskType !== 'REFERRAL') {
+        if (task.actionUrl) {
           window.open(task.actionUrl, '_blank');
-        } else if (task.taskType === 'REFERRAL' && onTaskAction) {
+        }
+      } else if (task.taskType === 'REFERRAL') {
+        const updatedTask = await startTask(token, task.id);
+        if (onTaskUpdate) {
+          onTaskUpdate(updatedTask);
+        }
+        if (onTaskAction) {
           onTaskAction(task);
         }
-      } else {
-        const completedTask = await completeTask(token, task.id);
+      } else if (task.taskType === 'WALLET_ACTION') {
+        const updatedTask = await startTask(token, task.id);
         if (onTaskUpdate) {
-          taskAnalytics.completed(task.id, task.title || 'Unknown Task', task.points);
-          onTaskUpdate(completedTask);
+          onTaskUpdate(updatedTask);
+        }
+      } else {
+        if (onOpenModal) {
+          onOpenModal(task);
         }
       }
     } catch (error) {
@@ -71,11 +106,11 @@ export const TaskListItem = ({ task, onTaskUpdate, onTaskAction }: Props) => {
   return (
     <div className="rounded-[2rem] border border-slate-800 bg-slate-950/90 p-5 shadow-[0_20px_40px_rgba(0,0,0,0.20)] transition hover:-translate-y-1 hover:border-violet-500/30">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
-        <div className="flex items-start gap-4 min-w-0">
-          <div className="flex h-14 w-14 items-center justify-center rounded-3xl bg-violet-500/10 text-2xl text-violet-300">
+        <div className="flex items-start gap-4 min-w-0 flex-1">
+          <div className="flex h-14 w-14 items-center justify-center rounded-3xl bg-violet-500/10 flex-shrink-0">
             {getPlatformIcon(task.platform, task.taskType)}
           </div>
-          <div className="min-w-0">
+          <div className="min-w-0 flex-1">
             <h4 className="text-lg font-semibold text-white truncate">{task.title}</h4>
             <p className="mt-2 text-sm leading-6 text-slate-400 truncate">{task.description || 'Completa esta misión para ganar puntos'}</p>
             <div className="mt-3 flex flex-wrap gap-2 text-xs font-semibold uppercase tracking-[0.25em] text-slate-500">
@@ -86,7 +121,7 @@ export const TaskListItem = ({ task, onTaskUpdate, onTaskAction }: Props) => {
           </div>
         </div>
 
-        <div className="flex shrink-0 items-center gap-3">
+        <div className="flex shrink-0 flex-col items-end gap-2">
           <button
             onClick={handleAction}
             disabled={isDisabled}
@@ -98,6 +133,9 @@ export const TaskListItem = ({ task, onTaskUpdate, onTaskAction }: Props) => {
           >
             {isProcessing ? 'Procesando...' : getButtonText()}
           </button>
+          {timeRemaining && (
+            <span className="text-xs font-mono text-yellow-400">{timeRemaining}</span>
+          )}
         </div>
       </div>
     </div>

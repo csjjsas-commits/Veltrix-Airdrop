@@ -4,6 +4,8 @@ import { getTasks } from '../services/api';
 import { UserTask } from '../types';
 import { TaskListItem } from '../components/tasks/TaskListItem';
 import { TareasReferralPanel } from '../components/tasks/TareasReferralPanel';
+import { MissionVerificationModal } from '../components/MissionVerificationModal';
+import { useMissionAction } from '../hooks/useMissionAction';
 import { motion } from 'framer-motion';
 
 export const TareasPage = () => {
@@ -12,6 +14,8 @@ export const TareasPage = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [activePlatform, setActivePlatform] = useState<'all' | 'instagram' | 'x' | 'telegram' | 'youtube'>('all');
+  const [modalTask, setModalTask] = useState<UserTask | null>(null);
+  const { state: missionState } = useMissionAction();
 
   const platformTabs = [
     { key: 'all', label: 'Todas' },
@@ -62,7 +66,16 @@ export const TareasPage = () => {
   };
 
   const handleReferralAction = (task: UserTask) => {
-    // Open referral modal or action
+    
+
+  const handleOpenModal = (task: UserTask) => {
+    setModalTask(task);
+  };
+
+  const handleTaskComplete = (updatedTask: UserTask) => {
+    handleTaskUpdate(updatedTask);
+    setModalTask(null);
+  };// Open referral modal or action
     console.log('Referral action for:', task);
   };
 
@@ -130,7 +143,8 @@ export const TareasPage = () => {
               className="space-y-3"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
-              transition={{ duration: 0.5 }}
+              tran  onOpenModal={handleOpenModal}
+                  sition={{ duration: 0.5 }}
             >
               {filteredTasks.length > 0 ? (
                 filteredTasks.map((task, idx) => (
@@ -154,6 +168,14 @@ export const TareasPage = () => {
             <TareasReferralPanel referralTask={referralTask} />
           </div>
         </div>
+
+      <MissionVerificationModal
+        task={modalTask}
+        isOpen={!!modalTask}
+        onClose={() => setModalTask(null)}
+        onTaskComplete={handleTaskComplete}
+        state={missionState}
+      />
       </div>
     </div>
   );

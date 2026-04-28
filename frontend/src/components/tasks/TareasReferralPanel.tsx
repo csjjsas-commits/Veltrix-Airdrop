@@ -52,45 +52,40 @@ export const TareasReferralPanel = ({ referralTask }: Props) => {
   return (
     <div className="sticky top-24 rounded-[2rem] border border-slate-800 bg-slate-950/95 p-6 shadow-2xl shadow-black/40">
       <div className="space-y-6">
-        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-          <div>
-            <p className="text-xs uppercase tracking-[0.35em] text-violet-300">Referidos</p>
-            <h3 className="mt-2 text-2xl font-semibold text-white">Invitá a tus amigos</h3>
-            <p className="mt-2 text-sm text-slate-400">Comparte tu enlace para ganar puntos cuando tus amigos completen tareas.</p>
-          </div>
-          <div className="inline-flex items-center rounded-full border border-violet-500/20 bg-violet-500/10 px-4 py-2 text-sm font-semibold text-violet-200">
-            Premio por referido: {referralTask?.points ?? 0} pts
-          </div>
+        <div>
+          <p className="text-xs uppercase tracking-[0.35em] text-slate-500 font-semibold">Referidos</p>
+          <h3 className="mt-3 text-2xl font-bold text-white">Invitá a tus amigos</h3>
+          <p className="mt-2 text-sm text-slate-400">Comparte tu enlace para ganar puntos cuando tus amigos completen tareas.</p>
         </div>
 
-        <div className="grid gap-3 sm:grid-cols-2">
-          <div className="rounded-[1.75rem] border border-slate-800 bg-slate-900/90 p-4 text-center">
-            <p className="text-sm uppercase tracking-[0.32em] text-slate-500">Referidos</p>
+        <div className="inline-flex items-center rounded-full border border-violet-500/30 bg-violet-500/10 px-4 py-2 text-sm font-semibold text-violet-300">
+          Premio por referido: {referralTask?.points ?? 0} pts
+        </div>
+
+        <div className="grid gap-4 sm:grid-cols-2">
+          <div className="rounded-[1.75rem] border border-slate-800 bg-slate-900/90 p-5 text-center">
+            <p className="text-xs uppercase tracking-widest text-slate-500">Referidos</p>
             <p className="mt-4 text-4xl font-bold text-white">{referralStats.count}</p>
           </div>
-          <div className="rounded-[1.75rem] border border-slate-800 bg-slate-900/90 p-4 text-center">
-            <p className="text-sm uppercase tracking-[0.32em] text-slate-500">Pts ganados</p>
+          <div className="rounded-[1.75rem] border border-slate-800 bg-slate-900/90 p-5 text-center">
+            <p className="text-xs uppercase tracking-widest text-slate-500">Pts ganados</p>
             <p className="mt-4 text-4xl font-bold text-violet-300">{referralStats.pointsEarned}</p>
           </div>
         </div>
 
-        <div className="rounded-[1.75rem] border border-slate-800 bg-slate-900/90 p-4">
-          <div className="flex items-center justify-between gap-4">
-            <div>
-              <p className="text-xs uppercase tracking-[0.35em] text-slate-500">Tu enlace</p>
-              <p className="mt-2 text-sm text-slate-400 break-all">Comparte este enlace con tus amigos</p>
-            </div>
-            <button
-              onClick={handleCopy}
-              className="rounded-full bg-violet-500 px-4 py-2 text-sm font-semibold text-white transition hover:bg-violet-400"
-            >
-              {copied ? '✓ Copiado' : 'Copiar link'}
-            </button>
-          </div>
-          <div className="mt-4 rounded-[1.5rem] bg-slate-950/90 p-4 border border-slate-800 text-sm text-slate-300 break-all">
-            {referralUrl}
+        <div>
+          <p className="text-xs uppercase tracking-widest text-slate-500 mb-3">Tu enlace</p>
+          <div className="rounded-[1.75rem] bg-slate-900/90 border border-slate-800 p-4">
+            <p className="text-sm text-slate-300 break-all font-mono">{referralUrl}</p>
           </div>
         </div>
+
+        <button
+          onClick={handleCopy}
+          className="w-full rounded-full bg-violet-500 px-6 py-3 text-sm font-semibold text-white transition hover:bg-violet-400"
+        >
+          {copied ? '✓ Copiado' : '📋 Copiar link'}
+        </button>
 
         {referralTask && (
           <div className="rounded-[1.75rem] border border-slate-800 bg-slate-900/90 p-4 text-sm text-slate-400">
