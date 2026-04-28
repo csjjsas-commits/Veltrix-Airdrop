@@ -53,6 +53,7 @@ export interface UserStats {
   rank: number;
   totalUsers: number;
   percentile: number;
+  totalCommunityPoints: number;
 }
 
 const LEVEL_XP = 500;
@@ -762,10 +763,14 @@ export const getUserStats = async (userId: string): Promise<UserStats> => {
   const airdropConfig = await prisma.airdropConfig.findFirst();
 
   let estimatedTokens = '0';
-  if (airdropConfig && airdropConfig.totalCommunityPoints > 0) {
-    const ratio = totalPoints / airdropConfig.totalCommunityPoints;
-    const tokens = ratio * Number(airdropConfig.totalAirdropPool);
-    estimatedTokens = tokens.toFixed(2);
+  let totalCommunityPoints = 0;
+  if (airdropConfig) {
+    totalCommunityPoints = airdropConfig.totalCommunityPoints;
+    if (totalCommunityPoints > 0) {
+      const ratio = totalPoints / totalCommunityPoints;
+      const tokens = ratio * Number(airdropConfig.totalAirdropPool);
+      estimatedTokens = tokens.toFixed(2);
+    }
   }
 
   const rankData = await getUserRank(userId);
@@ -787,7 +792,8 @@ export const getUserStats = async (userId: string): Promise<UserStats> => {
     pointsToNextLevel,
     rank: rankData.rankPosition,
     totalUsers: rankData.totalUsers,
-    percentile: rankData.percentile
+    percentile: rankData.percentile,
+    totalCommunityPoints
   };
 };
 

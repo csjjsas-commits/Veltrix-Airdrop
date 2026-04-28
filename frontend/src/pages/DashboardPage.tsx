@@ -128,9 +128,17 @@ export const DashboardPage = () => {
   const userPoints = dashboard?.stats.totalPoints ?? 0;
   const completedTasks = dashboard?.stats.completedTasks ?? 0;
   const pendingTasks = dashboard?.stats.pendingTasks ?? 0;
-  const totalNetworkPoints = dashboard?.stats.totalUsers ?? 0;
-  const participation = dashboard?.stats.percentile ?? 0;
+  const totalNetworkPoints = dashboard?.stats.totalCommunityPoints ?? 0;
   const estimatedTokens = dashboard?.stats.estimatedTokens ?? '0';
+  
+  // Calcular participación: (mis tokens / 50,000,000 total pool) * 100
+  const participation = ((parseFloat(estimatedTokens) / 50000000) * 100).toFixed(2);
+  
+  // Formatear número con separadores (ej: 1.000.000)
+  const formatNumberWithSeparators = (num: string | number): string => {
+    const str = typeof num === 'number' ? num.toFixed(2) : num;
+    return str.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+  };
 
   const getMissionCategory = (task: UserTask) => {
     switch (task.taskType) {
@@ -363,8 +371,10 @@ export const DashboardPage = () => {
               <div className="rounded-[2rem] border border-slate-800 bg-slate-950/95 p-6 shadow-2xl shadow-black/40">
                 <div>
                   <p className="text-xs uppercase tracking-[0.35em] text-violet-400 font-semibold">Tokens estimados</p>
-                  <h2 className="mt-4 text-4xl font-bold text-white">{estimatedTokens}</h2>
-                  <p className="mt-2 text-sm text-violet-300 font-semibold">VELX</p>
+                  <div className="mt-4 flex items-baseline gap-2">
+                    <h2 className="text-2xl font-bold text-white">{formatNumberWithSeparators(estimatedTokens)}</h2>
+                    <p className="text-sm text-violet-300 font-semibold">VELX</p>
+                  </div>
                 </div>
 
                 <div className="mt-6 space-y-2 text-sm">

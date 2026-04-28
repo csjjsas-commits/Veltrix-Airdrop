@@ -19,6 +19,7 @@ export interface DashboardStats {
   rank?: number;
   totalUsers?: number;
   percentile?: number;
+  totalCommunityPoints?: number;
 }
 
 export interface DashboardData {
