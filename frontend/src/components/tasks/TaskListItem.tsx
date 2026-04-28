@@ -113,7 +113,11 @@ export const TaskListItem = ({ task, onTaskUpdate, onTaskAction, onOpenModal }: 
   const isCompleted = task.status === 'COMPLETED';
 
   return (
-    <div className="rounded-[2rem] border border-slate-800 bg-slate-950/90 p-5 shadow-[0_20px_40px_rgba(0,0,0,0.20)] transition hover:-translate-y-1 hover:border-violet-500/30">
+    <div className={`rounded-[2rem] border p-5 shadow-[0_20px_40px_rgba(0,0,0,0.20)] transition ${
+      isCompleted
+        ? 'border-slate-700 bg-slate-900/90 text-slate-400'
+        : 'border-slate-800 bg-slate-950/90 hover:-translate-y-1 hover:border-violet-500/30'
+    }`}>
       <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
         <div className="flex items-start gap-4 min-w-0 flex-1">
           <div className="flex h-14 w-14 items-center justify-center rounded-3xl bg-violet-500/10 flex-shrink-0">

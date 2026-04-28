@@ -34,13 +34,39 @@ export const TareasPage = () => {
     return 'x';
   };
 
+  const getTaskPriority = (task: UserTask) => {
+    if (task.status === 'COMPLETED') return 2;
+    if (task.endDate) return 0;
+    return 1;
+  };
+
+  const sortTasks = (tasksToSort: UserTask[]) =>
+    tasksToSort.slice().sort((a, b) => {
+      const aPriority = getTaskPriority(a);
+      const bPriority = getTaskPriority(b);
+
+      if (aPriority !== bPriority) {
+        return aPriority - bPriority;
+      }
+
+      if (aPriority === 0 && a.endDate && b.endDate) {
+        return new Date(a.endDate).getTime() - new Date(b.endDate).getTime();
+      }
+
+      if (a.status !== b.status) {
+        return a.status === 'COMPLETED' ? 1 : -1;
+      }
+
+      return b.points - a.points;
+    });
+
   // Separate referral and regular tasks
   const referralTask = tasks.find(t => t.taskType === 'REFERRAL');
   const regularTasks = tasks.filter(t => t.taskType !== 'REFERRAL');
 
   const filteredTasks = activePlatform === 'all'
-    ? regularTasks
-    : regularTasks.filter(task => getPlatformKey(task) === activePlatform);
+    ? sortTasks(regularTasks)
+    : sortTasks(regularTasks.filter(task => getPlatformKey(task) === activePlatform));
 
   useEffect(() => {
     const fetchTasks = async () => {

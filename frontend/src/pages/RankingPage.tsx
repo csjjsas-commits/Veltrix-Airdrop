@@ -88,35 +88,39 @@ export const RankingPage = () => {
           animate={{ opacity: 1 }}
           transition={{ duration: 0.5 }}
         >
-          {leaderboard.map((entry, index) => (
-            <motion.div
-              key={entry.id}
-              className={`rounded-lg border p-4 transition ${
-                index < 3
-                  ? 'bg-gradient-to-r from-violet-900/20 to-slate-900 border-violet-500/30'
-                  : 'bg-slate-900 border-slate-800'
-              }`}
-              initial={{ y: 20, opacity: 0 }}
-              animate={{ y: 0, opacity: 1 }}
-              transition={{ delay: index * 0.1 }}
-            >
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-4">
-                  <div className="flex items-center justify-center w-10 h-10">
-                    {getRankIcon(index + 1)}
+          {leaderboard.map((entry, index) => {
+            const displayName = entry.name && !entry.name.includes('@') ? entry.name : entry.email.split('@')[0];
+            const handle = entry.email.split('@')[0];
+            return (
+              <motion.div
+                key={entry.id}
+                className={`rounded-lg border p-4 transition ${
+                  index < 3
+                    ? 'bg-gradient-to-r from-violet-900/20 to-slate-900 border-violet-500/30'
+                    : 'bg-slate-900 border-slate-800'
+                }`}
+                initial={{ y: 20, opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                transition={{ delay: index * 0.1 }}
+              >
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-4">
+                    <div className="flex items-center justify-center w-10 h-10">
+                      {getRankIcon(index + 1)}
+                    </div>
+                    <div>
+                      <p className="text-white font-semibold">{displayName}</p>
+                      <p className="text-slate-400 text-sm">@{handle}</p>
+                    </div>
                   </div>
-                  <div>
-                    <p className="text-white font-semibold">{entry.name}</p>
-                    <p className="text-slate-400 text-sm">@{entry.email}</p>
+                  <div className="text-right">
+                    <p className="text-2xl font-bold text-violet-400">{entry.points.toLocaleString()}</p>
+                    <p className="text-slate-400 text-sm">puntos</p>
                   </div>
                 </div>
-                <div className="text-right">
-                  <p className="text-2xl font-bold text-violet-400">{entry.points.toLocaleString()}</p>
-                  <p className="text-slate-400 text-sm">puntos</p>
-                </div>
-              </div>
-            </motion.div>
-          ))}
+              </motion.div>
+            );
+          })}
         </motion.div>
 
         {leaderboard.length === 0 && (

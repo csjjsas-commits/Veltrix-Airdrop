@@ -46,6 +46,32 @@ export const DashboardPage = () => {
     }
   };
 
+  const getTaskPriority = (task: UserTask) => {
+    if (task.status === 'COMPLETED') return 2;
+    if (task.endDate) return 0;
+    return 1;
+  };
+
+  const sortDashboardTasks = (tasksToSort: UserTask[]) =>
+    tasksToSort.slice().sort((a, b) => {
+      const aPriority = getTaskPriority(a);
+      const bPriority = getTaskPriority(b);
+
+      if (aPriority !== bPriority) {
+        return aPriority - bPriority;
+      }
+
+      if (aPriority === 0 && a.endDate && b.endDate) {
+        return new Date(a.endDate).getTime() - new Date(b.endDate).getTime();
+      }
+
+      if (a.status !== b.status) {
+        return a.status === 'COMPLETED' ? 1 : -1;
+      }
+
+      return b.points - a.points;
+    });
+
   const fetchDashboardData = useCallback(async () => {
     if (!token) return;
     setLoading(true);
@@ -277,7 +303,7 @@ export const DashboardPage = () => {
                 </div>
 
                 <div className="space-y-3">
-                  {availableTasks.slice(0, 4).map(task => (
+                  {sortDashboardTasks(availableTasks).slice(0, 4).map(task => (
                     <div key={task.id} className="rounded-[2rem] border border-slate-800 bg-slate-950/90 p-5 flex items-start justify-between gap-4 hover:border-violet-500/30 transition">
                       <div className="flex items-start gap-4 flex-1 min-w-0">
                         <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-violet-500/10 flex-shrink-0">
