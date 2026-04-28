@@ -13,17 +13,11 @@ export const AuthPage = () => {
         <div className="absolute inset-0 bg-[repeating-linear-gradient(0deg,rgba(255,255,255,0.02),rgba(255,255,255,0.02)_1px,transparent_1px,transparent_24px),repeating-linear-gradient(90deg,rgba(255,255,255,0.02),rgba(255,255,255,0.02)_1px,transparent_1px,transparent_24px)] opacity-20" />
       </div>
 
-      <div className="relative mx-auto flex min-h-screen max-w-7xl items-center justify-center px-6 py-12">
-        <div className="grid w-full gap-8 rounded-[2.5rem] border border-cyan-400/10 bg-white/5 p-8 shadow-[0_30px_130px_rgba(0,207,255,0.14)] backdrop-blur-xl lg:grid-cols-[1.15fr_0.95fr]">
+      <div className="relative mx-auto flex min-h-screen max-w-7xl items-center justify-center px-6 py-8">
+        <div className="grid w-full gap-12 rounded-[2.5rem] border border-cyan-400/10 bg-white/5 p-8 shadow-[0_30px_130px_rgba(0,207,255,0.14)] backdrop-blur-xl lg:grid-cols-[1fr_0.85fr]">
           <div className="space-y-10 rounded-[2rem] border border-white/10 bg-slate-950/30 p-10 shadow-[inset_0_0_0_1px_rgba(255,255,255,0.04)]">
-            <div className="flex items-center gap-4">
-              <div className="flex h-16 w-16 items-center justify-center rounded-3xl bg-gradient-to-br from-cyan-400 to-violet-500 shadow-[0_0_30px_rgba(0,207,255,0.24)]">
-                <span className="text-3xl font-extrabold text-slate-950">V</span>
-              </div>
-              <div>
-                <p className="text-xs uppercase tracking-[0.35em] text-cyan-200/80 font-semibold">VELTRIX</p>
-                <p className="mt-1 text-sm uppercase tracking-[0.35em] text-slate-300">RACE. COMPETE. EARN.</p>
-              </div>
+            <div className="flex items-center justify-center">
+              <img src="/branding/logo.png" alt="Veltrix Logo" className="h-20 w-auto" />
             </div>
 
             <div className="max-w-2xl">
@@ -36,7 +30,7 @@ export const AuthPage = () => {
             </div>
           </div>
 
-          <div className="rounded-[2rem] border border-white/10 bg-slate-950/90 p-8 shadow-[0_20px_80px_rgba(24,30,54,0.35)] backdrop-blur-xl">
+          <div className="rounded-[2rem] border border-white/10 bg-slate-950/90 p-6 shadow-[0_20px_80px_rgba(24,30,54,0.35)] backdrop-blur-xl">
             <AuthForm mode={isLogin ? 'login' : 'register'} />
           </div>
         </div>

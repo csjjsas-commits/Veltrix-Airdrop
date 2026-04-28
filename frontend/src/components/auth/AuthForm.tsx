@@ -89,14 +89,8 @@ export const AuthForm = ({ mode }: AuthFormProps) => {
     <div className="w-full rounded-[2rem] border border-cyan-400/10 bg-slate-950/95 p-8 shadow-[0_20px_80px_rgba(0,207,255,0.16)] backdrop-blur-3xl">
       {!isRegistrationSuccessful ? (
         <>
-          <div className="space-y-4">
+          <div className="space-y-2">
             <p className="text-xs uppercase tracking-[0.45em] text-cyan-300/80">BIENVENIDO DE NUEVO</p>
-            <h2 className="text-3xl font-semibold tracking-tight text-white sm:text-4xl">
-              Accede a tu panel premium y continúa ganando tokens.
-            </h2>
-            <p className="text-sm leading-6 text-slate-400">
-              Ingresa con tu cuenta para ver tu progreso y misiones.
-            </p>
           </div>
 
           <div className="mt-8 space-y-4">
@@ -164,9 +158,7 @@ export const AuthForm = ({ mode }: AuthFormProps) => {
 
             {errorMessage && <p className="text-sm text-rose-400">{errorMessage}</p>}
 
-            <div className="rounded-3xl border border-slate-800/80 bg-slate-900 p-4">
-              <TurnstileWidget onVerify={setCaptchaToken} resetTrigger={resetCounter} />
-            </div>
+            <TurnstileWidget onVerify={setCaptchaToken} resetTrigger={resetCounter} />
 
             <button
               type="submit"
