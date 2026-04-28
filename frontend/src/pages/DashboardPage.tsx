@@ -361,30 +361,28 @@ export const DashboardPage = () => {
 
             <div className="space-y-6">
               <div className="rounded-[2rem] border border-slate-800 bg-slate-950/95 p-6 shadow-2xl shadow-black/40">
-                <div className="flex items-start justify-between gap-6">
-                  <div>
-                    <p className="text-xs uppercase tracking-[0.35em] text-violet-400 font-semibold">Tokens estimados</p>
-                    <h2 className="mt-4 text-4xl font-bold text-white">{estimatedTokens}</h2>
-                    <p className="mt-2 text-sm text-violet-300 font-semibold">VELX</p>
-                  </div>
-                  <div className="rounded-2xl bg-violet-500/10 p-4 text-center">
-                    <p className="text-xs text-slate-500 uppercase tracking-widest">Tu participación</p>
-                    <p className="mt-3 text-2xl font-bold text-violet-300">{participation}%</p>
-                  </div>
+                <div>
+                  <p className="text-xs uppercase tracking-[0.35em] text-violet-400 font-semibold">Tokens estimados</p>
+                  <h2 className="mt-4 text-4xl font-bold text-white">{estimatedTokens}</h2>
+                  <p className="mt-2 text-sm text-violet-300 font-semibold">VELX</p>
                 </div>
 
-                <div className="mt-6 grid gap-3 sm:grid-cols-3">
-                  <div className="rounded-2xl border border-slate-800 bg-slate-900/90 p-4">
-                    <p className="text-xs uppercase tracking-widest text-slate-500">Tus puntos</p>
-                    <p className="mt-3 text-2xl font-bold text-white">{userPoints.toLocaleString()}</p>
+                <div className="mt-6 space-y-2 text-sm">
+                  <div className="flex justify-between items-center">
+                    <p className="text-slate-500 uppercase tracking-widest">Tus puntos</p>
+                    <p className="font-bold text-white">{userPoints.toLocaleString()}</p>
                   </div>
-                  <div className="rounded-2xl border border-slate-800 bg-slate-900/90 p-4">
-                    <p className="text-xs uppercase tracking-widest text-slate-500">Puntos totales red</p>
-                    <p className="mt-3 text-2xl font-bold text-white">{totalNetworkPoints.toLocaleString()}</p>
+                  <div className="flex justify-between items-center">
+                    <p className="text-slate-500 uppercase tracking-widest">Puntos totales en la red</p>
+                    <p className="font-bold text-white">{totalNetworkPoints.toLocaleString()}</p>
                   </div>
-                  <div className="rounded-2xl border border-slate-800 bg-slate-900/90 p-4">
-                    <p className="text-xs uppercase tracking-widest text-slate-500">Usuarios registrados</p>
-                    <p className="mt-3 text-2xl font-bold text-white">{dashboard?.stats.totalUsers ?? 0}</p>
+                  <div className="flex justify-between items-center">
+                    <p className="text-slate-500 uppercase tracking-widest">Usuarios registrados</p>
+                    <p className="font-bold text-white">{dashboard?.stats.totalUsers ?? 0}</p>
+                  </div>
+                  <div className="flex justify-between items-center pt-2 border-t border-slate-800">
+                    <p className="text-violet-300 uppercase tracking-widest">Tu participación</p>
+                    <p className="font-bold text-violet-300">{participation}%</p>
                   </div>
                 </div>
 
