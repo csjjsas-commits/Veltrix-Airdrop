@@ -50,46 +50,51 @@ export const TareasReferralPanel = ({ referralTask }: Props) => {
   };
 
   return (
-    <div className="sticky top-24 rounded-3xl border border-brand-elitePurple/30 bg-gradient-to-br from-brand-elitePurple/10 to-brand-elitePurple/5 px-6 py-6">
+    <div className="sticky top-24 rounded-[2rem] border border-slate-800 bg-slate-950/95 p-6 shadow-2xl shadow-black/40">
       <div className="space-y-6">
-        {/* Header */}
-        <div>
-          <h3 className="text-2xl font-bold text-brand-pureWhite mb-1">Referidos</h3>
-          <p className="text-sm text-brand-softGray">Invita amigos y gana puntos</p>
-        </div>
-
-        {/* Stats */}
-        <div className="grid grid-cols-2 gap-3">
-          <div className="rounded-2xl border border-brand-graphite/50 bg-brand-graphite/20 px-4 py-3 text-center">
-            <div className="text-3xl font-bold text-brand-neonCyan">{referralStats.count}</div>
-            <div className="text-xs text-brand-softGray mt-1">Referidos</div>
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+          <div>
+            <p className="text-xs uppercase tracking-[0.35em] text-violet-300">Referidos</p>
+            <h3 className="mt-2 text-2xl font-semibold text-white">Invitá a tus amigos</h3>
+            <p className="mt-2 text-sm text-slate-400">Comparte tu enlace para ganar puntos cuando tus amigos completen tareas.</p>
           </div>
-          <div className="rounded-2xl border border-brand-graphite/50 bg-brand-graphite/20 px-4 py-3 text-center">
-            <div className="text-3xl font-bold text-brand-amber-400">{referralStats.pointsEarned}</div>
-            <div className="text-xs text-brand-softGray mt-1">Pts ganados</div>
+          <div className="inline-flex items-center rounded-full border border-violet-500/20 bg-violet-500/10 px-4 py-2 text-sm font-semibold text-violet-200">
+            Premio por referido: {referralTask?.points ?? 0} pts
           </div>
         </div>
 
-        {/* Link Section */}
-        <div className="space-y-3">
-          <div className="rounded-2xl border border-brand-graphite/70 bg-brand-blackVoid/80 px-4 py-3">
-            <p className="text-xs text-brand-softGray break-all">{referralUrl}</p>
+        <div className="grid gap-3 sm:grid-cols-2">
+          <div className="rounded-[1.75rem] border border-slate-800 bg-slate-900/90 p-4 text-center">
+            <p className="text-sm uppercase tracking-[0.32em] text-slate-500">Referidos</p>
+            <p className="mt-4 text-4xl font-bold text-white">{referralStats.count}</p>
           </div>
-
-          <button
-            onClick={handleCopy}
-            className="w-full rounded-2xl bg-brand-elitePurple px-4 py-3 text-sm font-semibold text-brand-pureWhite transition hover:bg-brand-elitePurple/80"
-          >
-            {copied ? '✓ ¡Copiado!' : '📋 Copiar link'}
-          </button>
+          <div className="rounded-[1.75rem] border border-slate-800 bg-slate-900/90 p-4 text-center">
+            <p className="text-sm uppercase tracking-[0.32em] text-slate-500">Pts ganados</p>
+            <p className="mt-4 text-4xl font-bold text-violet-300">{referralStats.pointsEarned}</p>
+          </div>
         </div>
 
-        {/* Description */}
+        <div className="rounded-[1.75rem] border border-slate-800 bg-slate-900/90 p-4">
+          <div className="flex items-center justify-between gap-4">
+            <div>
+              <p className="text-xs uppercase tracking-[0.35em] text-slate-500">Tu enlace</p>
+              <p className="mt-2 text-sm text-slate-400 break-all">Comparte este enlace con tus amigos</p>
+            </div>
+            <button
+              onClick={handleCopy}
+              className="rounded-full bg-violet-500 px-4 py-2 text-sm font-semibold text-white transition hover:bg-violet-400"
+            >
+              {copied ? '✓ Copiado' : 'Copiar link'}
+            </button>
+          </div>
+          <div className="mt-4 rounded-[1.5rem] bg-slate-950/90 p-4 border border-slate-800 text-sm text-slate-300 break-all">
+            {referralUrl}
+          </div>
+        </div>
+
         {referralTask && (
-          <div className="rounded-2xl bg-brand-graphite/20 px-4 py-3">
-            <p className="text-xs text-brand-softGray">
-              Gana <span className="text-brand-amber-400 font-bold">{referralTask.points} puntos</span> por cada amigo que se registre y complete al menos una tarea.
-            </p>
+          <div className="rounded-[1.75rem] border border-slate-800 bg-slate-900/90 p-4 text-sm text-slate-400">
+            Gana <span className="font-semibold text-violet-300">{referralTask.points} puntos</span> por cada amigo que se registre y complete al menos una tarea.
           </div>
         )}
       </div>

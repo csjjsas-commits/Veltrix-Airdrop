@@ -237,42 +237,26 @@ export const DashboardPage = () => {
 
           <div className="mt-6 grid gap-6 md:grid-cols-3">
             <div className="md:col-span-2 space-y-6">
-              <div className="grid gap-4 grid-cols-2 md:grid-cols-4">
-                <div className="aspect-square rounded-xl bg-gray-800 p-4 flex flex-col justify-between">
-                  <div className="flex items-center justify-center rounded-2xl bg-violet-500/15 p-3 text-violet-300">
-                    <FaStar size={22} />
-                  </div>
-                  <div>
-                    <p className="text-3xl font-semibold text-white">{userPoints.toLocaleString()}</p>
-                    <p className="mt-2 text-xs text-slate-400">Mis Puntos</p>
-                  </div>
+              <div className="grid gap-4 md:grid-cols-2">
+                <div className="rounded-[2rem] border border-slate-800 bg-slate-950/95 p-5 shadow-2xl shadow-black/20">
+                  <p className="text-xs uppercase tracking-[0.35em] text-slate-500">Mis puntos</p>
+                  <p className="mt-3 text-4xl font-semibold text-white">{userPoints.toLocaleString()}</p>
+                  <p className="mt-2 text-sm text-slate-400">Total de puntos acumulados.</p>
                 </div>
-                <div className="aspect-square rounded-xl bg-gray-800 p-4 flex flex-col justify-between">
-                  <div className="flex items-center justify-center rounded-2xl bg-violet-500/15 p-3 text-violet-300">
-                    <FaCheckCircle size={22} />
-                  </div>
-                  <div>
-                    <p className="text-3xl font-semibold text-white">{completedTasks}</p>
-                    <p className="mt-2 text-xs text-slate-400">Completadas</p>
-                  </div>
+                <div className="rounded-[2rem] border border-slate-800 bg-slate-950/95 p-5 shadow-2xl shadow-black/20">
+                  <p className="text-xs uppercase tracking-[0.35em] text-slate-500">Tareas completadas</p>
+                  <p className="mt-3 text-4xl font-semibold text-white">{completedTasks}</p>
+                  <p className="mt-2 text-sm text-slate-400">Mis misiones completadas hasta ahora.</p>
                 </div>
-                <div className="aspect-square rounded-xl bg-gray-800 p-4 flex flex-col justify-between">
-                  <div className="flex items-center justify-center rounded-2xl bg-violet-500/15 p-3 text-violet-300">
-                    <FaClock size={22} />
-                  </div>
-                  <div>
-                    <p className="text-3xl font-semibold text-white">{pendingTasks}</p>
-                    <p className="mt-2 text-xs text-slate-400">Pendientes</p>
-                  </div>
+                <div className="rounded-[2rem] border border-slate-800 bg-slate-950/95 p-5 shadow-2xl shadow-black/20">
+                  <p className="text-xs uppercase tracking-[0.35em] text-slate-500">Progreso</p>
+                  <p className="mt-3 text-4xl font-semibold text-white">{progressValue}%</p>
+                  <p className="mt-2 text-sm text-slate-400">Avance hacia el siguiente nivel.</p>
                 </div>
-                <div className="aspect-square rounded-xl bg-gray-800 p-4 flex flex-col justify-between">
-                  <div className="flex items-center justify-center rounded-2xl bg-violet-500/15 p-3 text-violet-300">
-                    <FaBolt size={22} />
-                  </div>
-                  <div>
-                    <p className="text-3xl font-semibold text-white">{userLevel}</p>
-                    <p className="mt-2 text-xs text-slate-400">Nivel</p>
-                  </div>
+                <div className="rounded-[2rem] border border-slate-800 bg-slate-950/95 p-5 shadow-2xl shadow-black/20">
+                  <p className="text-xs uppercase tracking-[0.35em] text-slate-500">Usuarios totales</p>
+                  <p className="mt-3 text-4xl font-semibold text-white">{dashboard?.stats.totalUsers ?? 0}</p>
+                  <p className="mt-2 text-sm text-slate-400">Usuarios activos en el ranking.</p>
                 </div>
               </div>
 
@@ -319,27 +303,31 @@ export const DashboardPage = () => {
             </div>
 
             <div className="space-y-6">
-              <div className="rounded-2xl border border-violet-500/20 bg-gradient-to-b from-purple-900/20 to-black p-6 shadow-[0_20px_60px_rgba(88,28,135,0.20)]">
-                <p className="text-xs font-semibold uppercase tracking-[0.36em] text-violet-300">VELX AIRDROP</p>
-                <h2 className="mt-4 text-3xl font-semibold text-white">Tokens Estimados</h2>
-                <p className="mt-8 text-5xl font-bold text-violet-300">{estimatedTokens} VELX</p>
+              <div className="rounded-[2rem] border border-slate-800 bg-slate-950/95 p-6 shadow-2xl shadow-black/40">
+                <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
+                  <div>
+                    <p className="text-xs uppercase tracking-[0.35em] text-violet-300">VELX AIRDROP</p>
+                    <h2 className="mt-4 text-3xl font-semibold text-white">Tokens Estimados</h2>
+                    <p className="mt-6 text-5xl font-bold text-violet-300">{estimatedTokens} VELX</p>
+                  </div>
 
-                <div className="mt-8 grid gap-3 sm:grid-cols-3">
-                  <div className="rounded-2xl bg-white/5 p-4 text-center">
-                    <p className="text-sm text-slate-400">Tus Puntos</p>
-                    <p className="mt-2 text-lg font-semibold text-white">{userPoints.toLocaleString()}</p>
-                  </div>
-                  <div className="rounded-2xl bg-white/5 p-4 text-center">
-                    <p className="text-sm text-slate-400">Puntos Totales Red</p>
-                    <p className="mt-2 text-lg font-semibold text-white">{totalNetworkPoints.toLocaleString()}</p>
-                  </div>
-                  <div className="rounded-2xl bg-white/5 p-4 text-center">
-                    <p className="text-sm text-slate-400">Participación (%)</p>
-                    <p className="mt-2 text-lg font-semibold text-white">{participation}%</p>
+                  <div className="grid gap-3 sm:grid-cols-3">
+                    <div className="rounded-[1.75rem] border border-slate-800 bg-slate-900/90 p-4">
+                      <p className="text-sm text-slate-400">Tus puntos</p>
+                      <p className="mt-3 text-xl font-semibold text-white">{userPoints.toLocaleString()}</p>
+                    </div>
+                    <div className="rounded-[1.75rem] border border-slate-800 bg-slate-900/90 p-4">
+                      <p className="text-sm text-slate-400">Puntos totales en red</p>
+                      <p className="mt-3 text-xl font-semibold text-white">{totalNetworkPoints.toLocaleString()}</p>
+                    </div>
+                    <div className="rounded-[1.75rem] border border-slate-800 bg-slate-900/90 p-4">
+                      <p className="text-sm text-slate-400">Tu participación</p>
+                      <p className="mt-3 text-xl font-semibold text-violet-300">{participation}%</p>
+                    </div>
                   </div>
                 </div>
 
-                <p className="mt-6 text-xs text-slate-500">Pool total: 50,000,000 VELX</p>
+                <p className="mt-6 text-xs text-slate-500">Pool total: 50,000,000 VELX · Distribución proporcional a puntos acumulados</p>
               </div>
             </div>
           </div>

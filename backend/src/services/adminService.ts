@@ -318,6 +318,7 @@ export const updateAirdropConfig = async (data: UpdateConfigInput): Promise<Aird
 
 export const getTopUsersByPoints = async (limit = 10): Promise<LeaderboardEntry[]> => {
   return await prisma.user.findMany({
+    where: { role: 'USER' },
     orderBy: [{ points: 'desc' }, { createdAt: 'asc' }],
     take: limit,
     select: {

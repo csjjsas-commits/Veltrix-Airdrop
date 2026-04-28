@@ -16,7 +16,10 @@ import { authMiddleware, adminMiddleware } from '../middleware/auth';
 
 const router = Router();
 
-// Todas las rutas requieren autenticación de admin
+// Leaderboard puede verse por usuarios autenticados
+router.get('/leaderboard', authMiddleware, getLeaderboardHandler);
+
+// Todas las rutas siguientes requieren autenticación de admin
 router.use(authMiddleware);
 router.use(adminMiddleware);
 

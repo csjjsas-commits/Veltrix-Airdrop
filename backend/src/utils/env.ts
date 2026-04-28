@@ -22,7 +22,7 @@ export const env = {
   PORT: process.env.PORT ? Number(process.env.PORT) : 4000,
   NODE_ENV: process.env.NODE_ENV || 'development',
   JWT_SECRET: process.env.JWT_SECRET!,
-  JWT_EXPIRE: process.env.JWT_EXPIRE || '15m',
+  JWT_EXPIRE: process.env.JWT_EXPIRE || '30d',
   TURNSTILE_SECRET_KEY: process.env.TURNSTILE_SECRET_KEY || '',
   DISCORD_CLIENT_ID: process.env.DISCORD_CLIENT_ID || '',
   DISCORD_CLIENT_SECRET: process.env.DISCORD_CLIENT_SECRET || '',

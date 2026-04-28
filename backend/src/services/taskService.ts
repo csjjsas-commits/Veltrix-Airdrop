@@ -797,12 +797,17 @@ export const getUserRank = async (userId: string): Promise<UserRank> => {
   const [higherRankCount, totalUsers] = await Promise.all([
     prisma.user.count({
       where: {
+        role: 'USER',
         points: {
           gt: user.points
         }
       }
     }),
-    prisma.user.count()
+    prisma.user.count({
+      where: {
+        role: 'USER'
+      }
+    })
   ]);
 
   const rankPosition = higherRankCount + 1;

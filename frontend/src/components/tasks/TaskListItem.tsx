@@ -69,30 +69,37 @@ export const TaskListItem = ({ task, onTaskUpdate, onTaskAction }: Props) => {
   const isCompleted = task.status === 'COMPLETED';
 
   return (
-    <div className="flex items-center justify-between gap-3 rounded-2xl border border-brand-graphite/50 bg-brand-graphite/20 px-4 py-3 hover:border-brand-graphite/80 transition">
-      <div className="flex items-center gap-3 flex-1 min-w-0">
-        <div className="text-2xl flex-shrink-0">{getPlatformIcon(task.platform, task.taskType)}</div>
-        
-        <div className="flex-1 min-w-0">
-          <h4 className="text-sm font-semibold text-brand-pureWhite truncate">{task.title}</h4>
-          <div className="flex items-center gap-2 mt-1">
-            <span className="text-xs text-brand-softGray">⭐ {task.points} pts</span>
-            {task.endDate && !isCompleted && <CountdownBadge endDate={task.endDate} />}
+    <div className="rounded-[2rem] border border-slate-800 bg-slate-950/90 p-5 shadow-[0_20px_40px_rgba(0,0,0,0.20)] transition hover:-translate-y-1 hover:border-violet-500/30">
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+        <div className="flex items-start gap-4 min-w-0">
+          <div className="flex h-14 w-14 items-center justify-center rounded-3xl bg-violet-500/10 text-2xl text-violet-300">
+            {getPlatformIcon(task.platform, task.taskType)}
+          </div>
+          <div className="min-w-0">
+            <h4 className="text-lg font-semibold text-white truncate">{task.title}</h4>
+            <p className="mt-2 text-sm leading-6 text-slate-400 truncate">{task.description || 'Completa esta misión para ganar puntos'}</p>
+            <div className="mt-3 flex flex-wrap gap-2 text-xs font-semibold uppercase tracking-[0.25em] text-slate-500">
+              <span className="rounded-full border border-slate-800 bg-slate-900/80 px-3 py-2">{task.points} pts</span>
+              <span className="rounded-full border border-slate-800 bg-slate-900/80 px-3 py-2">{task.taskType.replace('_', ' ')}</span>
+              {task.endDate && !isCompleted && <CountdownBadge endDate={task.endDate} />}
+            </div>
           </div>
         </div>
-      </div>
 
-      <button
-        onClick={handleAction}
-        disabled={isDisabled}
-        className={`flex-shrink-0 rounded-full px-4 py-2 text-xs font-semibold transition whitespace-nowrap ${
-          isCompleted
-            ? 'bg-brand-graphite/40 text-brand-softGray cursor-not-allowed'
-            : 'bg-brand-elitePurple/20 text-brand-elitePurple hover:bg-brand-elitePurple/40 disabled:opacity-50 disabled:cursor-not-allowed'
-        }`}
-      >
-        {isProcessing ? 'Procesando...' : getButtonText()}
-      </button>
+        <div className="flex shrink-0 items-center gap-3">
+          <button
+            onClick={handleAction}
+            disabled={isDisabled}
+            className={`rounded-full px-5 py-3 text-sm font-semibold transition whitespace-nowrap ${
+              isCompleted
+                ? 'bg-slate-800 text-slate-500 cursor-not-allowed'
+                : 'bg-violet-500 text-white hover:bg-violet-400 disabled:opacity-50 disabled:cursor-not-allowed'
+            }`}
+          >
+            {isProcessing ? 'Procesando...' : getButtonText()}
+          </button>
+        </div>
+      </div>
     </div>
   );
 };
