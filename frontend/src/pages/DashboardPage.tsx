@@ -47,9 +47,10 @@ export const DashboardPage = () => {
   };
 
   const getTaskPriority = (task: UserTask) => {
-    if (task.status === 'COMPLETED') return 2;
-    if (task.endDate) return 0;
-    return 1;
+    if (task.status === 'COMPLETED') return 3;
+    if (task.isRequired) return 0;
+    if (task.endDate) return 1;
+    return 2;
   };
 
   const sortDashboardTasks = (tasksToSort: UserTask[]) =>
@@ -61,7 +62,7 @@ export const DashboardPage = () => {
         return aPriority - bPriority;
       }
 
-      if (aPriority === 0 && a.endDate && b.endDate) {
+      if (aPriority === 1 && a.endDate && b.endDate) {
         return new Date(a.endDate).getTime() - new Date(b.endDate).getTime();
       }
 

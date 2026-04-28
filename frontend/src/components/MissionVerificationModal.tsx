@@ -1,6 +1,9 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { FaExternalLinkAlt } from 'react-icons/fa';
 import { useMissionAction, MissionVerificationModalProps } from '../hooks/useMissionAction';
+import { useAuth } from '../hooks/useAuth';
+import { getDashboard } from '../services/api';
+import { UserTask } from '../types';
 
 const platformIcons: Record<string, JSX.Element> = {
   instagram: (
@@ -44,12 +47,103 @@ export const MissionVerificationModal = ({
 }: MissionVerificationModalProps) => {
   const [verificationHandle, setVerificationHandle] = useState('');
   const { submitProof, connectWallet, state } = useMissionAction();
+  const { user, token } = useAuth();
+  const [referralStats, setReferralStats] = useState({ count: 0, pointsEarned: 0 });
+  const [copied, setCopied] = useState(false);
+
+  useEffect(() => {
+    if (!isOpen || !task || task.taskType !== 'REFERRAL' || !token) return;
+
+    const fetchStats = async () => {
+      try {
+        const dashboard = await getDashboard(token);
+        const refTask = dashboard.availableTasks?.find((t: UserTask) => t.taskType === 'REFERRAL');
+        if (refTask?.referralCount !== undefined) {
+          const pointsEarned = (refTask.referralCount || 0) * (task?.points || 0);
+          setReferralStats({ count: refTask.referralCount || 0, pointsEarned });
+        }
+      } catch (error) {
+        console.error('Error fetching referral stats:', error);
+      }
+    };
+
+    fetchStats();
+  }, [isOpen, task, token]);
 
   if (!isOpen || !task) return null;
 
   const currentState = externalState || state;
   const canSubmit = verificationHandle.trim().length > 0 && !currentState.isLoading;
 
+  if (task.taskType === 'REFERRAL') {
+    const referralUrl = `${window.location.origin}/register?ref=${user?.referralCode}`;
+
+    const handleCopy = async () => {
+      try {
+        await navigator.clipboard.writeText(referralUrl);
+        setCopied(true);
+        setTimeout(() => setCopied(false), 2000);
+      } catch (err) {
+        console.error('Failed to copy:', err);
+      }
+    };
+
+    return (
+      <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/90 px-4 py-6">
+        <div className="w-full max-w-lg rounded-[2rem] border border-slate-800 bg-slate-950/95 p-8 shadow-2xl shadow-black/80">
+          <div className="mb-8 flex items-start justify-between gap-4">
+            <div>
+              <h2 className="text-3xl font-bold text-white">Invitá a tus amigos</h2>
+              <p className="mt-2 text-sm text-slate-400">Comparte tu enlace para ganar puntos cuando tus amigos completen tareas.</p>
+            </div>
+            <button
+              onClick={onClose}
+              className="rounded-full border border-slate-700 bg-slate-900 px-3 py-2 text-sm text-slate-300 transition hover:border-violet-400 hover:text-white"
+            >
+              Cerrar
+            </button>
+          </div>
+
+          <div className="space-y-6">
+            <div className="inline-flex items-center rounded-full border border-violet-500/30 bg-violet-500/10 px-4 py-2 text-sm font-semibold text-violet-300">
+              Premio por referido: {task?.points ?? 0} pts
+            </div>
+
+            <div className="grid gap-4 sm:grid-cols-2">
+              <div className="rounded-[1.75rem] border border-slate-800 bg-slate-900/90 p-6 text-center">
+                <p className="text-xs uppercase tracking-[0.35em] font-semibold text-slate-500">Referidos</p>
+                <p className="mt-4 text-4xl font-bold text-white">{referralStats.count}</p>
+              </div>
+              <div className="rounded-[1.75rem] border border-slate-800 bg-slate-900/90 p-6 text-center">
+                <p className="text-xs uppercase tracking-[0.35em] font-semibold text-slate-500">Pts ganados</p>
+                <p className="mt-4 text-4xl font-bold text-violet-300">{referralStats.pointsEarned}</p>
+              </div>
+            </div>
+
+            <div>
+              <p className="text-xs uppercase tracking-[0.35em] font-semibold text-slate-500 mb-3">Tu enlace de referido</p>
+              <div className="rounded-[1.75rem] bg-slate-900/90 border border-slate-800 p-4">
+                <p className="text-xs text-slate-400 break-all font-mono">{referralUrl}</p>
+              </div>
+            </div>
+
+            <button
+              onClick={handleCopy}
+              className="w-full rounded-full bg-cyan-500 px-6 py-4 text-sm font-semibold text-white transition hover:bg-cyan-400"
+            >
+              {copied ? '✓ Copiado' : '📋 Copiar link'}
+            </button>
+
+            <div className="rounded-[1.75rem] border border-slate-800 bg-slate-900/90 p-4 text-sm text-slate-400">
+              Gana <span className="font-semibold text-violet-300">{task.points} puntos</span> por cada amigo que se registre y complete al menos una tarea.
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Regular task verification modal
   const handleVerificationSubmit = async () => {
     if (!task || !verificationHandle.trim()) return;
 

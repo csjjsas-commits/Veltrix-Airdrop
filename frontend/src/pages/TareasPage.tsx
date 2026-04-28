@@ -35,9 +35,10 @@ export const TareasPage = () => {
   };
 
   const getTaskPriority = (task: UserTask) => {
-    if (task.status === 'COMPLETED') return 2;
-    if (task.endDate) return 0;
-    return 1;
+    if (task.status === 'COMPLETED') return 3;
+    if (task.isRequired) return 0;
+    if (task.endDate) return 1;
+    return 2;
   };
 
   const sortTasks = (tasksToSort: UserTask[]) =>
@@ -49,7 +50,7 @@ export const TareasPage = () => {
         return aPriority - bPriority;
       }
 
-      if (aPriority === 0 && a.endDate && b.endDate) {
+      if (aPriority === 1 && a.endDate && b.endDate) {
         return new Date(a.endDate).getTime() - new Date(b.endDate).getTime();
       }
 
@@ -63,6 +64,9 @@ export const TareasPage = () => {
   // Separate referral and regular tasks
   const referralTask = tasks.find(t => t.taskType === 'REFERRAL');
   const regularTasks = tasks.filter(t => t.taskType !== 'REFERRAL');
+
+  // Check if there's an incomplete required task (non-referral only)
+  const incompleteRequiredTask = regularTasks.find(t => t.isRequired && t.status !== 'COMPLETED');
 
   const filteredTasks = activePlatform === 'all'
     ? sortTasks(regularTasks)
@@ -171,6 +175,12 @@ export const TareasPage = () => {
               animate={{ opacity: 1 }}
               transition={{ duration: 0.5 }}
             >
+              {incompleteRequiredTask && (
+                <div className="rounded-lg border border-amber-900/50 bg-amber-950/30 p-4 text-amber-200 text-sm">
+                  <p className="font-semibold">⚠️ Tarea Obligatoria</p>
+                  <p className="mt-1 text-xs">Completa la tarea "<strong>{incompleteRequiredTask.title}</strong>" para desbloquear las demás tareas.</p>
+                </div>
+              )}
               {filteredTasks.length > 0 ? (
                 filteredTasks.map((task, idx) => (
                   <TaskListItem
@@ -179,6 +189,7 @@ export const TareasPage = () => {
                     onTaskUpdate={handleTaskUpdate}
                     onTaskAction={handleReferralAction}
                     onOpenModal={handleOpenModal}
+                    isBlocked={!!incompleteRequiredTask && task.id !== incompleteRequiredTask.id}
                   />
                 ))
               ) : (

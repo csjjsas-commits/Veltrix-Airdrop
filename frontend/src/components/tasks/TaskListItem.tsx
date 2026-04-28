@@ -11,6 +11,7 @@ interface Props {
   onTaskUpdate?: (updatedTask: UserTask) => void;
   onTaskAction?: (task: UserTask) => void;
   onOpenModal?: (task: UserTask) => void;
+  isBlocked?: boolean;
 }
 
 const getPlatformIcon = (platform?: string, taskType?: string) => {
@@ -23,7 +24,7 @@ const getPlatformIcon = (platform?: string, taskType?: string) => {
   return <FaTwitter size={20} className="text-violet-300" />;
 };
 
-export const TaskListItem = ({ task, onTaskUpdate, onTaskAction, onOpenModal }: Props) => {
+export const TaskListItem = ({ task, onTaskUpdate, onTaskAction, onOpenModal, isBlocked = false }: Props) => {
   const [isProcessing, setIsProcessing] = useState(false);
   const [timeRemaining, setTimeRemaining] = useState<string>('');
   const { token } = useAuth();
@@ -53,7 +54,7 @@ export const TaskListItem = ({ task, onTaskUpdate, onTaskAction, onOpenModal }: 
   }, [task.timeLimit, task.status, task.createdAt]);
 
   const handleAction = async () => {
-    if (!token) return;
+    if (!token || isBlocked) return;
     setIsProcessing(true);
 
     try {
@@ -109,12 +110,14 @@ export const TaskListItem = ({ task, onTaskUpdate, onTaskAction, onOpenModal }: 
     return 'Completar';
   };
 
-  const isDisabled = task.status === 'COMPLETED' || task.status === 'PENDING' || isProcessing;
+  const isDisabled = task.status === 'COMPLETED' || task.status === 'PENDING' || isProcessing || isBlocked;
   const isCompleted = task.status === 'COMPLETED';
 
   return (
     <div className={`rounded-[2rem] border p-5 shadow-[0_20px_40px_rgba(0,0,0,0.20)] transition ${
-      isCompleted
+      isBlocked
+        ? 'border-slate-700 bg-slate-900/50 opacity-50 cursor-not-allowed'
+        : isCompleted
         ? 'border-slate-700 bg-slate-900/90 text-slate-400'
         : 'border-slate-800 bg-slate-950/90 hover:-translate-y-1 hover:border-violet-500/30'
     }`}>
@@ -124,7 +127,14 @@ export const TaskListItem = ({ task, onTaskUpdate, onTaskAction, onOpenModal }: 
             {getPlatformIcon(task.platform, task.taskType)}
           </div>
           <div className="min-w-0 flex-1">
-            <h4 className="text-lg font-semibold text-white truncate">{task.title}</h4>
+            <div className="flex items-center gap-2 flex-wrap">
+              <h4 className="text-lg font-semibold text-white truncate">{task.title}</h4>
+              {task.isRequired && !isCompleted && (
+                <span className="rounded-full bg-amber-500/20 border border-amber-500/50 px-2 py-1 text-xs font-bold uppercase text-amber-300">
+                  Obligatoria
+                </span>
+              )}
+            </div>
             <p className="mt-2 text-sm leading-6 text-slate-400 truncate">{task.description || 'Completa esta misión para ganar puntos'}</p>
             <div className="mt-3">
               <span className="rounded-full border border-slate-800 bg-slate-900/80 px-3 py-2 text-xs font-semibold uppercase tracking-[0.25em] text-slate-500">{task.points} pts</span>
