@@ -66,7 +66,9 @@ export const TareasPage = () => {
   };
 
   const handleReferralAction = (task: UserTask) => {
-    
+    // Open referral modal or action
+    console.log('Referral action for:', task);
+  };
 
   const handleOpenModal = (task: UserTask) => {
     setModalTask(task);
@@ -75,8 +77,6 @@ export const TareasPage = () => {
   const handleTaskComplete = (updatedTask: UserTask) => {
     handleTaskUpdate(updatedTask);
     setModalTask(null);
-  };// Open referral modal or action
-    console.log('Referral action for:', task);
   };
 
   if (loading) {
@@ -143,8 +143,7 @@ export const TareasPage = () => {
               className="space-y-3"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
-              tran  onOpenModal={handleOpenModal}
-                  sition={{ duration: 0.5 }}
+              transition={{ duration: 0.5 }}
             >
               {filteredTasks.length > 0 ? (
                 filteredTasks.map((task, idx) => (
@@ -153,6 +152,7 @@ export const TareasPage = () => {
                     task={task}
                     onTaskUpdate={handleTaskUpdate}
                     onTaskAction={handleReferralAction}
+                    onOpenModal={handleOpenModal}
                   />
                 ))
               ) : (
