@@ -97,6 +97,7 @@ export interface TaskPayload {
   requiredReferralActions?: number | null;
   active: boolean;
   platform?: string;
+  isRequired?: boolean;
 }
 
 export interface SubmissionItem {

@@ -92,7 +92,8 @@ export const createTaskSchema = z.object({
     z.string().trim().max(1000, 'El objetivo de referencia es demasiado largo').optional().nullable()
   ),
   requiredReferralActions: z.number().int().min(0, 'Las acciones de referencia deben ser un número positivo').optional().nullable(),
-  active: z.boolean().default(true)
+  active: z.boolean().default(true),
+  isRequired: z.boolean().default(false)
 });
 
 export const updateTaskSchema = z.object({
@@ -130,7 +131,8 @@ export const updateTaskSchema = z.object({
     z.string().trim().max(1000, 'El objetivo de referencia es demasiado largo').optional().nullable()
   ),
   requiredReferralActions: z.number().int().min(0, 'Las acciones de referencia deben ser un número positivo').optional().nullable(),
-  active: z.boolean().optional()
+  active: z.boolean().optional(),
+  isRequired: z.boolean().optional()
 });
 
 export const taskStatusSchema = z.object({

@@ -70,6 +70,7 @@ const normalizeTaskForm = (task: UserTask | null) => {
       taskAction: 'seguir' as const,
       taskAccount: '',
       taskMandatory: false,
+      isRequired: false,
       editingTask: null
     };
   }
@@ -90,6 +91,7 @@ const normalizeTaskForm = (task: UserTask | null) => {
     taskAction: 'seguir' as const,
     taskAccount: task.verificationData?.username ?? '',
     taskMandatory: Boolean(task.requiresProof),
+    isRequired: Boolean(task.isRequired),
     editingTask: task
   };
 };
@@ -118,6 +120,7 @@ export const AdminPanel = () => {
   const [taskAction, setTaskAction] = useState<'seguir' | 'me gusta' | 'compartir' | 'ver video' | 'comentar' | 'suscribirse' | 'unirse'>('seguir');
   const [taskAccount, setTaskAccount] = useState<string>('');
   const [taskMandatory, setTaskMandatory] = useState<boolean>(false);
+  const [isRequired, setIsRequired] = useState<boolean>(false);
   const [isTaskModalOpen, setIsTaskModalOpen] = useState<boolean>(false);
   const [editingTask, setEditingTask] = useState<UserTask | null>(null);
   const [message, setMessage] = useState('');
@@ -203,6 +206,7 @@ export const AdminPanel = () => {
     setTaskAction(normalized.taskAction);
     setTaskAccount(normalized.taskAccount);
     setTaskMandatory(normalized.taskMandatory);
+    setIsRequired(normalized.isRequired);
     setEditingTask(null);
     setMessage('');
   };
@@ -236,7 +240,8 @@ export const AdminPanel = () => {
       referralTarget: isReferral ? referralTarget || null : null,
       requiredReferralActions: isReferral && requiredReferralActions > 0 ? requiredReferralActions : null,
       active: taskActive,
-      platform: taskPlatform
+      platform: taskPlatform,
+      isRequired: isRequired
     };
     console.log('📤 [TASK PAYLOAD]', JSON.stringify(payload, null, 2));
     return payload;
@@ -279,6 +284,7 @@ export const AdminPanel = () => {
     setTaskAction(normalized.taskAction);
     setTaskAccount(normalized.taskAccount);
     setTaskMandatory(normalized.taskMandatory);
+    setIsRequired(normalized.isRequired);
     setIsTaskModalOpen(true);
   };
 
@@ -727,11 +733,11 @@ export const AdminPanel = () => {
                     <label className="flex w-full items-center gap-3 rounded-xl border border-gray-700/40 bg-gray-800/60 px-4 py-3 text-sm font-medium text-gray-300 cursor-pointer">
                       <input
                         type="checkbox"
-                        checked={taskMandatory}
-                        onChange={(e) => setTaskMandatory(e.target.checked)}
+                        checked={isRequired}
+                        onChange={(e) => setIsRequired(e.target.checked)}
                         className="h-5 w-5 rounded border-gray-600 text-purple-500"
                       />
-                      <span>Tarea obligatoria</span>
+                      <span>Tarea requerida</span>
                     </label>
                   </div>
                 </div>

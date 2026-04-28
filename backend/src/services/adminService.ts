@@ -89,7 +89,8 @@ export const createTask = async (data: CreateTaskInput): Promise<Task> => {
         timeLimit: data.timeLimit ?? null,
         referralTarget: data.referralTarget || null,
         requiredReferralActions: data.requiredReferralActions ?? null,
-        active: data.active
+        active: data.active,
+        isRequired: data.isRequired ?? false
       }
     });
 
@@ -135,6 +136,7 @@ export const updateTask = async (taskId: string, data: UpdateTaskInput): Promise
     if (data.referralTarget !== undefined) updateData.referralTarget = data.referralTarget || null;
     if (data.requiredReferralActions !== undefined) updateData.requiredReferralActions = data.requiredReferralActions ?? null;
     if (data.active !== undefined) updateData.active = data.active;
+    if (data.isRequired !== undefined) updateData.isRequired = data.isRequired;
 
     console.log('✅ [updateTask] Applying changes to fields:', Object.keys(updateData));
 
