@@ -133,6 +133,8 @@ export const DashboardPage = () => {
   
   // Calcular participación: (mis tokens / 50,000,000 total pool) * 100
   const participation = ((parseFloat(estimatedTokens) / 50000000) * 100).toFixed(2);
+
+  const activeRequiredTask = sortDashboardTasks(availableTasks).find(task => task.isRequired && task.status !== 'COMPLETED') || null;
   
   // Formatear número con separadores (ej: 1.000.000)
   const formatNumberWithSeparators = (num: string | number): string => {
@@ -312,51 +314,71 @@ export const DashboardPage = () => {
                 </div>
 
                 <div className="space-y-3">
-                  {sortDashboardTasks(availableTasks).slice(0, 4).map(task => (
-                    <div key={task.id} className="rounded-[2rem] border border-slate-800 bg-slate-950/90 p-5 flex items-start justify-between gap-4 hover:border-violet-500/30 transition">
-                      <div className="flex items-start gap-4 flex-1 min-w-0">
-                        <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-violet-500/10 flex-shrink-0">
-                          {getPlatformIcon(task)}
+                  {activeRequiredTask && (
+                    <div className="rounded-lg border border-amber-900/50 bg-amber-950/30 p-4 text-amber-200 text-sm">
+                      <p className="font-semibold">⚠️ Tarea obligatoria pendiente</p>
+                      <p className="mt-1 text-xs">Completa la tarea "<strong>{activeRequiredTask.title}</strong>" para desbloquear las demás tareas.</p>
+                    </div>
+                  )}
+                  {sortDashboardTasks(availableTasks).slice(0, 4).map(task => {
+                    const isBlocked = !!activeRequiredTask && !task.isRequired;
+                    return (
+                      <div key={task.id} className={`rounded-[2rem] border p-5 flex items-start justify-between gap-4 transition ${
+                        isBlocked
+                          ? 'border-slate-700 bg-slate-900/50 opacity-50 cursor-not-allowed'
+                          : 'border-slate-800 bg-slate-950/90 hover:border-violet-500/30'
+                      }`}>
+                        <div className="flex items-start gap-4 flex-1 min-w-0">
+                          <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-violet-500/10 flex-shrink-0">
+                            {getPlatformIcon(task)}
+                          </div>
+                          <div className="min-w-0 flex-1">
+                            <div className="flex flex-wrap items-center gap-2">
+                              <p className="text-sm font-semibold text-white truncate">{task.title}</p>
+                              {task.isRequired && task.status !== 'COMPLETED' && (
+                                <span className="rounded-full bg-amber-500/20 border border-amber-500/50 px-2 py-1 text-[11px] font-bold uppercase tracking-[0.2em] text-amber-300">
+                                  Obligatoria
+                                </span>
+                              )}
+                            </div>
+                            <p className="mt-1 text-xs text-slate-400 truncate">{task.description || 'Completa esta misión'}</p>
+                            <span className="mt-2 inline-flex items-center rounded-full bg-violet-500/10 px-3 py-1 text-xs font-semibold text-violet-300">
+                              +{task.points} pts
+                            </span>
+                          </div>
                         </div>
-                        <div className="min-w-0 flex-1">
-                          <p className="text-sm font-semibold text-white truncate">{task.title}</p>
-                          <p className="mt-1 text-xs text-slate-400 truncate">{task.description || 'Completa esta misión'}</p>
-                          <span className="mt-2 inline-flex items-center rounded-full bg-violet-500/10 px-3 py-1 text-xs font-semibold text-violet-300">
-                            +{task.points} pts
-                          </span>
-                        </div>
-                      </div>
-                      <div className="flex shrink-0 flex-col items-end gap-2">
-                        <div className="flex items-center gap-2">
-                          {task.actionUrl && (
-                            <a
-                              href={task.actionUrl}
-                              target="_blank"
-                              rel="noreferrer"
-                              className="inline-flex items-center gap-2 rounded-full border border-slate-800 bg-slate-900/95 px-3 py-2 text-xs font-semibold text-violet-300 transition hover:bg-slate-900 hover:text-violet-200"
+                        <div className="flex shrink-0 flex-col items-end gap-2">
+                          <div className="flex items-center gap-2">
+                            {task.actionUrl && (
+                              <a
+                                href={task.actionUrl}
+                                target="_blank"
+                                rel="noreferrer"
+                                className="inline-flex items-center gap-2 rounded-full border border-slate-800 bg-slate-900/95 px-3 py-2 text-xs font-semibold text-violet-300 transition hover:bg-slate-900 hover:text-violet-200"
+                              >
+                                <FaExternalLinkAlt className="h-3 w-3" />
+                                Abrir
+                              </a>
+                            )}
+                            <button
+                              onClick={() => setModalTask(task)}
+                              disabled={isBlocked || task.status === 'COMPLETED' || task.status === 'PENDING'}
+                              className={`rounded-full px-4 py-2 text-xs font-semibold transition whitespace-nowrap ${
+                                task.status === 'COMPLETED' || isBlocked
+                                  ? 'bg-slate-800 text-slate-500 cursor-not-allowed'
+                                  : 'bg-violet-500 text-white hover:bg-violet-400 disabled:opacity-50'
+                              }`}
                             >
-                              <FaExternalLinkAlt className="h-3 w-3" />
-                              Abrir
-                            </a>
+                              {task.status === 'COMPLETED' ? '✓ Completada' : 'Completar'}
+                            </button>
+                          </div>
+                          {task.endDate && task.status !== 'COMPLETED' && (
+                            <CountdownBadge endDate={task.endDate} className="text-slate-400" />
                           )}
-                          <button
-                            onClick={() => setModalTask(task)}
-                            disabled={task.status === 'COMPLETED' || task.status === 'PENDING'}
-                            className={`rounded-full px-4 py-2 text-xs font-semibold transition whitespace-nowrap ${
-                              task.status === 'COMPLETED'
-                                ? 'bg-slate-800 text-slate-500 cursor-not-allowed'
-                                : 'bg-violet-500 text-white hover:bg-violet-400 disabled:opacity-50'
-                            }`}
-                          >
-                            {task.status === 'COMPLETED' ? '✓ Completada' : 'Completar'}
-                          </button>
                         </div>
-                        {task.endDate && task.status !== 'COMPLETED' && (
-                          <CountdownBadge endDate={task.endDate} className="text-slate-400" />
-                        )}
-                      </div>
-                  </div>
-                  ))}
+                    </div>
+                    );
+                  })}
 
                   {availableTasks.length === 0 && (
                     <div className="rounded-2xl border border-slate-800 bg-slate-900/80 p-6 text-center text-slate-400">
