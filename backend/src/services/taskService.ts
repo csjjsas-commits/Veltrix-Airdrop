@@ -24,6 +24,7 @@ export interface TaskWithStatus {
   requiredReferralActions: number | null;
   referralRequiredTaskId: string | null;
   active: boolean;
+  isRequired: boolean;
   verificationData: any;
   createdAt: Date;
   updatedAt: Date;
@@ -257,6 +258,7 @@ export const getTasksForUser = async (userId: string): Promise<TaskWithStatus[]>
       requiredReferralActions: task.requiredReferralActions,
       referralRequiredTaskId: task.referralRequiredTaskId,
       active: task.active,
+      isRequired: task.isRequired,
       verificationData: parseVerificationData(task.verificationData),
       createdAt: task.createdAt,
       updatedAt: task.updatedAt,
@@ -326,6 +328,7 @@ export const getTaskById = async (taskId: string, userId: string): Promise<TaskW
     requiredReferralActions: task.requiredReferralActions,
     referralRequiredTaskId: task.referralRequiredTaskId,
     active: task.active,
+    isRequired: task.isRequired,
     verificationData: parseVerificationData(task.verificationData),
     createdAt: task.createdAt,
     updatedAt: task.updatedAt,
@@ -441,6 +444,7 @@ export const completeTask = async (taskId: string, userId: string): Promise<Task
     requiredReferralActions: task.requiredReferralActions,
     referralRequiredTaskId: task.referralRequiredTaskId,
     active: task.active,
+    isRequired: task.isRequired,
     verificationData: parseVerificationData(task.verificationData),
     createdAt: task.createdAt,
     updatedAt: task.updatedAt,
@@ -518,6 +522,7 @@ export const openLink = async (taskId: string, userId: string): Promise<TaskWith
     requiredReferralActions: task.requiredReferralActions,
     referralRequiredTaskId: task.referralRequiredTaskId,
     active: task.active,
+    isRequired: task.isRequired,
     verificationData: parseVerificationData(task.verificationData),
     createdAt: task.createdAt,
     updatedAt: task.updatedAt,
@@ -596,6 +601,7 @@ export const startTask = async (taskId: string, userId: string): Promise<TaskWit
     requiredReferralActions: task.requiredReferralActions,
     referralRequiredTaskId: task.referralRequiredTaskId,
     active: task.active,
+    isRequired: task.isRequired,
     verificationData: parseVerificationData(task.verificationData),
     createdAt: task.createdAt,
     updatedAt: task.updatedAt,
@@ -717,6 +723,7 @@ export const submitTaskForReview = async (
     requiredReferralActions: task.requiredReferralActions,
     referralRequiredTaskId: task.referralRequiredTaskId,
     active: task.active,
+    isRequired: task.isRequired,
     verificationData: parseVerificationData(task.verificationData),
     createdAt: task.createdAt,
     updatedAt: task.updatedAt,
