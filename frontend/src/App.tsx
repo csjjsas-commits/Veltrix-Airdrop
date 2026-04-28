@@ -4,8 +4,7 @@ import { AnalyticsProvider } from './components/analytics/AnalyticsProvider';
 import { usePageTracking } from './hooks/useAnalytics';
 import { ToastProvider } from './components/ui/ToastProvider';
 import { TopBar } from './components/layout/TopBar';
-import { LoginPage } from './pages/LoginPage';
-import { RegisterPage } from './pages/RegisterPage';
+import { AuthPage } from './pages/AuthPage';
 import { DashboardPage } from './pages/DashboardPage';
 import { TareasPage } from './pages/TareasPage';
 import { RankingPage } from './pages/RankingPage';
@@ -37,8 +36,8 @@ const AppContent = () => {
     <div className="min-h-screen bg-brand-blackVoid text-brand-pureWhite">
       <TopBar />
       <Routes>
-        <Route path="/login" element={<LoginPage />} />
-        <Route path="/register" element={<RegisterPage />} />
+        <Route path="/login" element={<AuthPage />} />
+        <Route path="/register" element={<AuthPage />} />
         <Route path="/dashboard" element={<ProtectedRoute><DashboardPage /></ProtectedRoute>} />
         <Route path="/tareas" element={<ProtectedRoute><TareasPage /></ProtectedRoute>} />
         <Route path="/ranking" element={<ProtectedRoute><RankingPage /></ProtectedRoute>} />
