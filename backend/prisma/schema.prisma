@@ -40,6 +40,12 @@ model User {
   walletAddress    String?     @unique
   walletChain      String?
   walletConnectedAt DateTime?
+  googleId         String?     @unique
+  googleAccessToken String?
+  googleRefreshToken String?
+  googleTokenExpiresAt DateTime?
+  avatar           String?
+  emailVerified    Boolean     @default(false)
   userTasks       UserTask[]
   analyticsEvents AnalyticsEvent[]
   referralActions ReferralAction[]

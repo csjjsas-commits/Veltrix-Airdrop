@@ -221,7 +221,8 @@ function addDays(days: number) {
           password: hashedPassword,
           role: user.role,
           points: user.points,
-          referralCode: user.referralCode
+          referralCode: user.referralCode,
+          emailVerified: true
         }
       });
     })

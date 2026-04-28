@@ -2,6 +2,7 @@ import { Router } from 'express';
 import healthRouter from './health';
 import authRouter from './auth';
 import taskRouter from './tasks';
+import missionRouter from './missions';
 import adminRouter from './admin';
 import analyticsRouter from './analytics';
 import telegramRouter from './telegram';
@@ -19,6 +20,7 @@ router.get('/', (req, res) => {
 router.use('/health', healthRouter);
 router.use('/auth', authRouter);
 router.use('/tasks', taskRouter);
+router.use('/missions', missionRouter);
 router.use('/admin', adminRouter);
 router.use('/analytics', analyticsRouter);
 router.use('/telegram', telegramRouter);
