@@ -44,9 +44,15 @@ export const TelegramVerification: React.FC<TelegramVerificationProps> = ({
         return;
       }
 
-      const result = await verifyTask(token, taskId, getVerificationData());
-      setLastResult(result);
-      onVerificationComplete(result);
+      const result = await verifyTask(token, taskId, { verificationData: getVerificationData() });
+      const normalizedResult = {
+        ...result,
+        success: !!(result?.verified || result?.taskCompleted),
+        message: result?.message || (result?.verified || result?.taskCompleted ? 'Verificación exitosa' : 'Verificación fallida')
+      };
+
+      setLastResult(normalizedResult);
+      onVerificationComplete(normalizedResult);
     } catch (error: any) {
       setLastResult({
         success: false,

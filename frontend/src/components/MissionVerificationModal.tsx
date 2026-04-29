@@ -4,6 +4,7 @@ import { useMissionAction, MissionVerificationModalProps } from '../hooks/useMis
 import { useAuth } from '../hooks/useAuth';
 import { getDashboard, verifyTask } from '../services/api';
 import { UserTask } from '../types';
+import { VerificationButton } from './verification/VerificationButton';
 
 const platformIcons: Record<string, JSX.Element> = {
   instagram: (
@@ -74,9 +75,10 @@ export const MissionVerificationModal = ({
   if (!isOpen || !task) return null;
 
   const currentState = externalState || state;
-  const isAutoVerification = task.verificationType && task.verificationType !== 'MANUAL';
-  const shouldRequireHandle = task.taskType === 'WALLET_ACTION' || !isAutoVerification;
-  const canSubmit = !currentState.isLoading && (!shouldRequireHandle || verificationHandle.trim().length > 0);
+  const isAutoVerification = task.verificationType && task.verificationType !== 'MANUAL' && task.taskType !== 'WALLET_ACTION';
+  const isWalletVerification = task.taskType === 'WALLET_ACTION';
+  const requiresHandleInput = isWalletVerification || !isAutoVerification;
+  const canSubmit = !currentState.isLoading && (!requiresHandleInput || verificationHandle.trim().length > 0);
 
   if (task.taskType === 'REFERRAL') {
     const referralUrl = `${window.location.origin}/register?ref=${user?.referralCode}`;
@@ -226,13 +228,34 @@ export const MissionVerificationModal = ({
           )}
 
           <div className="rounded-[1.75rem] border border-slate-800 bg-slate-900/95 p-5">
-            <p className="text-xs uppercase tracking-[0.35em] text-slate-400 mb-3">Paso 2: Ingresa tu usuario en {task.platform ?? 'la plataforma'}</p>
-            <input
-              value={verificationHandle}
-              onChange={(e) => setVerificationHandle(e.target.value)}
-              placeholder="@tuusuario"
-              className="w-full rounded-3xl border border-slate-800 bg-slate-950 px-4 py-4 text-white placeholder:text-slate-500 outline-none focus:border-violet-400 focus:ring-2 focus:ring-violet-500/20"
-            />
+            <p className="text-xs uppercase tracking-[0.35em] text-slate-400 mb-3">Paso 2: {isAutoVerification ? 'Verificación automática' : `Ingresa tu ${isWalletVerification ? 'dirección de wallet' : 'usuario en ' + (task.platform ?? 'la plataforma')}`}</p>
+            {isAutoVerification ? (
+              <VerificationButton
+                taskId={task.id}
+                verificationType={task.verificationType!}
+                verificationData={task.verificationData}
+                onVerificationComplete={(result) => {
+                  if (result.verified || result.taskCompleted) {
+                    onTaskComplete({
+                      ...task,
+                      status: 'COMPLETED',
+                      completedAt: new Date().toISOString(),
+                      pointsAwarded: task.points
+                    });
+                    onClose();
+                  } else {
+                    setError(result.message || 'Verificación fallida');
+                  }
+                }}
+              />
+            ) : (
+              <input
+                value={verificationHandle}
+                onChange={(e) => setVerificationHandle(e.target.value)}
+                placeholder={isWalletVerification ? "0x..." : "@tuusuario"}
+                className="w-full rounded-3xl border border-slate-800 bg-slate-950 px-4 py-4 text-white placeholder:text-slate-500 outline-none focus:border-violet-400 focus:ring-2 focus:ring-violet-500/20"
+              />
+            )}
             {currentState.error && <p className="mt-3 text-sm text-red-400">{currentState.error}</p>}
           </div>
 

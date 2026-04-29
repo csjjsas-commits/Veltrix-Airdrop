@@ -37,6 +37,7 @@ export const VerificationButton: React.FC<VerificationButtonProps> = ({
   if (verificationType.startsWith('YOUTUBE_')) {
     return (
       <YouTubeVerification
+        taskId={taskId}
         action={verificationType === 'YOUTUBE_SUBSCRIBE' ? 'subscribe' : 'like'}
         targetId={verificationData?.targetId || verificationData?.channelId || verificationData?.videoId}
         channelId={verificationData?.channelId}
@@ -59,6 +60,7 @@ export const VerificationButton: React.FC<VerificationButtonProps> = ({
                    verificationType === 'TWITTER_LIKE' ? 'like' : 'retweet';
     return (
       <TwitterVerification
+        taskId={taskId}
         action={action}
         targetId={verificationData?.targetId || verificationData?.username || verificationData?.tweetId}
         targetUsername={verificationData?.username}
@@ -87,10 +89,15 @@ export const VerificationButton: React.FC<VerificationButtonProps> = ({
         return;
       }
 
-      const result = await verifyTask(token, taskId, getVerificationData());
+      const result = await verifyTask(token, taskId, { verificationData: getVerificationData() });
+      const normalizedResult = {
+        ...result,
+        success: !!(result?.verified || result?.taskCompleted),
+        message: result?.message || (result?.verified || result?.taskCompleted ? 'Verificación exitosa' : 'Verificación fallida')
+      };
 
-      setLastResult(result);
-      onVerificationComplete(result);
+      setLastResult(normalizedResult);
+      onVerificationComplete(normalizedResult);
     } catch (error: any) {
       setLastResult({
         success: false,

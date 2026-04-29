@@ -145,9 +145,11 @@ export const useMissionAction = () => {
         updatedTask = await completeTask(token, task.id);
       } else if (task.verificationType && task.verificationType !== 'MANUAL') {
         updatedTask = await verifyTask(token, task.id, {
-          verificationType: task.verificationType,
-          verificationData: task.verificationData,
-          linkOpenedAt: state.linkOpenedAt?.toISOString()
+          verificationData: {
+            verificationType: task.verificationType,
+            verificationData: task.verificationData,
+            linkOpenedAt: state.linkOpenedAt?.toISOString()
+          }
         });
       } else {
         updatedTask = await completeTask(token, task.id);
@@ -197,8 +199,10 @@ export const useMissionAction = () => {
 
     try {
       const updatedTask = await verifyTask(token, task.id, {
-        action: 'connect',
-        walletAddress: walletAddress.trim()
+        verificationData: {
+          action: 'connect',
+          walletAddress: walletAddress.trim()
+        }
       });
       taskAnalytics.completed(task.id, task.title || 'Unknown Task', task.points);
       return updatedTask;

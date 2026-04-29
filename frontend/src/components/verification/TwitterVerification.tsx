@@ -4,6 +4,7 @@ import { ToastProvider } from '../ui/ToastProvider';
 import { API_BASE } from '../../services/api';
 
 interface TwitterVerificationProps {
+  taskId: string;
   onVerificationComplete?: (success: boolean, data?: any) => void;
   targetUsername?: string;
   tweetId?: string;
@@ -120,34 +121,31 @@ export const TwitterVerification: React.FC<TwitterVerificationProps> = ({
     setVerificationStatus(null);
 
     try {
-      const response = await fetch(`${API_BASE}/tasks/verify`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('token')}`
-        },
-        body: JSON.stringify({
-          taskId: 'current-task-id', // This should be passed from parent
-          verificationData: {
-            action,
-            targetId
-          }
-        })
+      const token = localStorage.getItem('token');
+      if (!token) {
+        setVerificationStatus('No autenticado. Conecta tu cuenta primero.');
+        onVerificationComplete?.(false, { message: 'No autenticado' });
+        return;
+      }
+
+      const result = await verifyTask(token, taskId, {
+        verificationData: {
+          action,
+          targetId
+        }
       });
 
-      const data = await response.json();
-
-      if (data.success) {
+      if (result?.verified || result?.taskCompleted) {
         setVerificationStatus('¡Verificación exitosa!');
-        onVerificationComplete?.(true, data);
+        onVerificationComplete?.(true, result);
       } else {
-        setVerificationStatus(data.message || 'Verificación fallida');
-        onVerificationComplete?.(false, data);
+        setVerificationStatus(result?.message || 'Verificación fallida');
+        onVerificationComplete?.(false, result);
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error verifying:', error);
-      setVerificationStatus('Error durante la verificación');
-      onVerificationComplete?.(false);
+      setVerificationStatus(error?.message || 'Error durante la verificación');
+      onVerificationComplete?.(false, { message: error?.message });
     } finally {
       setIsVerifying(false);
     }
