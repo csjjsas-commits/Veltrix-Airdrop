@@ -130,18 +130,17 @@ export const TelegramVerification: React.FC<TelegramVerificationProps> = ({
 
   return (
     <div className="space-y-4">
-      <div className="text-center">
-        <h3 className="text-lg font-semibold text-brand-pureWhite mb-2">
-          {getTitle()}
-        </h3>
-        <p className="text-sm text-brand-softGray mb-4">
+      {/* Action Description */}
+      <div className="rounded-[1.75rem] border border-slate-800 bg-slate-900/95 p-5">
+        <p className="text-xs uppercase tracking-[0.35em] text-slate-400 mb-3">Acción requerida</p>
+        <p className="text-sm text-slate-300 mb-2">
           {getDescription()}
         </p>
       </div>
 
       {/* Telegram ID Input */}
-      <div className="space-y-2">
-        <label className="block text-sm text-brand-softGray">
+      <div className="rounded-[1.75rem] border border-slate-800 bg-slate-900/95 p-5">
+        <label className="block text-sm text-slate-300 mb-2">
           Tu ID de Usuario de Telegram *
         </label>
         <input
@@ -149,50 +148,50 @@ export const TelegramVerification: React.FC<TelegramVerificationProps> = ({
           value={userTelegramId}
           onChange={(e) => setUserTelegramId(e.target.value)}
           placeholder="Ej: 123456789"
-          className="w-full rounded-2xl border border-brand-graphite/70 bg-brand-blackVoid/80 px-4 py-3 text-brand-pureWhite outline-none focus:border-brand-neonCyan"
+          className="w-full rounded-3xl border border-slate-800 bg-slate-950 px-4 py-3 text-white placeholder:text-slate-500 outline-none focus:border-violet-400 focus:ring-2 focus:ring-violet-500/20"
           disabled={disabled}
         />
-        <p className="text-xs text-brand-softGray">
-          Para obtener tu ID: En Telegram, escribe <code className="bg-brand-graphite/50 px-1 rounded">@userinfobot</code> y envíale /start
+        <p className="text-xs text-slate-400 mt-2">
+          Para obtener tu ID: En Telegram, escribe <code className="bg-slate-800 px-1 rounded">@userinfobot</code> y envíale /start
         </p>
       </div>
 
       {/* Action Buttons */}
       <div className="space-y-3">
         {step === 'join' && (
-          <Button
+          <button
             onClick={handleJoin}
             disabled={disabled}
-            className="w-full bg-blue-600 hover:bg-blue-700 text-white"
+            className="w-full rounded-3xl bg-blue-600 px-4 py-3 text-sm font-semibold text-white transition hover:bg-blue-500 disabled:cursor-not-allowed disabled:opacity-50"
           >
             🔗 Unirse a {verificationType === 'TELEGRAM_JOIN_CHANNEL' ? 'Canal' : verificationType === 'TELEGRAM_JOIN_GROUP' ? 'Grupo' : 'Bot'}
-          </Button>
+          </button>
         )}
 
-        <Button
+        <button
           onClick={handleVerify}
           disabled={disabled || isVerifying || !userTelegramId.trim()}
-          className="w-full"
+          className="w-full rounded-3xl bg-violet-500 px-4 py-3 text-sm font-semibold text-white transition hover:bg-violet-400 disabled:cursor-not-allowed disabled:opacity-50"
         >
           {isVerifying ? 'Verificando...' : '✅ Verificar Membresía'}
-        </Button>
+        </button>
       </div>
 
       {/* Result Message */}
       {lastResult && (
-        <div className={`p-3 rounded-2xl text-sm ${
+        <div className={`rounded-[1.75rem] border p-4 text-sm ${
           lastResult.success
-            ? 'bg-green-500/20 text-green-400 border border-green-500/30'
-            : 'bg-red-500/20 text-red-400 border border-red-500/30'
+            ? 'border-green-500/30 bg-green-500/10 text-green-300'
+            : 'border-red-500/30 bg-red-500/10 text-red-300'
         }`}>
           {lastResult.message}
         </div>
       )}
 
       {/* Instructions */}
-      <div className="text-xs text-brand-softGray space-y-1">
-        <p><strong>Pasos:</strong></p>
-        <ol className="list-decimal list-inside space-y-1 ml-2">
+      <div className="rounded-[1.75rem] border border-blue-500/30 bg-blue-500/10 p-4 text-sm text-blue-300">
+        <p className="font-medium mb-2">Pasos:</p>
+        <ol className="list-decimal list-inside space-y-1 text-xs">
           <li>Haz clic en "Unirse" para abrir Telegram</li>
           <li>Únete al {verificationType === 'TELEGRAM_JOIN_CHANNEL' ? 'canal' : verificationType === 'TELEGRAM_JOIN_GROUP' ? 'grupo' : 'bot'}</li>
           <li>Ingresa tu ID de Telegram arriba</li>

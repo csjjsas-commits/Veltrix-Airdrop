@@ -260,97 +260,92 @@ export const TwitterVerification: React.FC<TwitterVerificationProps> = ({
 
   return (
     <div className="space-y-4">
-      <div className="bg-white p-6 rounded-lg shadow-md">
-        <h3 className="text-lg font-semibold mb-4">Verificación de X (Twitter)</h3>
-
-        {/* Connection Status */}
-        <div className="mb-4">
-          <div className="flex items-center justify-between">
-            <span className="text-sm font-medium">
-              Estado de conexión: {isConnected ? 'Conectado' : 'No conectado'}
-            </span>
-            {isConnected ? (
-              <Button
-                onClick={disconnectTwitter}
-                className="bg-gray-600 hover:bg-gray-700 text-white px-3 py-1 text-sm"
-              >
-                Desconectar
-              </Button>
-            ) : (
-              <Button
-                onClick={connectTwitter}
-                disabled={isConnecting}
-                className="px-3 py-1 text-sm"
-              >
-                {isConnecting ? 'Conectando...' : 'Conectar X (Twitter)'}
-              </Button>
-            )}
-          </div>
-          {connectionStatus && (
-            <p className="text-sm text-gray-600 mt-1">{connectionStatus}</p>
+      {/* Connection Status */}
+      <div className="rounded-[1.75rem] border border-slate-800 bg-slate-900/95 p-5">
+        <div className="flex items-center justify-between mb-3">
+          <span className="text-sm font-medium text-slate-300">
+            Estado de conexión: {isConnected ? 'Conectado' : 'No conectado'}
+          </span>
+          {isConnected ? (
+            <button
+              onClick={disconnectTwitter}
+              className="rounded-3xl border border-slate-700 bg-slate-900 px-3 py-2 text-xs font-semibold text-slate-300 transition hover:border-red-400 hover:text-red-300"
+            >
+              Desconectar
+            </button>
+          ) : (
+            <button
+              onClick={connectTwitter}
+              disabled={isConnecting}
+              className="rounded-3xl bg-violet-500 px-3 py-2 text-xs font-semibold text-white transition hover:bg-violet-400 disabled:cursor-not-allowed disabled:opacity-50"
+            >
+              {isConnecting ? 'Conectando...' : 'Conectar X (Twitter)'}
+            </button>
           )}
         </div>
-
-        {/* Action Description */}
-        <div className="mb-4">
-          <p className="text-sm text-gray-700">
-            Acción requerida: {getActionText()}
-          </p>
-          {action === 'follow' && targetUsername && (
-            <p className="text-xs text-gray-500 mt-1">
-              Usuario: @{targetUsername}
-            </p>
-          )}
-          {(action === 'like' || action === 'retweet') && tweetId && (
-            <p className="text-xs text-gray-500 mt-1">
-              ID del tweet: {tweetId}
-            </p>
-          )}
-        </div>
-
-        {/* Verification Button */}
-        <div className="flex items-center space-x-4">
-          <Button
-            onClick={verifyAction}
-            disabled={!isConnected || isVerifying}
-            className="flex-1"
-          >
-            {isVerifying ? 'Verificando...' : getActionButtonText()}
-          </Button>
-        </div>
-
-        {/* Status Messages */}
-        {verificationStatus && (
-          <div className={`mt-4 p-3 rounded-md text-sm ${
-            verificationStatus.includes('¡') || verificationStatus.includes('exitosa')
-              ? 'bg-green-50 text-green-700 border border-green-200'
-              : 'bg-red-50 text-red-700 border border-red-200'
-          }`}>
-            {verificationStatus}
-          </div>
-        )}
-
-        {/* Instructions */}
-        {!isConnected && (
-          <div className="mt-4 p-3 bg-blue-50 text-blue-700 border border-blue-200 rounded-md text-sm">
-            <p className="font-medium mb-1">Instrucciones:</p>
-            <ol className="list-decimal list-inside space-y-1">
-              <li>Haz clic en "Conectar X (Twitter)" para autorizar el acceso</li>
-              <li>Se abrirá una ventana de X para iniciar sesión</li>
-              <li>Otorga los permisos necesarios para la verificación</li>
-              <li>Una vez conectado, podrás verificar tus acciones</li>
-            </ol>
-          </div>
-        )}
-
-        {/* Limitations */}
-        {action === 'retweet' && (
-          <div className="mt-4 p-3 bg-yellow-50 text-yellow-700 border border-yellow-200 rounded-md text-sm">
-            <p className="font-medium mb-1">Nota sobre retweets:</p>
-            <p>La verificación de retweets no está soportada por la API de X (Twitter) v2. Esta función devolverá "no soportada" por ahora.</p>
-          </div>
+        {connectionStatus && (
+          <p className="text-xs text-slate-400">{connectionStatus}</p>
         )}
       </div>
+
+      {/* Action Description */}
+      <div className="rounded-[1.75rem] border border-slate-800 bg-slate-900/95 p-5">
+        <p className="text-xs uppercase tracking-[0.35em] text-slate-400 mb-3">Acción requerida</p>
+        <p className="text-sm text-slate-300 mb-2">
+          {getActionText()}
+        </p>
+        {action === 'follow' && targetUsername && (
+          <p className="text-xs text-slate-500">
+            Usuario: @{targetUsername}
+          </p>
+        )}
+        {(action === 'like' || action === 'retweet') && tweetId && (
+          <p className="text-xs text-slate-500">
+            ID del tweet: {tweetId}
+          </p>
+        )}
+      </div>
+
+      {/* Verification Button */}
+      <button
+        onClick={verifyAction}
+        disabled={!isConnected || isVerifying}
+        className="w-full rounded-3xl bg-violet-500 px-4 py-3 text-sm font-semibold text-white transition hover:bg-violet-400 disabled:cursor-not-allowed disabled:opacity-50"
+      >
+        {isVerifying ? 'Verificando...' : getActionButtonText()}
+      </button>
+
+      {/* Status Messages */}
+      {verificationStatus && (
+        <div className={`rounded-[1.75rem] border p-4 text-sm ${
+          verificationStatus.includes('¡') || verificationStatus.includes('exitosa')
+            ? 'border-green-500/30 bg-green-500/10 text-green-300'
+            : 'border-red-500/30 bg-red-500/10 text-red-300'
+        }`}>
+          {verificationStatus}
+        </div>
+      )}
+
+      {/* Instructions */}
+      {!isConnected && (
+        <div className="rounded-[1.75rem] border border-blue-500/30 bg-blue-500/10 p-4 text-sm text-blue-300">
+          <p className="font-medium mb-2">Instrucciones:</p>
+          <ol className="list-decimal list-inside space-y-1 text-xs">
+            <li>Haz clic en "Conectar X (Twitter)" para autorizar el acceso</li>
+            <li>Se abrirá una ventana de X para iniciar sesión</li>
+            <li>Otorga los permisos necesarios para la verificación</li>
+            <li>Una vez conectado, podrás verificar tus acciones</li>
+          </ol>
+        </div>
+      )}
+
+      {/* Limitations */}
+      {action === 'retweet' && (
+        <div className="rounded-[1.75rem] border border-yellow-500/30 bg-yellow-500/10 p-4 text-sm text-yellow-300">
+          <p className="font-medium mb-2">Nota sobre retweets:</p>
+          <p className="text-xs">La verificación de retweets no está soportada por la API de X (Twitter) v2. Esta función devolverá "no soportada" por ahora.</p>
+        </div>
+      )}
     </div>
   );
 };
