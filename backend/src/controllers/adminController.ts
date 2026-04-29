@@ -31,7 +31,7 @@ import {
   reviewSubmissionSchema,
   updateConfigSchema
 } from '../schemas/adminSchema';
-import { ValidationError } from '../utils/errors';
+import { ValidationError, NotFoundError } from '../utils/errors';
 
 // Task Management Controllers
 export const getTasks = async (req: Request, res: Response): Promise<void> => {
@@ -257,7 +257,7 @@ export const getConfig = async (req: Request, res: Response): Promise<void> => {
       data: config
     });
   } catch (error) {
-    if (error instanceof ValidationError) {
+    if (error instanceof ValidationError || error instanceof NotFoundError) {
       res.status(404).json({
         success: false,
         message: error.message
@@ -293,7 +293,7 @@ export const updateConfigHandler = async (req: Request, res: Response): Promise<
       return;
     }
 
-    if (error instanceof ValidationError) {
+    if (error instanceof ValidationError || error instanceof NotFoundError) {
       res.status(404).json({
         success: false,
         message: error.message

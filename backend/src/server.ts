@@ -3,6 +3,7 @@ import app from './app';
 import { initAnalyticsTable } from './services/analyticsService';
 import prisma from './utils/prismaClient';
 import { seedDemoDatabase } from './utils/seedDatabase';
+import { seedProductionDatabase } from './utils/seedProduction';
 
 const PORT = env.PORT;
 
@@ -16,9 +17,9 @@ const startServer = async () => {
 
     if (userCount === 0) {
       if (env.NODE_ENV === 'production') {
-        console.warn(
-          'Database is empty and demo seeding is disabled in production. Create the initial admin with `npm run seed:admin` or set ADMIN_EMAIL, ADMIN_PASSWORD and ADMIN_NAME.'
-        );
+        console.log('Database is empty in production. Seeding initial production data...');
+        await seedProductionDatabase(prisma);
+        console.log('Production database seeded successfully');
       } else {
         console.log('Database is empty, seeding with demo data...');
         await seedDemoDatabase(prisma);

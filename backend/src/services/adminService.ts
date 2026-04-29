@@ -288,20 +288,38 @@ export const reviewSubmission = async (
 
 // Configuration Management
 export const getAirdropConfig = async (): Promise<AirdropConfig> => {
-  const config = await prisma.airdropConfig.findFirst();
+  let config = await prisma.airdropConfig.findFirst();
 
   if (!config) {
-    throw new NotFoundError('Configuración no encontrada');
+    config = await prisma.airdropConfig.create({
+      data: {
+        totalAirdropPool: new Prisma.Decimal('10000000'),
+        currentWeek: 1,
+        totalCommunityPoints: 0,
+        startDate: new Date(),
+        endDate: new Date(Date.now() + 90 * 24 * 60 * 60 * 1000),
+        isActive: true
+      }
+    });
   }
 
   return config;
 };
 
 export const updateAirdropConfig = async (data: UpdateConfigInput): Promise<AirdropConfig> => {
-  const config = await prisma.airdropConfig.findFirst();
+  let config = await prisma.airdropConfig.findFirst();
 
   if (!config) {
-    throw new NotFoundError('Configuración no encontrada');
+    config = await prisma.airdropConfig.create({
+      data: {
+        totalAirdropPool: new Prisma.Decimal('10000000'),
+        currentWeek: 1,
+        totalCommunityPoints: 0,
+        startDate: new Date(),
+        endDate: new Date(Date.now() + 90 * 24 * 60 * 60 * 1000),
+        isActive: true
+      }
+    });
   }
 
   const updateData: any = {};
