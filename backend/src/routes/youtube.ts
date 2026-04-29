@@ -11,7 +11,7 @@ const youtubeStateMap = new Map<string, string>();
 router.get('/auth-url', authMiddleware, (req, res) => {
   try {
     const clientId = process.env.YOUTUBE_CLIENT_ID;
-    const redirectUri = process.env.YOUTUBE_REDIRECT_URI || `${req.protocol}://${req.get('host')}/api/auth/youtube/callback`;
+    const redirectUri = process.env.YOUTUBE_REDIRECT_URI || `${req.protocol}://${req.get('host')}/api/youtube/callback`;
 
     if (!clientId) {
       return res.status(500).json({
@@ -73,7 +73,7 @@ router.get('/callback', async (req, res) => {
 
     youtubeStateMap.delete(state);
 
-    const redirectUri = process.env.YOUTUBE_REDIRECT_URI || `${req.protocol}://${req.get('host')}/api/auth/youtube/callback`;
+    const redirectUri = process.env.YOUTUBE_REDIRECT_URI || `${req.protocol}://${req.get('host')}/api/youtube/callback`;
 
     // Exchange code for tokens
     const tokenData = await youtubeService.exchangeCodeForToken(code as string, redirectUri);
