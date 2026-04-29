@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { FaExternalLinkAlt } from 'react-icons/fa';
 import { useMissionAction, MissionVerificationModalProps } from '../hooks/useMissionAction';
 import { useAuth } from '../hooks/useAuth';
-import { getDashboard } from '../services/api';
+import { getDashboard, verifyTask } from '../services/api';
 import { UserTask } from '../types';
 
 const platformIcons: Record<string, JSX.Element> = {
@@ -50,6 +50,7 @@ export const MissionVerificationModal = ({
   const { user, token } = useAuth();
   const [referralStats, setReferralStats] = useState({ count: 0, pointsEarned: 0 });
   const [copied, setCopied] = useState(false);
+  const [error, setError] = useState('');
 
   useEffect(() => {
     if (!isOpen || !task || task.taskType !== 'REFERRAL' || !token) return;
@@ -73,7 +74,9 @@ export const MissionVerificationModal = ({
   if (!isOpen || !task) return null;
 
   const currentState = externalState || state;
-  const canSubmit = verificationHandle.trim().length > 0 && !currentState.isLoading;
+  const isAutoVerification = task.verificationType && task.verificationType !== 'MANUAL';
+  const shouldRequireHandle = task.taskType === 'WALLET_ACTION' || !isAutoVerification;
+  const canSubmit = !currentState.isLoading && (!shouldRequireHandle || verificationHandle.trim().length > 0);
 
   if (task.taskType === 'REFERRAL') {
     const referralUrl = `${window.location.origin}/register?ref=${user?.referralCode}`;
@@ -145,14 +148,30 @@ export const MissionVerificationModal = ({
 
   // Regular task verification modal
   const handleVerificationSubmit = async () => {
-    if (!task || !verificationHandle.trim()) return;
+    if (!task) return;
 
     let updatedTask = null;
+    const trimmedHandle = verificationHandle.trim();
+    const canVerifyViaApi = task.verificationType && task.verificationType !== 'MANUAL';
 
     if (task.taskType === 'WALLET_ACTION') {
-      updatedTask = await connectWallet(task, verificationHandle.trim());
+      updatedTask = await connectWallet(task, trimmedHandle);
+    } else if (canVerifyViaApi) {
+      if (!token) {
+        setError('No hay token de autenticación disponible.');
+        return;
+      }
+
+      const verificationPayload = {
+        verificationType: task.verificationType,
+        verificationData: task.verificationData,
+        userHandle: trimmedHandle || undefined,
+        linkOpenedAt: state.linkOpenedAt?.toISOString()
+      };
+
+      updatedTask = await verifyTask(token, task.id, verificationPayload);
     } else {
-      updatedTask = await submitProof(task, verificationHandle.trim());
+      updatedTask = await submitProof(task, trimmedHandle);
     }
 
     if (updatedTask) {

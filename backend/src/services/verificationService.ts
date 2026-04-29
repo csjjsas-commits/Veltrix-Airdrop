@@ -70,22 +70,22 @@ export class VerificationService {
       throw new ValidationError('Tipo de verificación no soportado');
     }
 
-    // Prepare verification data with user tokens if needed
-    let verificationData = task.verificationData || verificationRequest.verificationData;
+    // Prepare verification data with task defaults and request overrides
+    const verificationData = {
+      ...(task.verificationData || {}),
+      ...(verificationRequest.verificationData || {}),
+      ...(verificationRequest.userHandle ? { userHandle: verificationRequest.userHandle } : {}),
+      ...(verificationRequest.linkOpenedAt ? { linkOpenedAt: verificationRequest.linkOpenedAt } : {})
+    };
+
     if (verificationType === TaskVerificationTypes.YOUTUBE_SUBSCRIBE || verificationType === TaskVerificationTypes.YOUTUBE_LIKE) {
-      verificationData = {
-        ...verificationData,
-        accessToken: user.youtubeAccessToken,
-        refreshToken: user.youtubeRefreshToken,
-        tokenExpiresAt: user.youtubeTokenExpiresAt
-      };
+      verificationData.accessToken = user.youtubeAccessToken;
+      verificationData.refreshToken = user.youtubeRefreshToken;
+      verificationData.tokenExpiresAt = user.youtubeTokenExpiresAt;
     } else if (verificationType === TaskVerificationTypes.TWITTER_FOLLOW || verificationType === TaskVerificationTypes.TWITTER_LIKE || verificationType === TaskVerificationTypes.TWITTER_RETWEET) {
-      verificationData = {
-        ...verificationData,
-        accessToken: user.twitterAccessToken,
-        refreshToken: user.twitterRefreshToken,
-        tokenExpiresAt: user.twitterTokenExpiresAt
-      };
+      verificationData.accessToken = user.twitterAccessToken;
+      verificationData.refreshToken = user.twitterRefreshToken;
+      verificationData.tokenExpiresAt = user.twitterTokenExpiresAt;
     }
 
     // Perform verification
