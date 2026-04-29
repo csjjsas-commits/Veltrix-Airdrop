@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useAuth } from '../../hooks/useAuth';
 import { Button } from '../ui/Button';
 import { TelegramVerification } from './TelegramVerification';
 import { YouTubeVerification } from './YouTubeVerification';
@@ -20,6 +21,8 @@ export const VerificationButton: React.FC<VerificationButtonProps> = ({
   onVerificationComplete,
   disabled = false
 }) => {
+  const { token } = useAuth();
+
   // Use specialized component for Telegram verification
   if (verificationType.startsWith('TELEGRAM_')) {
     return (
@@ -86,7 +89,6 @@ export const VerificationButton: React.FC<VerificationButtonProps> = ({
   const handleVerification = async () => {
     setIsVerifying(true);
     try {
-      const token = localStorage.getItem('token');
       if (!token) {
         setLastResult({ success: false, message: 'No autenticado' });
         return;
@@ -117,19 +119,19 @@ export const VerificationButton: React.FC<VerificationButtonProps> = ({
         return {
           action: 'follow',
           targetId: verificationData?.targetUserId,
-          username: prompt('Ingresa tu username de Twitter (sin @):')
+          username: prompt('Ingresa tu username de X (sin @):')
         };
       case 'TWITTER_LIKE':
         return {
           action: 'like',
           tweetId: verificationData?.tweetId,
-          username: prompt('Ingresa tu username de Twitter (sin @):')
+          username: prompt('Ingresa tu username de X (sin @):')
         };
       case 'TWITTER_RETWEET':
         return {
           action: 'retweet',
           tweetId: verificationData?.tweetId,
-          username: prompt('Ingresa tu username de Twitter (sin @):')
+          username: prompt('Ingresa tu username de X (sin @):')
         };
       case 'DISCORD_JOIN':
         return {
@@ -193,9 +195,9 @@ export const VerificationButton: React.FC<VerificationButtonProps> = ({
     if (isVerifying) return 'Verificando...';
 
     switch (verificationType) {
-      case 'TWITTER_FOLLOW': return 'Seguir en Twitter';
-      case 'TWITTER_LIKE': return 'Dar Like';
-      case 'TWITTER_RETWEET': return 'Retuitear';
+      case 'TWITTER_FOLLOW': return 'Seguir en X';
+      case 'TWITTER_LIKE': return 'Dar Like en X';
+      case 'TWITTER_RETWEET': return 'Retuitear en X';
       case 'DISCORD_JOIN': return 'Unirse a Discord';
       case 'DISCORD_ROLE': return 'Verificar Rol';
       case 'TELEGRAM_JOIN_CHANNEL': return 'Unirse al Canal';

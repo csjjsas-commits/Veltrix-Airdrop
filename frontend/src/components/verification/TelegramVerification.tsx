@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Button } from '../ui/Button';
+import { useAuth } from '../../hooks/useAuth';
 import { verifyTask } from '../../services/api';
 
 interface TelegramVerificationProps {
@@ -30,6 +31,8 @@ export const TelegramVerification: React.FC<TelegramVerificationProps> = ({
     }
   };
 
+  const { token } = useAuth();
+
   const handleVerify = async () => {
     if (!userTelegramId.trim()) {
       setLastResult({ success: false, message: 'Ingresa tu ID de usuario de Telegram' });
@@ -38,7 +41,6 @@ export const TelegramVerification: React.FC<TelegramVerificationProps> = ({
 
     setIsVerifying(true);
     try {
-      const token = localStorage.getItem('token');
       if (!token) {
         setLastResult({ success: false, message: 'No autenticado' });
         return;

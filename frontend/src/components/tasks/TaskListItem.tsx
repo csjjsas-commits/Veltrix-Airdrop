@@ -4,7 +4,7 @@ import { completeTask, startTask } from '../../services/api';
 import { UserTask } from '../../types';
 import { CountdownBadge } from './CountdownBadge';
 import { useAnalytics } from '../../hooks/useAnalytics';
-import { FaInstagram, FaTelegramPlane, FaTwitter, FaYoutube, FaUsers, FaExternalLinkAlt } from 'react-icons/fa';
+import { FaInstagram, FaTelegramPlane, FaYoutube, FaUsers, FaExternalLinkAlt } from 'react-icons/fa';
 
 interface Props {
   task: UserTask;
@@ -18,10 +18,19 @@ const getPlatformIcon = (platform?: string, taskType?: string) => {
   if (taskType === 'REFERRAL') return <FaUsers size={20} className="text-violet-300" />;
   const p = platform?.toLowerCase();
   if (p === 'instagram') return <FaInstagram size={20} className="text-violet-300" />;
-  if (p === 'twitter' || p === 'x') return <FaTwitter size={20} className="text-violet-300" />;
+  if (p === 'twitter' || p === 'x') return (
+    <div className="flex h-10 w-10 items-center justify-center rounded-full bg-violet-500/10 text-xs font-semibold text-violet-300">
+      X
+    </div>
+  );
   if (p === 'youtube') return <FaYoutube size={20} className="text-violet-300" />;
   if (p === 'telegram') return <FaTelegramPlane size={20} className="text-violet-300" />;
-  return <FaTwitter size={20} className="text-violet-300" />;
+  return <div className="flex h-10 w-10 items-center justify-center rounded-full bg-violet-500/10 text-xs font-semibold text-violet-300">{platform?.slice(0, 2).toUpperCase()}</div>;
+};
+
+const formatTaskText = (text?: string | null) => {
+  if (!text) return '';
+  return /twitter/i.test(text) ? text.replace(/Twitter/gi, 'X') : text;
 };
 
 export const TaskListItem = ({ task, onTaskUpdate, onTaskAction, onOpenModal, isBlocked = false }: Props) => {
@@ -128,14 +137,14 @@ export const TaskListItem = ({ task, onTaskUpdate, onTaskAction, onOpenModal, is
           </div>
           <div className="min-w-0 flex-1">
             <div className="flex items-center gap-2 flex-wrap">
-              <h4 className="text-lg font-semibold text-white truncate">{task.title}</h4>
+              <h4 className="text-lg font-semibold text-white truncate">{formatTaskText(task.title)}</h4>
               {task.isRequired && !isCompleted && (
                 <span className="rounded-full bg-amber-500/20 border border-amber-500/50 px-2 py-1 text-xs font-bold uppercase text-amber-300">
                   Obligatoria
                 </span>
               )}
             </div>
-            <p className="mt-2 text-sm leading-6 text-slate-400 truncate">{task.description || 'Completa esta misión para ganar puntos'}</p>
+            <p className="mt-2 text-sm leading-6 text-slate-400 truncate">{formatTaskText(task.description) || 'Completa esta misión para ganar puntos'}</p>
             <div className="mt-3">
               <span className="rounded-full border border-slate-800 bg-slate-900/80 px-3 py-2 text-xs font-semibold uppercase tracking-[0.25em] text-slate-500">{task.points} pts</span>
             </div>

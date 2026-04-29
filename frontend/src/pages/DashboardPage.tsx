@@ -1,6 +1,6 @@
 import { useEffect, useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { FaInstagram, FaTelegramPlane, FaTwitter, FaYoutube, FaTasks, FaStar, FaCheckCircle, FaClock, FaBolt, FaExternalLinkAlt } from 'react-icons/fa';
+import { FaInstagram, FaTelegramPlane, FaYoutube, FaTasks, FaStar, FaCheckCircle, FaClock, FaBolt, FaExternalLinkAlt } from 'react-icons/fa';
 import { useAuth } from '../hooks/useAuth';
 import { useAnalytics } from '../hooks/useAnalytics';
 import { useMissionAction } from '../hooks/useMissionAction';
@@ -42,7 +42,11 @@ export const DashboardPage = () => {
       case 'youtube':
         return <FaYoutube size={22} className="text-violet-300" />;
       default:
-        return <FaTwitter size={22} className="text-violet-300" />;
+        return (
+          <div className="flex h-11 w-11 items-center justify-center rounded-full bg-violet-500/10 text-xs font-semibold text-violet-300">
+            X
+          </div>
+        );
     }
   };
 
@@ -317,7 +321,7 @@ export const DashboardPage = () => {
                   {activeRequiredTask && (
                     <div className="rounded-lg border border-amber-900/50 bg-amber-950/30 p-4 text-amber-200 text-sm">
                       <p className="font-semibold">⚠️ Tarea obligatoria pendiente</p>
-                      <p className="mt-1 text-xs">Completa la tarea "<strong>{activeRequiredTask.title}</strong>" para desbloquear las demás tareas.</p>
+                      <p className="mt-1 text-xs">Completa la tarea "<strong>{activeRequiredTask.title.replace(/Twitter/gi, 'X')}</strong>" para desbloquear las demás tareas.</p>
                     </div>
                   )}
                   {sortDashboardTasks(availableTasks).slice(0, 4).map(task => {
@@ -334,14 +338,14 @@ export const DashboardPage = () => {
                           </div>
                           <div className="min-w-0 flex-1">
                             <div className="flex flex-wrap items-center gap-2">
-                              <p className="text-sm font-semibold text-white truncate">{task.title}</p>
+                              <p className="text-sm font-semibold text-white truncate">{task.title.replace(/Twitter/gi, 'X')}</p>
                               {task.isRequired && task.status !== 'COMPLETED' && (
                                 <span className="rounded-full bg-amber-500/20 border border-amber-500/50 px-2 py-1 text-[11px] font-bold uppercase tracking-[0.2em] text-amber-300">
                                   Obligatoria
                                 </span>
                               )}
                             </div>
-                            <p className="mt-1 text-xs text-slate-400 truncate">{task.description || 'Completa esta misión'}</p>
+                            <p className="mt-1 text-xs text-slate-400 truncate">{task.description ? task.description.replace(/Twitter/gi, 'X') : 'Completa esta misión'}</p>
                             <span className="mt-2 inline-flex items-center rounded-full bg-violet-500/10 px-3 py-1 text-xs font-semibold text-violet-300">
                               +{task.points} pts
                             </span>

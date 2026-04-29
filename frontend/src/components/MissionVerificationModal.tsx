@@ -80,6 +80,20 @@ export const MissionVerificationModal = ({
   const requiresHandleInput = isWalletVerification || !isAutoVerification;
   const canSubmit = !currentState.isLoading && (!requiresHandleInput || verificationHandle.trim().length > 0);
 
+  const formatPlatformText = (text?: string) => {
+    if (!text) return '';
+    return task.platform?.toLowerCase().includes('twitter') || task.platform?.toLowerCase() === 'x'
+      ? text.replace(/Twitter/gi, 'X')
+      : text;
+  };
+
+  const displayPlatform = task.platform?.toLowerCase() === 'twitter' || task.platform?.toLowerCase() === 'x'
+    ? 'X'
+    : task.platform || 'la plataforma';
+
+  const displayTitle = formatPlatformText(task.title);
+  const displayDescription = formatPlatformText(task.description || 'Completa el paso 1 desde el enlace y luego ingresa tu usuario para verificar la misión.');
+
   if (task.taskType === 'REFERRAL') {
     const referralUrl = `${window.location.origin}/register?ref=${user?.referralCode}`;
 
@@ -197,9 +211,9 @@ export const MissionVerificationModal = ({
                 <h2 className="text-2xl font-semibold text-white">Verificar Tarea</h2>
               </div>
             </div>
-            <p className="text-sm font-semibold text-white">{task.title}</p>
+            <p className="text-sm font-semibold text-white">{displayTitle}</p>
             <p className="max-w-xl text-sm leading-6 text-slate-300">
-              {task.description || 'Completa el paso 1 desde el enlace y luego ingresa tu usuario para verificar la misión.'}
+              {displayDescription}
             </p>
           </div>
 
@@ -228,7 +242,7 @@ export const MissionVerificationModal = ({
           )}
 
           <div className="rounded-[1.75rem] border border-slate-800 bg-slate-900/95 p-5">
-            <p className="text-xs uppercase tracking-[0.35em] text-slate-400 mb-3">Paso 2: {isAutoVerification ? 'Verificación automática' : `Ingresa tu ${isWalletVerification ? 'dirección de wallet' : 'usuario en ' + (task.platform ?? 'la plataforma')}`}</p>
+            <p className="text-xs uppercase tracking-[0.35em] text-slate-400 mb-3">Paso 2: {isAutoVerification ? 'Verificación automática' : `Ingresa tu ${isWalletVerification ? 'dirección de wallet' : 'usuario en ' + displayPlatform}`}</p>
             {isAutoVerification ? (
               <VerificationButton
                 taskId={task.id}
@@ -259,21 +273,23 @@ export const MissionVerificationModal = ({
             {currentState.error && <p className="mt-3 text-sm text-red-400">{currentState.error}</p>}
           </div>
 
-          <div className="flex flex-col gap-3 sm:flex-row">
-            <button
-              onClick={handleVerificationSubmit}
-              disabled={!canSubmit}
-              className="inline-flex min-h-[56px] flex-1 items-center justify-center rounded-3xl bg-violet-500 px-6 py-4 text-sm font-semibold text-white transition hover:bg-violet-400 disabled:cursor-not-allowed disabled:opacity-50"
-            >
-              {currentState.isLoading ? 'Confirmando...' : 'Verificar automáticamente'}
-            </button>
-            <button
-              onClick={onClose}
-              className="inline-flex min-h-[56px] items-center justify-center rounded-3xl border border-slate-700 bg-slate-950 px-6 py-4 text-sm font-semibold text-slate-300 transition hover:border-slate-500 hover:text-white"
-            >
-              Cancelar
-            </button>
-          </div>
+          {!isAutoVerification && (
+            <div className="flex flex-col gap-3 sm:flex-row">
+              <button
+                onClick={handleVerificationSubmit}
+                disabled={!canSubmit}
+                className="inline-flex min-h-[56px] flex-1 items-center justify-center rounded-3xl bg-violet-500 px-6 py-4 text-sm font-semibold text-white transition hover:bg-violet-400 disabled:cursor-not-allowed disabled:opacity-50"
+              >
+                {currentState.isLoading ? 'Confirmando...' : 'Verificar automáticamente'}
+              </button>
+              <button
+                onClick={onClose}
+                className="inline-flex min-h-[56px] items-center justify-center rounded-3xl border border-slate-700 bg-slate-950 px-6 py-4 text-sm font-semibold text-slate-300 transition hover:border-slate-500 hover:text-white"
+              >
+                Cancelar
+              </button>
+            </div>
+          )}
         </div>
       </div>
     </div>
