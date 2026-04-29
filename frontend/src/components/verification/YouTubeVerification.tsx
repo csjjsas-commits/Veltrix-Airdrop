@@ -45,10 +45,23 @@ export const YouTubeVerification: React.FC<YouTubeVerificationProps> = ({
 
   const connectYouTube = async () => {
     setIsConnecting(true);
+    setConnectionStatus(null);
     try {
+      const token = localStorage.getItem('token');
+      if (!token) {
+        setConnectionStatus('No autenticado. Por favor inicia sesión.');
+        setIsConnecting(false);
+        return;
+      }
+
       const response = await fetch(`${API_BASE}/youtube/auth-url`, {
-        headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
+        headers: { 'Authorization': `Bearer ${token}` }
       });
+
+      if (!response.ok) {
+        throw new Error(`Error: ${response.statusText}`);
+      }
+
       const data = await response.json();
 
       if (data.authUrl) {
@@ -58,6 +71,12 @@ export const YouTubeVerification: React.FC<YouTubeVerificationProps> = ({
           'youtube-auth',
           'width=600,height=700,scrollbars=yes,resizable=yes'
         );
+
+        if (!authWindow) {
+          setConnectionStatus('Error: No se pudo abrir la ventana de autenticación. Verifica que los popups no estén bloqueados.');
+          setIsConnecting(false);
+          return;
+        }
 
         // Poll for completion
         const checkClosed = setInterval(() => {
@@ -72,7 +91,7 @@ export const YouTubeVerification: React.FC<YouTubeVerificationProps> = ({
         const checkStatus = setInterval(async () => {
           try {
             const statusResponse = await fetch(`${API_BASE}/youtube/status`, {
-              headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
+              headers: { 'Authorization': `Bearer ${token}` }
             });
             const statusData = await statusResponse.json();
             if (statusData.connected) {
@@ -95,9 +114,13 @@ export const YouTubeVerification: React.FC<YouTubeVerificationProps> = ({
           setIsConnecting(false);
           authWindow?.close();
         }, 300000);
+      } else {
+        setConnectionStatus(`Error: ${data.error || 'No se pudo obtener la URL de autenticación'}`);
+        setIsConnecting(false);
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error getting auth URL:', error);
+      setConnectionStatus(`Error: ${error?.message || 'Error conectando con YouTube'}`);
       setIsConnecting(false);
     }
   };
@@ -116,7 +139,17 @@ export const YouTubeVerification: React.FC<YouTubeVerificationProps> = ({
   };
 
   const verifyAction = async () => {
-    if (!isConnected) return;
+    // For connect action, verify immediately after OAuth
+    if (action === 'connect') {
+      if (!isConnected) {
+        setVerificationStatus('Por favor, conecta tu cuenta de YouTube primero.');
+        return;
+      }
+      // Proceed with verification
+    } else {
+      // For other actions (subscribe, like), must be connected first
+      if (!isConnected) return;
+    }
 
     setIsVerifying(true);
     setVerificationStatus(null);
