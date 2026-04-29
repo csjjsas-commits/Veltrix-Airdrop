@@ -1,22 +1,24 @@
-import { FormEvent, useState } from 'react';
+import { FormEvent, useEffect, useState } from 'react';
 import { useNavigate, Link, useSearchParams } from 'react-router-dom';
-import { FaEnvelope, FaGoogle, FaLock, FaCheckCircle } from 'react-icons/fa';
+import { FaEnvelope, FaGoogle, FaLock } from 'react-icons/fa';
 import { useAuth } from '../../hooks/useAuth';
 import { useAnalytics } from '../../hooks/useAnalytics';
 import { useToast } from '../ui/ToastProvider';
 import { TurnstileWidget } from '../captcha/TurnstileWidget';
+import { getMe } from '../../services/api';
 
 interface AuthFormProps {
   mode: 'login' | 'register';
 }
 
 export const AuthForm = ({ mode }: AuthFormProps) => {
-  const { login, register } = useAuth();
+  const { login, register, setAuthData, user: authUser } = useAuth();
   const { showToast } = useToast();
   const navigate = useNavigate();
   const { user } = useAnalytics();
   const [searchParams] = useSearchParams();
   const referralCode = searchParams.get('ref');
+  const tokenFromQuery = searchParams.get('token');
 
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
@@ -24,7 +26,6 @@ export const AuthForm = ({ mode }: AuthFormProps) => {
   const [captchaToken, setCaptchaToken] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
   const [loading, setLoading] = useState(false);
-  const [isRegistrationSuccessful, setIsRegistrationSuccessful] = useState(false);
   const [resetCounter, setResetCounter] = useState(0);
 
   const isLogin = mode === 'login';
@@ -34,18 +35,59 @@ export const AuthForm = ({ mode }: AuthFormProps) => {
     setLoading(true);
 
     try {
-      showToast({
-        type: 'info',
-        title: 'Google Sign-In',
-        description: 'La integración con Google aún no está disponible. Estamos trabajando en ello.'
-      });
-    } catch (err) {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/auth/google/auth-url`);
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(errorText || 'No se pudo iniciar Google Sign-In');
+      }
+      const payload = await response.json();
+      const authUrl = payload.authUrl;
+      if (authUrl) {
+        window.location.href = authUrl;
+      } else {
+        throw new Error('No se pudo obtener la URL de Google Sign-In');
+      }
+    } catch (err: any) {
       console.error('Google auth error', err);
-      setErrorMessage('Error al conectar con Google');
+      setErrorMessage(err?.message || 'Error al conectar con Google');
+      showToast({
+        type: 'error',
+        title: 'Google Sign-In falló',
+        description: err?.message || 'Intenta de nuevo más tarde.'
+      });
     } finally {
       setLoading(false);
     }
   };
+
+  const handleTokenSignIn = async (token: string) => {
+    try {
+      setLoading(true);
+      const result = await getMe(token);
+      if (result?.user) {
+        setAuthData(result.user, token);
+        showToast({
+          type: 'success',
+          title: 'Bienvenido',
+          description: 'Has iniciado sesión con Google correctamente.'
+        });
+        navigate('/dashboard');
+      } else {
+        throw new Error('No se pudo recuperar la información de usuario.');
+      }
+    } catch (err: any) {
+      console.error('Google token sign-in error', err);
+      setErrorMessage(err?.message || 'No se pudo iniciar sesión con Google');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    if (tokenFromQuery && !authUser && !loading) {
+      handleTokenSignIn(tokenFromQuery);
+    }
+  }, [tokenFromQuery, authUser, loading]);
 
   const handleSubmit = async (event: FormEvent) => {
     event.preventDefault();
@@ -67,12 +109,12 @@ export const AuthForm = ({ mode }: AuthFormProps) => {
       } else {
         await register(name.trim(), email.trim(), password, tokenToSend, referralCode || undefined);
         user.register('email');
-        setIsRegistrationSuccessful(true);
         showToast({
           type: 'success',
           title: 'Cuenta creada',
-          description: 'Hemos enviado un enlace de confirmación a tu correo electrónico.'
+          description: 'Tu cuenta se creó correctamente. Ya puedes acceder al panel.'
         });
+        navigate('/dashboard');
       }
     } catch (err) {
       const message = err instanceof Error ? err.message : (isLogin ? 'Correo o contraseña incorrectos' : 'No se pudo crear la cuenta. Revisa tus datos e intenta de nuevo.');
@@ -90,8 +132,6 @@ export const AuthForm = ({ mode }: AuthFormProps) => {
 
   return (
     <div className="w-full rounded-[2rem] border border-cyan-400/10 bg-slate-950/95 p-8 shadow-[0_20px_80px_rgba(0,207,255,0.16)] backdrop-blur-3xl">
-      {!isRegistrationSuccessful ? (
-        <>
           <div className="space-y-2">
             <p className="text-xs uppercase tracking-[0.45em] text-cyan-300/80">BIENVENIDO DE NUEVO</p>
           </div>
@@ -168,7 +208,7 @@ export const AuthForm = ({ mode }: AuthFormProps) => {
               className="w-full rounded-3xl bg-gradient-to-r from-cyan-400 via-violet-500 to-fuchsia-500 px-4 py-3 text-sm font-semibold text-slate-950 shadow-[0_20px_60px_rgba(67,191,255,0.25)] transition duration-300 hover:-translate-y-0.5 hover:brightness-105 disabled:cursor-not-allowed disabled:opacity-60"
               disabled={loading}
             >
-              {loading ? 'Accediendo...' : 'Acceder a mi panel'}
+              {loading ? 'Accediendo...' : (isLogin ? 'Acceder a mi panel' : 'Crear cuenta')}
             </button>
           </form>
 
@@ -181,36 +221,6 @@ export const AuthForm = ({ mode }: AuthFormProps) => {
               {isLogin ? 'Registrate' : 'Inicia sesión'}
             </Link>
           </p>
-        </>
-      ) : (
-        <div className="flex flex-col items-center justify-center gap-6 text-center py-12">
-          <div className="flex h-20 w-20 items-center justify-center rounded-full bg-cyan-500/10 text-cyan-300">
-            <FaCheckCircle className="h-10 w-10" />
-          </div>
-          <div>
-            <h2 className="text-3xl font-semibold text-white">¡Casi listo, Piloto!</h2>
-            <p className="mt-3 text-sm leading-6 text-slate-400 max-w-sm mx-auto">
-              Hemos enviado un enlace de confirmación a tu correo electrónico. Por favor, verifícalo para activar tu enlace neuronal y acceder a las misiones.
-            </p>
-          </div>
-          <div className="flex flex-col gap-3 w-full">
-            <button
-              type="button"
-              onClick={() => navigate('/login')}
-              className="w-full rounded-3xl bg-cyan-500 px-4 py-3 text-sm font-semibold text-slate-950 transition hover:bg-cyan-400"
-            >
-              Volver al inicio
-            </button>
-            <button
-              type="button"
-              onClick={() => console.log('Reenviar correo de confirmación')}
-              className="w-full rounded-3xl border border-slate-700 bg-slate-900 px-4 py-3 text-sm font-semibold text-slate-200 transition hover:border-cyan-300"
-            >
-              Reenviar correo
-            </button>
-          </div>
-        </div>
-      )}
     </div>
   );
 };

@@ -12,6 +12,7 @@ interface AuthContextValue extends AuthState {
   register: (name: string, email: string, password: string, captchaToken: string, referralCode?: string) => Promise<void>;
   logout: () => void;
   setUser: (user: UserInfo) => void;
+  setAuthData: (user: UserInfo, token: string) => void;
 }
 
 const AuthContext = createContext<AuthContextValue | undefined>(undefined);
@@ -57,8 +58,14 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     }
   };
 
+  const setAuthData = (user: UserInfo, token: string) => {
+    const newState = { user, token };
+    localStorage.setItem(AUTH_STORAGE_KEY, JSON.stringify(newState));
+    setState(newState);
+  };
+
   const value = useMemo(
-    () => ({ ...state, login, register, logout, setUser }),
+    () => ({ ...state, login, register, logout, setUser, setAuthData }),
     [state]
   );
 

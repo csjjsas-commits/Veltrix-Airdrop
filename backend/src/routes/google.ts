@@ -102,7 +102,7 @@ router.get('/callback', async (req, res) => {
     );
 
     // Redirect to frontend with token
-    res.redirect(`${env.FRONTEND_URL}/dashboard?token=${token}&google_login=true`);
+    res.redirect(`${env.FRONTEND_URL}/login?token=${token}&google_login=true`);
 
   } catch (error) {
     console.error('Google OAuth callback error:', error);

@@ -5,6 +5,7 @@ import prisma from '../utils/prismaClient';
 
 const router = Router();
 const youtubeService = new YouTubeService();
+const youtubeStateMap = new Map<string, string>();
 
 // Get YouTube OAuth URL
 router.get('/auth-url', authMiddleware, (req, res) => {
@@ -19,6 +20,14 @@ router.get('/auth-url', authMiddleware, (req, res) => {
       });
     }
 
+    const state = `youtube_${req.user!.id}_${Date.now()}`;
+    youtubeStateMap.set(state, req.user!.id);
+
+    // Clean up old state after 10 minutes
+    setTimeout(() => {
+      youtubeStateMap.delete(state);
+    }, 10 * 60 * 1000);
+
     const scope = 'https://www.googleapis.com/auth/youtube.readonly https://www.googleapis.com/auth/youtube.force-ssl';
     const authUrl = `https://accounts.google.com/o/oauth2/v2/auth?` +
       `client_id=${clientId}&` +
@@ -26,7 +35,8 @@ router.get('/auth-url', authMiddleware, (req, res) => {
       `scope=${encodeURIComponent(scope)}&` +
       `response_type=code&` +
       `access_type=offline&` +
-      `prompt=consent`;
+      `prompt=consent&` +
+      `state=${encodeURIComponent(state)}`;
 
     res.json({
       success: true,
@@ -44,18 +54,24 @@ router.get('/auth-url', authMiddleware, (req, res) => {
 import { env } from '../utils/env';
 
 // OAuth callback
-router.get('/callback', authMiddleware, async (req, res) => {
+router.get('/callback', async (req, res) => {
   try {
-    const { code, error } = req.query;
-    const userId = req.user!.id;
+    const { code, error, state } = req.query;
 
     if (error) {
-      return res.redirect(`${env.FRONTEND_URL}/dashboard?youtube_error=${error}`);
+      return res.redirect(`${env.FRONTEND_URL}/dashboard?youtube_error=${encodeURIComponent(String(error))}`);
     }
 
-    if (!code) {
-      return res.redirect(`${env.FRONTEND_URL}/dashboard?youtube_error=no_code`);
+    if (!code || !state || typeof state !== 'string') {
+      return res.redirect(`${env.FRONTEND_URL}/dashboard?youtube_error=no_code_or_state`);
     }
+
+    const userId = youtubeStateMap.get(state);
+    if (!userId) {
+      return res.redirect(`${env.FRONTEND_URL}/dashboard?youtube_error=invalid_state`);
+    }
+
+    youtubeStateMap.delete(state);
 
     const redirectUri = process.env.YOUTUBE_REDIRECT_URI || `${req.protocol}://${req.get('host')}/api/auth/youtube/callback`;
 

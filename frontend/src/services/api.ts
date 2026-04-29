@@ -71,6 +71,10 @@ export const getDashboard = async (token: string): Promise<DashboardData> => {
   return request<DashboardData>('/tasks/dashboard', 'GET', undefined, token);
 };
 
+export const getMe = async (token: string): Promise<{ user: UserInfo }> => {
+  return request<{ user: UserInfo }>('/auth/me', 'GET', undefined, token);
+};
+
 export const getTasks = async (token: string): Promise<UserTask[]> => {
   return request<UserTask[]>('/tasks', 'GET', undefined, token);
 };
