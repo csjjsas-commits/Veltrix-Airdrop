@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Button } from '../ui/Button';
 import { ToastProvider } from '../ui/ToastProvider';
 import { API_BASE, verifyTask } from '../../services/api';
+import { useAuth } from '../../hooks/useAuth';
 
 interface TwitterVerificationProps {
   taskId: string;
@@ -20,6 +21,7 @@ export const TwitterVerification: React.FC<TwitterVerificationProps> = ({
   action,
   targetId
 }) => {
+  const { token } = useAuth();
   const [isConnected, setIsConnected] = useState(false);
   const [isConnecting, setIsConnecting] = useState(false);
   const [isVerifying, setIsVerifying] = useState(false);
@@ -32,14 +34,29 @@ export const TwitterVerification: React.FC<TwitterVerificationProps> = ({
 
   const checkTwitterConnection = async () => {
     try {
+      if (!token) {
+        setConnectionStatus('No autenticado. Por favor inicia sesión.');
+        return;
+      }
+
       const response = await fetch(`${API_BASE}/twitter/status`, {
-        headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
+        headers: { 'Authorization': `Bearer ${token}` }
       });
+
+      if (!response.ok) {
+        if (response.status === 401) {
+          setConnectionStatus('Sesión expirada. Por favor inicia sesión nuevamente.');
+          return;
+        }
+        throw new Error(`Error: ${response.statusText}`);
+      }
+
       const data = await response.json();
       setIsConnected(data.connected);
       setConnectionStatus(data.connected ? `Conectado como @${data.username}` : null);
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error checking Twitter connection:', error);
+      setConnectionStatus(`Error: ${error?.message || 'Error verificando conexión'}`);
     }
   };
 
@@ -47,7 +64,6 @@ export const TwitterVerification: React.FC<TwitterVerificationProps> = ({
     setIsConnecting(true);
     setConnectionStatus(null);
     try {
-      const token = localStorage.getItem('token');
       if (!token) {
         setConnectionStatus('No autenticado. Por favor inicia sesión.');
         setIsConnecting(false);
@@ -93,6 +109,19 @@ export const TwitterVerification: React.FC<TwitterVerificationProps> = ({
             const statusResponse = await fetch(`${API_BASE}/twitter/status`, {
               headers: { 'Authorization': `Bearer ${token}` }
             });
+
+            if (!statusResponse.ok) {
+              if (statusResponse.status === 401) {
+                setConnectionStatus('Sesión expirada. Por favor inicia sesión nuevamente.');
+                clearInterval(checkStatus);
+                clearInterval(checkClosed);
+                setIsConnecting(false);
+                authWindow?.close();
+                return;
+              }
+              return; // Continue polling on other errors
+            }
+
             const statusData = await statusResponse.json();
             if (statusData.connected) {
               clearInterval(checkStatus);
@@ -127,14 +156,29 @@ export const TwitterVerification: React.FC<TwitterVerificationProps> = ({
 
   const disconnectTwitter = async () => {
     try {
-      await fetch(`${API_BASE}/twitter/disconnect`, {
+      if (!token) {
+        setConnectionStatus('No autenticado. Por favor inicia sesión.');
+        return;
+      }
+
+      const response = await fetch(`${API_BASE}/twitter/disconnect`, {
         method: 'POST',
-        headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
+        headers: { 'Authorization': `Bearer ${token}` }
       });
+
+      if (!response.ok) {
+        if (response.status === 401) {
+          setConnectionStatus('Sesión expirada. Por favor inicia sesión nuevamente.');
+          return;
+        }
+        throw new Error(`Error: ${response.statusText}`);
+      }
+
       setIsConnected(false);
       setConnectionStatus(null);
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error disconnecting Twitter:', error);
+      setConnectionStatus(`Error: ${error?.message || 'Error desconectando Twitter'}`);
     }
   };
 
@@ -155,7 +199,6 @@ export const TwitterVerification: React.FC<TwitterVerificationProps> = ({
     setVerificationStatus(null);
 
     try {
-      const token = localStorage.getItem('token');
       if (!token) {
         setVerificationStatus('No autenticado. Conecta tu cuenta primero.');
         onVerificationComplete?.(false, { message: 'No autenticado' });
