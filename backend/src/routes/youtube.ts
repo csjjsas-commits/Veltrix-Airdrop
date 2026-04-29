@@ -47,7 +47,7 @@ import { env } from '../utils/env';
 router.get('/callback', authMiddleware, async (req, res) => {
   try {
     const { code, error } = req.query;
-    const userId = req.user!.userId;
+    const userId = req.user!.id;
 
     if (error) {
       return res.redirect(`${env.FRONTEND_URL}/dashboard?youtube_error=${error}`);
@@ -88,7 +88,7 @@ router.get('/callback', authMiddleware, async (req, res) => {
 // Get YouTube connection status
 router.get('/status', authMiddleware, async (req, res) => {
   try {
-    const userId = req.user!.userId;
+    const userId = req.user!.id;
 
     const user = await prisma.user.findUnique({
       where: { id: userId },
@@ -131,7 +131,7 @@ router.get('/status', authMiddleware, async (req, res) => {
 // Disconnect YouTube
 router.post('/disconnect', authMiddleware, async (req, res) => {
   try {
-    const userId = req.user!.userId;
+    const userId = req.user!.id;
 
     await prisma.user.update({
       where: { id: userId },

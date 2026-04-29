@@ -11,7 +11,7 @@ const router: Router = express.Router();
  */
 router.get('/message', authMiddleware, async (req: Request, res: Response) => {
   try {
-    const userId = req.user!.userId;
+    const userId = req.user!.id;
 
     // Generate a unique message for the user to sign
     const message = `Sign this message to verify wallet ownership for Airdrop\nTimestamp: ${Date.now()}\nUser ID: ${userId}`;
@@ -37,7 +37,7 @@ router.get('/message', authMiddleware, async (req: Request, res: Response) => {
 router.post('/connect', authMiddleware, async (req: Request, res: Response) => {
   try {
     const { walletAddress, signature, message } = req.body;
-    const userId = req.user!.userId;
+    const userId = req.user!.id;
 
     if (!walletAddress || !signature || !message) {
       return res.status(400).json({
@@ -96,7 +96,7 @@ router.post('/connect', authMiddleware, async (req: Request, res: Response) => {
  */
 router.get('/status', authMiddleware, async (req: Request, res: Response) => {
   try {
-    const userId = req.user!.userId;
+    const userId = req.user!.id;
 
     const user = await prisma.user.findUnique({
       where: { id: userId },
@@ -136,7 +136,7 @@ router.get('/status', authMiddleware, async (req: Request, res: Response) => {
  */
 router.post('/disconnect', authMiddleware, async (req: Request, res: Response) => {
   try {
-    const userId = req.user!.userId;
+    const userId = req.user!.id;
 
     await prisma.user.update({
       where: { id: userId },

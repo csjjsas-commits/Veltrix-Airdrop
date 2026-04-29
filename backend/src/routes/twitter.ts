@@ -12,7 +12,7 @@ const codeVerifiers = new Map<string, string>();
 // Generate OAuth authorization URL
 router.get('/auth-url', authMiddleware, async (req, res) => {
   try {
-    const userId = (req as any).user.id;
+    const userId = req.user!.id;
     const state = `twitter_${userId}_${Date.now()}`;
 
     const { authUrl, codeVerifier } = twitterService.generateAuthUrl(state);
@@ -91,7 +91,7 @@ router.get('/callback', async (req, res) => {
 // Get connection status
 router.get('/status', authMiddleware, async (req, res) => {
   try {
-    const userId = (req as any).user.id;
+    const userId = req.user!.id;
 
     const user = await prisma.user.findUnique({
       where: { id: userId },
@@ -123,7 +123,7 @@ router.get('/status', authMiddleware, async (req, res) => {
 // Disconnect Twitter account
 router.post('/disconnect', authMiddleware, async (req, res) => {
   try {
-    const userId = (req as any).user.id;
+    const userId = req.user!.id;
 
     await prisma.user.update({
       where: { id: userId },

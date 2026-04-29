@@ -5,7 +5,7 @@ import { UnauthorizedError, ForbiddenError } from '../utils/errors';
 declare global {
   namespace Express {
     interface Request {
-      user?: TokenPayload;
+      user?: TokenPayload & { id: string };
     }
   }
 }
@@ -25,7 +25,7 @@ export const authMiddleware = (req: Request, _res: Response, next: NextFunction)
       throw new UnauthorizedError('Token inválido');
     }
 
-    req.user = payload;
+    req.user = { ...payload, id: payload.userId };
     next();
   } catch (error) {
     next(error);

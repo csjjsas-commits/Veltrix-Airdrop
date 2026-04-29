@@ -12,7 +12,7 @@ const router: Router = express.Router();
  */
 router.get('/code', authMiddleware, async (req: Request, res: Response) => {
   try {
-    const userId = req.user!.userId;
+    const userId = req.user!.id;
 
     const user = await prisma.user.findUnique({
       where: { id: userId },
@@ -67,7 +67,7 @@ router.get('/code', authMiddleware, async (req: Request, res: Response) => {
  */
 router.get('/stats', authMiddleware, async (req: Request, res: Response) => {
   try {
-    const userId = req.user!.userId;
+    const userId = req.user!.id;
 
     // Count total referred users
     const totalReferred = await prisma.user.count({
