@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Button } from '../ui/Button';
 import { ToastProvider } from '../ui/ToastProvider';
-import { API_BASE } from '../../services/api';
+import { API_BASE, verifyTask } from '../../services/api';
 
 interface TwitterVerificationProps {
   taskId: string;
@@ -13,6 +13,7 @@ interface TwitterVerificationProps {
 }
 
 export const TwitterVerification: React.FC<TwitterVerificationProps> = ({
+  taskId,
   onVerificationComplete,
   targetUsername,
   tweetId,
