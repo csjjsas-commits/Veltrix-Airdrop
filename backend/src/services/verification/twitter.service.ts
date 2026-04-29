@@ -21,6 +21,11 @@ export class TwitterService implements VerificationProvider {
   ): Promise<VerificationResult> {
     const { action, targetId, accessToken, refreshToken, tokenExpiresAt } = verificationData;
 
+    // Handle account connection verification
+    if (action === 'connect') {
+      return await this.verifyConnection(userId);
+    }
+
     // Check if Twitter API is configured
     if (!this.clientId || !this.clientSecret) {
       return {
@@ -349,6 +354,43 @@ export class TwitterService implements VerificationProvider {
       message: 'La verificación de retweets no está soportada por la API de Twitter v2.',
       unsupported: true
     };
+  }
+
+  private async verifyConnection(userId: string): Promise<VerificationResult> {
+    try {
+      // Check if user has Twitter account connected
+      const user = await prisma.user.findUnique({
+        where: { id: userId },
+        select: {
+          twitterUserId: true,
+          twitterUsername: true,
+          twitterConnectedAt: true
+        }
+      });
+
+      if (!user || !user.twitterUserId || !user.twitterUsername) {
+        return {
+          success: false,
+          message: 'Cuenta de Twitter no conectada. Por favor conecta tu cuenta primero.'
+        };
+      }
+
+      return {
+        success: true,
+        message: `Cuenta de Twitter conectada exitosamente: @${user.twitterUsername}`,
+        externalId: user.twitterUserId,
+        metadata: {
+          username: user.twitterUsername,
+          connectedAt: user.twitterConnectedAt
+        }
+      };
+    } catch (error) {
+      console.error('Error verifying Twitter connection:', error);
+      return {
+        success: false,
+        message: 'Error verificando conexión de Twitter. Intenta de nuevo.'
+      };
+    }
   }
 
   private generateCodeVerifier(): string {

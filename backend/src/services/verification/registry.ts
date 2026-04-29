@@ -12,6 +12,7 @@ export class VerificationProviderRegistry {
     [TaskVerificationTypes.TWITTER_FOLLOW, { type: TaskVerificationTypes.TWITTER_FOLLOW, provider: TwitterService }],
     [TaskVerificationTypes.TWITTER_LIKE, { type: TaskVerificationTypes.TWITTER_LIKE, provider: TwitterService }],
     [TaskVerificationTypes.TWITTER_RETWEET, { type: TaskVerificationTypes.TWITTER_RETWEET, provider: TwitterService }],
+    [TaskVerificationTypes.TWITTER_CONNECT, { type: TaskVerificationTypes.TWITTER_CONNECT, provider: TwitterService }],
 
     // Discord verifications
     [TaskVerificationTypes.DISCORD_JOIN, { type: TaskVerificationTypes.DISCORD_JOIN, provider: DiscordService }],
@@ -25,6 +26,7 @@ export class VerificationProviderRegistry {
     // YouTube verifications
     [TaskVerificationTypes.YOUTUBE_SUBSCRIBE, { type: TaskVerificationTypes.YOUTUBE_SUBSCRIBE, provider: YouTubeService }],
     [TaskVerificationTypes.YOUTUBE_LIKE, { type: TaskVerificationTypes.YOUTUBE_LIKE, provider: YouTubeService }],
+    [TaskVerificationTypes.YOUTUBE_CONNECT, { type: TaskVerificationTypes.YOUTUBE_CONNECT, provider: YouTubeService }],
 
     // Wallet verifications
     [TaskVerificationTypes.WALLET_CONNECT, { type: TaskVerificationTypes.WALLET_CONNECT, provider: WalletService }],

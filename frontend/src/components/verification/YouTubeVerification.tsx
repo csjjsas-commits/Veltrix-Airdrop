@@ -8,7 +8,7 @@ interface YouTubeVerificationProps {
   onVerificationComplete?: (success: boolean, data?: any) => void;
   channelId?: string;
   channelTitle?: string;
-  action: 'subscribe' | 'like';
+  action: 'subscribe' | 'like' | 'connect';
   targetId: string; // channel ID for subscribe, video ID for like
 }
 
@@ -158,6 +158,8 @@ export const YouTubeVerification: React.FC<YouTubeVerificationProps> = ({
         return `Suscribirse al canal ${channelTitle || 'especificado'}`;
       case 'like':
         return 'Dar like al video especificado';
+      case 'connect':
+        return 'Conectar tu cuenta de YouTube';
       default:
         return 'Realizar acción en YouTube';
     }
@@ -169,6 +171,8 @@ export const YouTubeVerification: React.FC<YouTubeVerificationProps> = ({
         return 'Verificar Suscripción';
       case 'like':
         return 'Verificar Like';
+      case 'connect':
+        return 'Verificar Conexión';
       default:
         return 'Verificar';
     }

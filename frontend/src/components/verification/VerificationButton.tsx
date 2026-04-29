@@ -35,10 +35,12 @@ export const VerificationButton: React.FC<VerificationButtonProps> = ({
 
   // Use specialized component for YouTube verification
   if (verificationType.startsWith('YOUTUBE_')) {
+    const action = verificationType === 'YOUTUBE_CONNECT' ? 'connect' :
+                   verificationType === 'YOUTUBE_SUBSCRIBE' ? 'subscribe' : 'like';
     return (
       <YouTubeVerification
         taskId={taskId}
-        action={verificationType === 'YOUTUBE_SUBSCRIBE' ? 'subscribe' : 'like'}
+        action={action}
         targetId={verificationData?.targetId || verificationData?.channelId || verificationData?.videoId}
         channelId={verificationData?.channelId}
         channelTitle={verificationData?.channelTitle}
@@ -56,7 +58,8 @@ export const VerificationButton: React.FC<VerificationButtonProps> = ({
 
   // Use specialized component for Twitter verification
   if (verificationType.startsWith('TWITTER_')) {
-    const action = verificationType === 'TWITTER_FOLLOW' ? 'follow' :
+    const action = verificationType === 'TWITTER_CONNECT' ? 'connect' :
+                   verificationType === 'TWITTER_FOLLOW' ? 'follow' :
                    verificationType === 'TWITTER_LIKE' ? 'like' : 'retweet';
     return (
       <TwitterVerification

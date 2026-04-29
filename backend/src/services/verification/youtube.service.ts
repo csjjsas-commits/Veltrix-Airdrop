@@ -1,4 +1,4 @@
-﻿import { VerificationProvider, VerificationResult } from './types';
+import { VerificationProvider, VerificationResult } from './types';
 import prisma from '../../utils/prismaClient';
 
 export class YouTubeService implements VerificationProvider {
@@ -76,7 +76,7 @@ export class YouTubeService implements VerificationProvider {
         default:
           return {
             success: false,
-            message: 'AcciÃ³n de YouTube no soportada'
+            message: 'Acción de YouTube no soportada'
           };
       }
     } catch (error) {
@@ -158,7 +158,7 @@ export class YouTubeService implements VerificationProvider {
         }
         return {
           success: false,
-          message: 'Error verificando suscripciÃ³n al canal'
+          message: 'Error verificando suscripción al canal'
         };
       }
 
@@ -167,7 +167,7 @@ export class YouTubeService implements VerificationProvider {
       if (data.items && data.items.length > 0) {
         return {
           success: true,
-          message: 'Â¡SuscripciÃ³n al canal verificada exitosamente!',
+          message: '¡Suscripción al canal verificada exitosamente!',
           externalId: data.items[0].id,
           metadata: {
             subscribedAt: new Date().toISOString(),
@@ -178,14 +178,14 @@ export class YouTubeService implements VerificationProvider {
       } else {
         return {
           success: false,
-          message: 'No se detecta suscripciÃ³n a este canal. SuscrÃ­bete al canal y vuelve a verificar.'
+          message: 'No se detecta suscripción a este canal. Suscríbete al canal y vuelve a verificar.'
         };
       }
     } catch (error) {
       console.error('Error checking subscription:', error);
       return {
         success: false,
-        message: 'Error verificando suscripciÃ³n al canal'
+        message: 'Error verificando suscripción al canal'
       };
     }
   }
@@ -199,7 +199,7 @@ export class YouTubeService implements VerificationProvider {
     // The rate endpoint only allows setting/getting the user's rating for their own videos
     return {
       success: false,
-      message: 'La verificaciÃ³n de likes de YouTube no estÃ¡ soportada por la API de YouTube.',
+      message: 'La verificación de likes de YouTube no está soportada por la API de YouTube.',
       unsupported: true
     };
   }
@@ -259,4 +259,43 @@ export class YouTubeService implements VerificationProvider {
       console.error('Error getting user channel info:', error);
       throw error;
     }
-  }}
+  }
+
+  private async verifyConnection(userId: string): Promise<VerificationResult> {
+    try {
+      // Check if user has YouTube account connected
+      const user = await prisma.user.findUnique({
+        where: { id: userId },
+        select: {
+          youtubeChannelId: true,
+          youtubeChannelTitle: true,
+          youtubeConnectedAt: true
+        }
+      });
+
+      if (!user || !user.youtubeChannelId || !user.youtubeChannelTitle) {
+        return {
+          success: false,
+          message: 'Cuenta de YouTube no conectada. Por favor conecta tu cuenta primero.'
+        };
+      }
+
+      return {
+        success: true,
+        message: `Cuenta de YouTube conectada exitosamente: ${user.youtubeChannelTitle}`,
+        externalId: user.youtubeChannelId,
+        metadata: {
+          channelTitle: user.youtubeChannelTitle,
+          connectedAt: user.youtubeConnectedAt
+        }
+      };
+    } catch (error) {
+      console.error('Error verifying YouTube connection:', error);
+      return {
+        success: false,
+        message: 'Error verificando conexi�n de YouTube. Intenta de nuevo.'
+      };
+    }
+  }
+}
+

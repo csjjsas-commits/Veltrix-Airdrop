@@ -8,7 +8,7 @@ interface TwitterVerificationProps {
   onVerificationComplete?: (success: boolean, data?: any) => void;
   targetUsername?: string;
   tweetId?: string;
-  action: 'follow' | 'like' | 'retweet';
+  action: 'follow' | 'like' | 'retweet' | 'connect';
   targetId: string; // username for follow, tweet ID for like/retweet
 }
 
@@ -160,6 +160,8 @@ export const TwitterVerification: React.FC<TwitterVerificationProps> = ({
         return 'Dar like al tweet especificado';
       case 'retweet':
         return 'Retuitear el tweet especificado';
+      case 'connect':
+        return 'Conectar tu cuenta de X (Twitter)';
       default:
         return 'Realizar acción en Twitter';
     }
@@ -173,6 +175,8 @@ export const TwitterVerification: React.FC<TwitterVerificationProps> = ({
         return 'Verificar Like';
       case 'retweet':
         return 'Verificar Retweet';
+      case 'connect':
+        return 'Verificar Conexión';
       default:
         return 'Verificar';
     }
