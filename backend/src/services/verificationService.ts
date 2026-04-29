@@ -6,7 +6,9 @@ import { ReferralService } from './verification/referral.service';
 
 export interface VerificationRequest {
   verificationType: TaskVerificationType;
-  verificationData: any;
+  verificationData?: Record<string, any>;
+  userHandle?: string;
+  linkOpenedAt?: string | Date;
   userMetadata?: any;
 }
 
@@ -72,11 +74,11 @@ export class VerificationService {
 
     // Prepare verification data with task defaults and request overrides
     const verificationData = {
-      ...(task.verificationData || {}),
+      ...((task.verificationData || {}) as Record<string, any>),
       ...(verificationRequest.verificationData || {}),
       ...(verificationRequest.userHandle ? { userHandle: verificationRequest.userHandle } : {}),
       ...(verificationRequest.linkOpenedAt ? { linkOpenedAt: verificationRequest.linkOpenedAt } : {})
-    };
+    } as Record<string, any>;
 
     if (verificationType === TaskVerificationTypes.YOUTUBE_SUBSCRIBE || verificationType === TaskVerificationTypes.YOUTUBE_LIKE) {
       verificationData.accessToken = user.youtubeAccessToken;
