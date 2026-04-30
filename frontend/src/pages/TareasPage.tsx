@@ -114,7 +114,7 @@ export const TareasPage = () => {
   if (loading) {
     return (
       <div className="min-h-screen bg-slate-950">
-        <div className="mx-auto max-w-7xl px-4 py-8">
+        <div className="mx-auto max-w-full px-4 py-8">
           <div className="animate-pulse">
             <div className="h-8 bg-slate-800 rounded w-1/4 mb-8"></div>
             <div className="grid gap-3 space-y-4">
@@ -131,7 +131,7 @@ export const TareasPage = () => {
   if (error) {
     return (
       <div className="min-h-screen bg-slate-950">
-        <div className="mx-auto max-w-7xl px-4 py-8">
+        <div className="mx-auto max-w-full px-4 py-8">
           <div className="text-center">
             <p className="text-red-400">{error}</p>
           </div>
@@ -142,7 +142,7 @@ export const TareasPage = () => {
 
   return (
     <div className="min-h-screen bg-slate-950">
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-6 md:py-8">
+      <div className="mx-auto max-w-full px-4 sm:px-6 lg:px-8 py-6 md:py-8">
         {/* Header */}
         <div className="mb-8">
           <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-white">Tareas Disponibles</h1>

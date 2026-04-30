@@ -136,7 +136,7 @@ const tokenFromQuery = rawToken
   };
 
   return (
-    <div className="w-full rounded-[2rem] border border-cyan-400/10 bg-slate-950/95 p-8 shadow-[0_20px_80px_rgba(0,207,255,0.16)] backdrop-blur-3xl">
+    <div className="w-full max-w-full rounded-[2rem] border border-cyan-400/10 bg-slate-950/95 p-6 sm:p-8 shadow-[0_20px_80px_rgba(0,207,255,0.16)] backdrop-blur-3xl">
           <div className="space-y-2">
             <p className="text-xs uppercase tracking-[0.45em] text-cyan-300/80">BIENVENIDO DE NUEVO</p>
           </div>

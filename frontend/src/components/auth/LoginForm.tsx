@@ -49,7 +49,7 @@ export const LoginForm = () => {
   };
 
   return (
-    <div className="rounded-3xl border border-slate-800/60 bg-slate-950/90 p-8 shadow-2xl shadow-slate-950/40 max-w-md w-full">
+    <div className="rounded-3xl border border-slate-800/60 bg-slate-950/90 p-6 sm:p-8 shadow-2xl shadow-slate-950/40 max-w-full w-full">
       <h2 className="text-3xl font-semibold text-white">Bienvenido de nuevo</h2>
       <p className="mt-3 text-slate-400">Ingresa con tu cuenta para ver tu progreso y misiones.</p>
       <form className="mt-8 space-y-6" onSubmit={handleSubmit}>

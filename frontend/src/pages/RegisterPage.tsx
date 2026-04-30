@@ -2,8 +2,8 @@ import { RegisterForm } from '../components/auth/RegisterForm';
 
 export const RegisterPage = () => (
   <div className="min-h-screen bg-[radial-gradient(circle_at_top,_rgba(139,92,246,0.2),_transparent_35%),_linear-gradient(180deg,_#050816_0%,_#090b16_100%)] text-white">
-    <div className="mx-auto grid min-h-screen max-w-7xl grid-cols-1 items-center gap-8 px-6 py-16 lg:grid-cols-[1.2fr_0.9fr]">
-      <div className="space-y-10 rounded-[2.5rem] border border-slate-800/60 bg-slate-950/70 p-10 shadow-2xl shadow-slate-950/40 backdrop-blur-xl">
+    <div className="mx-auto grid min-h-screen max-w-full grid-cols-1 items-center gap-8 px-4 sm:px-6 py-10 sm:py-16 lg:grid-cols-[1.2fr_0.9fr]">
+      <div className="space-y-10 rounded-[2.5rem] border border-slate-800/60 bg-slate-950/70 p-6 sm:p-8 lg:p-10 shadow-2xl shadow-slate-950/40 backdrop-blur-xl">
         <div className="flex items-center gap-3">
           <div className="flex h-14 w-14 items-center justify-center rounded-3xl bg-violet-500/20 ring-1 ring-violet-400/20">
             <span className="text-2xl font-bold text-violet-300">V</span>
@@ -14,7 +14,7 @@ export const RegisterPage = () => (
           </div>
         </div>
         <div className="max-w-2xl">
-          <h1 className="text-5xl font-semibold tracking-tight text-white sm:text-6xl">Inicia sesión y descubre tu panel de progreso</h1>
+          <h1 className="text-3xl sm:text-4xl lg:text-5xl font-semibold tracking-tight text-white">Inicia sesión y descubre tu panel de progreso</h1>
           <p className="mt-6 text-lg leading-8 text-slate-400">Accede a tus misiones semanales, puntos y recompensas estimadas en una interfaz premium con looks de crypto y experiencia de piloto.</p>
         </div>
         <div className="grid gap-4 sm:grid-cols-2">
@@ -29,7 +29,7 @@ export const RegisterPage = () => (
         </div>
       </div>
 
-      <div className="rounded-[2.5rem] border border-slate-800/70 bg-slate-900/90 p-8 shadow-2xl shadow-slate-950/40 backdrop-blur-xl">
+      <div className="rounded-[2.5rem] border border-slate-800/70 bg-slate-900/90 p-6 sm:p-8 shadow-2xl shadow-slate-950/40 backdrop-blur-xl">
         <RegisterForm />
       </div>
     </div>

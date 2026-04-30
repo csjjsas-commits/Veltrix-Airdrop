@@ -222,7 +222,7 @@ export const DashboardPage = () => {
     return (
       <div className="min-h-screen bg-brand-blackVoid text-brand-pureWhite">
         <main className="pt-8">
-          <div className="mx-auto max-w-7xl px-6">
+          <div className="mx-auto max-w-full px-4 sm:px-6 lg:px-8">
             <div className="space-y-8">
               <SkeletonCard />
               <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
@@ -241,7 +241,7 @@ export const DashboardPage = () => {
   return (
     <div className="min-h-screen bg-slate-950 text-white">
       <main>
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-6 md:py-8">
+        <div className="mx-auto max-w-full px-4 sm:px-6 lg:px-8 py-6 md:py-8">
           <div className="mb-6">
             <p className="text-xs sm:text-sm font-semibold uppercase tracking-[0.28em] text-slate-400">
               Welcome back, Veltrix CEO
