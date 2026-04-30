@@ -96,10 +96,15 @@ export const YouTubeVerification: React.FC<YouTubeVerificationProps> = ({
 
         // Poll for completion
         const checkClosed = setInterval(() => {
-          if (authWindow?.closed) {
-            clearInterval(checkClosed);
-            checkYouTubeConnection();
-            setIsConnecting(false);
+          try {
+            if (authWindow?.closed) {
+              clearInterval(checkClosed);
+              checkYouTubeConnection();
+              setIsConnecting(false);
+            }
+          } catch (error) {
+            // Some browsers block access to cross-origin window properties when COOP is enforced.
+            // In that case, rely on status polling instead of reading authWindow.closed directly.
           }
         }, 1000);
 
@@ -116,7 +121,11 @@ export const YouTubeVerification: React.FC<YouTubeVerificationProps> = ({
                 clearInterval(checkStatus);
                 clearInterval(checkClosed);
                 setIsConnecting(false);
-                authWindow?.close();
+                try {
+                  authWindow?.close();
+                } catch (closeError) {
+                  // ignore close restrictions
+                }
                 return;
               }
               return; // Continue polling on other errors
@@ -129,7 +138,11 @@ export const YouTubeVerification: React.FC<YouTubeVerificationProps> = ({
               setIsConnected(true);
               setConnectionStatus(`Conectado como ${statusData.channelTitle}`);
               setIsConnecting(false);
-              authWindow?.close();
+              try {
+                authWindow?.close();
+              } catch (closeError) {
+                // ignore close restrictions
+              }
             }
           } catch (error) {
             // Continue polling
@@ -141,7 +154,11 @@ export const YouTubeVerification: React.FC<YouTubeVerificationProps> = ({
           clearInterval(checkClosed);
           clearInterval(checkStatus);
           setIsConnecting(false);
-          authWindow?.close();
+          try {
+            authWindow?.close();
+          } catch (closeError) {
+            // ignore close restrictions
+          }
         }, 300000);
       } else {
         setConnectionStatus(`Error: ${data.error || 'No se pudo obtener la URL de autenticación'}`);
