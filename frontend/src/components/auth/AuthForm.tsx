@@ -18,7 +18,12 @@ export const AuthForm = ({ mode }: AuthFormProps) => {
   const { user } = useAnalytics();
   const [searchParams] = useSearchParams();
   const referralCode = searchParams.get('ref');
-  const tokenFromQuery = searchParams.get('token');
+  const rawToken = searchParams.get('token');
+
+const tokenFromQuery = rawToken
+  ? decodeURIComponent(rawToken)
+  : null;
+
 
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
