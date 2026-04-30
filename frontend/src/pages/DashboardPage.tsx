@@ -243,10 +243,10 @@ export const DashboardPage = () => {
       <main>
         <div className="mx-auto max-w-full px-4 sm:px-6 lg:px-8 py-6 md:py-8">
           <div className="mb-6">
-            <p className="text-xs sm:text-sm font-semibold uppercase tracking-[0.28em] text-slate-400">
+            <p className="text-[11px] sm:text-xs font-semibold uppercase tracking-[0.28em] text-slate-400">
               Welcome back, Veltrix CEO
             </p>
-            <h1 className="mt-3 text-2xl sm:text-3xl lg:text-4xl font-semibold text-white">Dashboard</h1>
+            <h1 className="mt-3 text-xl sm:text-2xl lg:text-4xl font-semibold text-white">Dashboard</h1>
           </div>
 
           <div className="rounded-2xl border border-slate-800 bg-slate-900/90 p-3 sm:p-4 lg:p-5">
@@ -274,36 +274,36 @@ export const DashboardPage = () => {
             </motion.div>
           )}
 
-          <div className="mt-6 grid gap-6 md:grid-cols-3">
+          <div className="mt-6 grid grid-cols-1 gap-6 md:grid-cols-3">
             <div className="md:col-span-2 space-y-6">
-              <div className="grid gap-4 sm:grid-cols-2">
+              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                 <div className="rounded-[2rem] border border-slate-800 bg-slate-950/95 p-3 sm:p-4 lg:p-5 shadow-2xl shadow-black/20">
-                  <p className="text-xs uppercase tracking-[0.35em] text-slate-500">Mis puntos</p>
-                  <p className="mt-3 text-2xl sm:text-3xl lg:text-4xl font-semibold text-white">{userPoints.toLocaleString()}</p>
-                  <p className="mt-2 text-xs sm:text-sm text-slate-400">Total de puntos acumulados.</p>
+                  <p className="text-[10px] uppercase tracking-[0.35em] text-slate-500">Mis puntos</p>
+                  <p className="mt-3 text-xl sm:text-2xl lg:text-4xl font-semibold text-white">{userPoints.toLocaleString()}</p>
+                  <p className="mt-2 text-[11px] sm:text-xs text-slate-400">Total de puntos acumulados.</p>
                 </div>
                 <div className="rounded-[2rem] border border-slate-800 bg-slate-950/95 p-3 sm:p-4 lg:p-5 shadow-2xl shadow-black/20">
-                  <p className="text-xs uppercase tracking-[0.35em] text-slate-500">Tareas completadas</p>
-                  <p className="mt-3 text-2xl sm:text-3xl lg:text-4xl font-semibold text-white">{completedTasks}</p>
-                  <p className="mt-2 text-xs sm:text-sm text-slate-400">Mis misiones completadas hasta ahora.</p>
+                  <p className="text-[10px] uppercase tracking-[0.35em] text-slate-500">Tareas completadas</p>
+                  <p className="mt-3 text-xl sm:text-2xl lg:text-4xl font-semibold text-white">{completedTasks}</p>
+                  <p className="mt-2 text-[11px] sm:text-xs text-slate-400">Mis misiones completadas hasta ahora.</p>
                 </div>
                 <div className="rounded-[2rem] border border-slate-800 bg-slate-950/95 p-3 sm:p-4 lg:p-5 shadow-2xl shadow-black/20">
-                  <p className="text-xs uppercase tracking-[0.35em] text-slate-500">Progreso</p>
-                  <p className="mt-3 text-2xl sm:text-3xl lg:text-4xl font-semibold text-white">{progressValue}%</p>
-                  <p className="mt-2 text-xs sm:text-sm text-slate-400">Avance hacia el siguiente nivel.</p>
+                  <p className="text-[10px] uppercase tracking-[0.35em] text-slate-500">Progreso</p>
+                  <p className="mt-3 text-xl sm:text-2xl lg:text-4xl font-semibold text-white">{progressValue}%</p>
+                  <p className="mt-2 text-[11px] sm:text-xs text-slate-400">Avance hacia el siguiente nivel.</p>
                 </div>
                 <div className="rounded-[2rem] border border-slate-800 bg-slate-950/95 p-3 sm:p-4 lg:p-5 shadow-2xl shadow-black/20">
-                  <p className="text-xs uppercase tracking-[0.35em] text-slate-500">Usuarios totales</p>
-                  <p className="mt-3 text-2xl sm:text-3xl lg:text-4xl font-semibold text-white">{dashboard?.stats.totalUsers ?? 0}</p>
-                  <p className="mt-2 text-xs sm:text-sm text-slate-400">Usuarios activos en el ranking.</p>
+                  <p className="text-[10px] uppercase tracking-[0.35em] text-slate-500">Usuarios totales</p>
+                  <p className="mt-3 text-xl sm:text-2xl lg:text-4xl font-semibold text-white">{dashboard?.stats.totalUsers ?? 0}</p>
+                  <p className="mt-2 text-[11px] sm:text-xs text-slate-400">Usuarios activos en el ranking.</p>
                 </div>
               </div>
 
               <div className="rounded-2xl border border-slate-800 bg-slate-900/90 p-3 sm:p-4 lg:p-5">
-                <div className="flex items-center justify-between gap-4 mb-4">
+                <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between mb-4">
                   <div>
-                    <h2 className="text-base sm:text-lg font-semibold text-white">Tareas Recientes</h2>
-                    <p className="text-xs sm:text-sm text-slate-400">Últimas tareas activas para completar.</p>
+                    <h2 className="text-sm sm:text-base font-semibold text-white">Tareas Recientes</h2>
+                    <p className="text-[11px] sm:text-xs text-slate-400">Últimas tareas activas para completar.</p>
                   </div>
                   <button
                     type="button"
@@ -324,12 +324,12 @@ export const DashboardPage = () => {
                   {sortDashboardTasks(availableTasks).slice(0, 4).map(task => {
                     const isBlocked = !!activeRequiredTask && !task.isRequired;
                     return (
-                      <div key={task.id} className={`rounded-[2rem] border p-5 flex items-start justify-between gap-4 transition ${
+                      <div key={task.id} className={`rounded-[2rem] border p-5 flex flex-col gap-4 transition ${
                         isBlocked
                           ? 'border-slate-700 bg-slate-900/50 opacity-50 cursor-not-allowed'
                           : 'border-slate-800 bg-slate-950/90 hover:border-violet-500/30'
                       }`}>
-                        <div className="flex items-start gap-4 flex-1 min-w-0">
+                        <div className="flex flex-col gap-4 sm:flex-row sm:items-start flex-1 min-w-0">
                           <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-violet-500/10 flex-shrink-0">
                             {getPlatformIcon(task)}
                           </div>
@@ -348,14 +348,14 @@ export const DashboardPage = () => {
                             </span>
                           </div>
                         </div>
-                        <div className="flex shrink-0 flex-col items-end gap-2">
-                          <div className="flex items-center gap-2">
+                        <div className="flex w-full flex-col items-end gap-2 sm:w-auto">
+                          <div className="flex w-full flex-col gap-2 sm:flex-row sm:items-center sm:justify-end">
                             {task.actionUrl && (
                               <a
                                 href={task.actionUrl}
                                 target="_blank"
                                 rel="noreferrer"
-                                className="inline-flex items-center gap-2 rounded-full border border-slate-800 bg-slate-900/95 px-3 py-2 text-xs font-semibold text-violet-300 transition hover:bg-slate-900 hover:text-violet-200"
+                                className="inline-flex w-full justify-center items-center gap-2 rounded-full border border-slate-800 bg-slate-900/95 px-3 py-2 text-xs font-semibold text-violet-300 transition hover:bg-slate-900 hover:text-violet-200 sm:w-auto"
                               >
                                 <FaExternalLinkAlt className="h-3 w-3" />
                                 Abrir
@@ -364,11 +364,11 @@ export const DashboardPage = () => {
                             <button
                               onClick={() => setModalTask(task)}
                               disabled={isBlocked || task.status === 'COMPLETED' || task.status === 'PENDING'}
-                              className={`rounded-full px-4 py-2 text-xs font-semibold transition whitespace-nowrap ${
+                              className={`w-full rounded-full px-4 py-2 text-xs font-semibold transition ${
                                 task.status === 'COMPLETED' || isBlocked
                                   ? 'bg-slate-800 text-slate-500 cursor-not-allowed'
                                   : 'bg-violet-500 text-white hover:bg-violet-400 disabled:opacity-50'
-                              }`}
+                              } sm:w-auto`}
                             >
                               {task.status === 'COMPLETED' ? '✓ Completada' : 'Completar'}
                             </button>

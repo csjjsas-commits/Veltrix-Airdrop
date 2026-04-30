@@ -124,7 +124,7 @@ export const TaskListItem = ({ task, onTaskUpdate, onTaskAction, onOpenModal, is
   const isCompleted = task.status === 'COMPLETED';
 
   return (
-    <div className={`rounded-[2rem] border p-5 shadow-[0_20px_40px_rgba(0,0,0,0.20)] transition ${
+    <div className={`w-full max-w-full rounded-[2rem] border p-5 shadow-[0_20px_40px_rgba(0,0,0,0.20)] transition ${
       isBlocked
         ? 'border-slate-700 bg-slate-900/50 opacity-50 cursor-not-allowed'
         : isCompleted

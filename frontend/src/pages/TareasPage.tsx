@@ -150,16 +150,16 @@ export const TareasPage = () => {
         </div>
 
         {/* Layout: Main content + Sidebar */}
-        <div className="grid gap-8 md:grid-cols-3">
+        <div className="grid grid-cols-1 gap-8 md:grid-cols-3">
           {/* Main Content - Left (2/3) */}
           <div className="md:col-span-2 space-y-6">
             {/* Platform Tabs */}
-            <div className="flex flex-wrap gap-2">
+            <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
               {platformTabs.map(tab => (
                 <button
                   key={tab.key}
                   onClick={() => setActivePlatform(tab.key)}
-                  className={`rounded-full px-4 py-2 text-sm font-medium transition ${
+                  className={`w-full rounded-full px-4 py-2 text-sm font-medium transition ${
                     activePlatform === tab.key
                       ? 'bg-violet-500 text-white'
                       : 'bg-slate-800 text-slate-300 hover:bg-slate-700'
@@ -203,7 +203,7 @@ export const TareasPage = () => {
           </div>
 
           {/* Sidebar - Right (1/3) */}
-          <div>
+          <div className="w-full md:w-auto">
             <TareasReferralPanel referralTask={referralTask} />
           </div>
         </div>

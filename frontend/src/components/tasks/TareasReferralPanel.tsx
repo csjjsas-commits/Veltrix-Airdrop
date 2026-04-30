@@ -50,7 +50,7 @@ export const TareasReferralPanel = ({ referralTask }: Props) => {
   };
 
   return (
-    <div className="sticky top-24 rounded-[2rem] border border-slate-800 bg-slate-950/95 p-4 sm:p-5 lg:p-6 shadow-2xl shadow-black/40">
+    <div className="rounded-[2rem] border border-slate-800 bg-slate-950/95 p-4 sm:p-5 lg:p-6 shadow-2xl shadow-black/40 md:sticky md:top-24">
       <div className="space-y-6">
         <div>
           <p className="text-xs uppercase tracking-[0.35em] text-slate-500 font-semibold">Referidos</p>
