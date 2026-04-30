@@ -142,10 +142,10 @@ export const TareasPage = () => {
 
   return (
     <div className="min-h-screen bg-slate-950">
-      <div className="mx-auto max-w-7xl px-4 py-8">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-6 md:py-8">
         {/* Header */}
         <div className="mb-8">
-          <h1 className="text-4xl font-bold text-white">Tareas Disponibles</h1>
+          <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-white">Tareas Disponibles</h1>
           <p className="mt-2 text-slate-400">Completa tareas para ganar puntos y tokens</p>
         </div>
 

@@ -241,19 +241,19 @@ export const DashboardPage = () => {
   return (
     <div className="min-h-screen bg-slate-950 text-white">
       <main>
-        <div className="mx-auto max-w-7xl px-4 py-6 md:px-6">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-6 md:py-8">
           <div className="mb-6">
-            <p className="text-sm font-semibold uppercase tracking-[0.28em] text-slate-400">
+            <p className="text-xs sm:text-sm font-semibold uppercase tracking-[0.28em] text-slate-400">
               Welcome back, Veltrix CEO
             </p>
-            <h1 className="mt-3 text-3xl font-semibold text-white">Dashboard</h1>
+            <h1 className="mt-3 text-2xl sm:text-3xl lg:text-4xl font-semibold text-white">Dashboard</h1>
           </div>
 
-          <div className="rounded-2xl border border-slate-800 bg-slate-900/90 p-4 md:p-5">
+          <div className="rounded-2xl border border-slate-800 bg-slate-900/90 p-3 sm:p-4 lg:p-5">
             <div className="flex flex-col gap-3">
               <div className="flex items-center justify-between gap-4">
-                <p className="text-sm text-slate-400">Progress to next level</p>
-                <p className="text-sm text-slate-400">{progressValue}%</p>
+                <p className="text-xs sm:text-sm text-slate-400">Progress to next level</p>
+                <p className="text-xs sm:text-sm text-slate-400">{progressValue}%</p>
               </div>
               <div className="h-2 w-full overflow-hidden rounded-full bg-slate-800">
                 <div
@@ -276,34 +276,34 @@ export const DashboardPage = () => {
 
           <div className="mt-6 grid gap-6 md:grid-cols-3">
             <div className="md:col-span-2 space-y-6">
-              <div className="grid gap-4 md:grid-cols-2">
-                <div className="rounded-[2rem] border border-slate-800 bg-slate-950/95 p-5 shadow-2xl shadow-black/20">
+              <div className="grid gap-4 sm:grid-cols-2">
+                <div className="rounded-[2rem] border border-slate-800 bg-slate-950/95 p-3 sm:p-4 lg:p-5 shadow-2xl shadow-black/20">
                   <p className="text-xs uppercase tracking-[0.35em] text-slate-500">Mis puntos</p>
-                  <p className="mt-3 text-4xl font-semibold text-white">{userPoints.toLocaleString()}</p>
-                  <p className="mt-2 text-sm text-slate-400">Total de puntos acumulados.</p>
+                  <p className="mt-3 text-2xl sm:text-3xl lg:text-4xl font-semibold text-white">{userPoints.toLocaleString()}</p>
+                  <p className="mt-2 text-xs sm:text-sm text-slate-400">Total de puntos acumulados.</p>
                 </div>
-                <div className="rounded-[2rem] border border-slate-800 bg-slate-950/95 p-5 shadow-2xl shadow-black/20">
+                <div className="rounded-[2rem] border border-slate-800 bg-slate-950/95 p-3 sm:p-4 lg:p-5 shadow-2xl shadow-black/20">
                   <p className="text-xs uppercase tracking-[0.35em] text-slate-500">Tareas completadas</p>
-                  <p className="mt-3 text-4xl font-semibold text-white">{completedTasks}</p>
-                  <p className="mt-2 text-sm text-slate-400">Mis misiones completadas hasta ahora.</p>
+                  <p className="mt-3 text-2xl sm:text-3xl lg:text-4xl font-semibold text-white">{completedTasks}</p>
+                  <p className="mt-2 text-xs sm:text-sm text-slate-400">Mis misiones completadas hasta ahora.</p>
                 </div>
-                <div className="rounded-[2rem] border border-slate-800 bg-slate-950/95 p-5 shadow-2xl shadow-black/20">
+                <div className="rounded-[2rem] border border-slate-800 bg-slate-950/95 p-3 sm:p-4 lg:p-5 shadow-2xl shadow-black/20">
                   <p className="text-xs uppercase tracking-[0.35em] text-slate-500">Progreso</p>
-                  <p className="mt-3 text-4xl font-semibold text-white">{progressValue}%</p>
-                  <p className="mt-2 text-sm text-slate-400">Avance hacia el siguiente nivel.</p>
+                  <p className="mt-3 text-2xl sm:text-3xl lg:text-4xl font-semibold text-white">{progressValue}%</p>
+                  <p className="mt-2 text-xs sm:text-sm text-slate-400">Avance hacia el siguiente nivel.</p>
                 </div>
-                <div className="rounded-[2rem] border border-slate-800 bg-slate-950/95 p-5 shadow-2xl shadow-black/20">
+                <div className="rounded-[2rem] border border-slate-800 bg-slate-950/95 p-3 sm:p-4 lg:p-5 shadow-2xl shadow-black/20">
                   <p className="text-xs uppercase tracking-[0.35em] text-slate-500">Usuarios totales</p>
-                  <p className="mt-3 text-4xl font-semibold text-white">{dashboard?.stats.totalUsers ?? 0}</p>
-                  <p className="mt-2 text-sm text-slate-400">Usuarios activos en el ranking.</p>
+                  <p className="mt-3 text-2xl sm:text-3xl lg:text-4xl font-semibold text-white">{dashboard?.stats.totalUsers ?? 0}</p>
+                  <p className="mt-2 text-xs sm:text-sm text-slate-400">Usuarios activos en el ranking.</p>
                 </div>
               </div>
 
-              <div className="rounded-2xl border border-slate-800 bg-slate-900/90 p-5">
+              <div className="rounded-2xl border border-slate-800 bg-slate-900/90 p-3 sm:p-4 lg:p-5">
                 <div className="flex items-center justify-between gap-4 mb-4">
                   <div>
-                    <h2 className="text-lg font-semibold text-white">Tareas Recientes</h2>
-                    <p className="text-sm text-slate-400">Últimas tareas activas para completar.</p>
+                    <h2 className="text-base sm:text-lg font-semibold text-white">Tareas Recientes</h2>
+                    <p className="text-xs sm:text-sm text-slate-400">Últimas tareas activas para completar.</p>
                   </div>
                   <button
                     type="button"

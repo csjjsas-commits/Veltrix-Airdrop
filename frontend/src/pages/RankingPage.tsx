@@ -44,9 +44,9 @@ export const RankingPage = () => {
   if (loading) {
     return (
       <div className="min-h-screen bg-slate-950">
-        <div className="mx-auto max-w-4xl px-4 py-8">
+        <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8 py-6 md:py-8">
           <div className="mb-8">
-            <h1 className="text-3xl font-bold text-white">Ranking Global</h1>
+            <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-white">Ranking Global</h1>
             <p className="mt-2 text-slate-400">Top usuarios por puntos acumulados</p>
           </div>
           <div className="space-y-4">
@@ -65,7 +65,7 @@ export const RankingPage = () => {
   if (error) {
     return (
       <div className="min-h-screen bg-slate-950">
-        <div className="mx-auto max-w-4xl px-4 py-8">
+        <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8 py-6 md:py-8">
           <div className="text-center">
             <p className="text-red-400">{error}</p>
           </div>
@@ -76,10 +76,10 @@ export const RankingPage = () => {
 
   return (
     <div className="min-h-screen bg-slate-950">
-      <div className="mx-auto max-w-4xl px-4 py-8">
+      <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8 py-6 md:py-8">
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-white">Ranking Global</h1>
-          <p className="mt-2 text-slate-400">Top usuarios por puntos acumulados</p>
+          <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-white">Ranking Global</h1>
+          <p className="mt-2 text-xs sm:text-sm text-slate-400">Top usuarios por puntos acumulados</p>
         </div>
 
         <motion.div
@@ -94,7 +94,7 @@ export const RankingPage = () => {
             return (
               <motion.div
                 key={entry.id}
-                className={`rounded-lg border p-4 transition ${
+                className={`rounded-lg border p-3 sm:p-4 lg:p-5 transition ${
                   index < 3
                     ? 'bg-gradient-to-r from-violet-900/20 to-slate-900 border-violet-500/30'
                     : 'bg-slate-900 border-slate-800'
@@ -103,19 +103,19 @@ export const RankingPage = () => {
                 animate={{ y: 0, opacity: 1 }}
                 transition={{ delay: index * 0.1 }}
               >
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-4">
-                    <div className="flex items-center justify-center w-10 h-10">
+                <div className="flex items-center justify-between gap-3">
+                  <div className="flex items-center gap-3">
+                    <div className="flex items-center justify-center w-8 h-8 sm:w-10 sm:h-10">
                       {getRankIcon(index + 1)}
                     </div>
-                    <div>
-                      <p className="text-white font-semibold">{displayName}</p>
-                      <p className="text-slate-400 text-sm">@{handle}</p>
+                    <div className="min-w-0">
+                      <p className="text-sm sm:text-base text-white font-semibold truncate">{displayName}</p>
+                      <p className="text-xs sm:text-sm text-slate-400 truncate">@{handle}</p>
                     </div>
                   </div>
                   <div className="text-right">
-                    <p className="text-2xl font-bold text-violet-400">{entry.points.toLocaleString()}</p>
-                    <p className="text-slate-400 text-sm">puntos</p>
+                    <p className="text-lg sm:text-2xl font-bold text-violet-400">{entry.points.toLocaleString()}</p>
+                    <p className="text-xs sm:text-sm text-slate-400">puntos</p>
                   </div>
                 </div>
               </motion.div>

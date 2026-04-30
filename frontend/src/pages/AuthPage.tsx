@@ -13,24 +13,24 @@ export const AuthPage = () => {
         <div className="absolute inset-0 bg-[repeating-linear-gradient(0deg,rgba(255,255,255,0.02),rgba(255,255,255,0.02)_1px,transparent_1px,transparent_24px),repeating-linear-gradient(90deg,rgba(255,255,255,0.02),rgba(255,255,255,0.02)_1px,transparent_1px,transparent_24px)] opacity-20" />
       </div>
 
-      <div className="relative mx-auto flex min-h-screen max-w-7xl items-center justify-center px-6 py-8">
-        <div className="grid w-full gap-12 rounded-[2.5rem] border border-cyan-400/10 bg-white/5 p-8 shadow-[0_30px_130px_rgba(0,207,255,0.14)] backdrop-blur-xl lg:grid-cols-[1fr_0.85fr]">
-          <div className="space-y-10 rounded-[2rem] border border-white/10 bg-slate-950/30 p-10 shadow-[inset_0_0_0_1px_rgba(255,255,255,0.04)]">
+      <div className="relative mx-auto flex min-h-screen max-w-7xl items-center justify-center px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
+        <div className="grid w-full gap-6 sm:gap-8 lg:gap-12 rounded-[2.5rem] border border-cyan-400/10 bg-white/5 p-4 sm:p-6 lg:p-8 shadow-[0_30px_130px_rgba(0,207,255,0.14)] backdrop-blur-xl lg:grid-cols-[1fr_0.85fr]">
+          <div className="space-y-6 sm:space-y-8 lg:space-y-10 rounded-[2rem] border border-white/10 bg-slate-950/30 p-6 sm:p-8 lg:p-10 shadow-[inset_0_0_0_1px_rgba(255,255,255,0.04)]">
             <div className="flex items-center justify-center">
-              <img src="/branding/logo.png" alt="Veltrix Logo" className="h-20 w-auto" />
+              <img src="/branding/logo.png" alt="Veltrix Logo" className="h-14 sm:h-16 lg:h-20 w-auto" />
             </div>
 
             <div className="max-w-2xl">
-              <h1 className="text-5xl font-semibold leading-[1.02] tracking-tight text-white sm:text-6xl">
+              <h1 className="text-2xl sm:text-3xl lg:text-5xl xl:text-6xl font-semibold leading-[1.02] tracking-tight text-white">
                 Inicia sesión y descubre tu panel de progreso
               </h1>
-              <p className="mt-6 text-lg leading-8 text-slate-300">
+              <p className="mt-4 sm:mt-6 text-sm sm:text-base lg:text-lg leading-7 sm:leading-8 text-slate-300">
                 Accede a tus misiones semanales, puntos y recompensas estimadas en una interfaz premium con looks de crypto y experiencia de piloto.
               </p>
             </div>
           </div>
 
-          <div className="rounded-[2rem] border border-white/10 bg-slate-950/90 p-6 shadow-[0_20px_80px_rgba(24,30,54,0.35)] backdrop-blur-xl">
+          <div className="rounded-[2rem] border border-white/10 bg-slate-950/90 p-4 sm:p-5 lg:p-6 shadow-[0_20px_80px_rgba(24,30,54,0.35)] backdrop-blur-xl">
             <AuthForm mode={isLogin ? 'login' : 'register'} />
           </div>
         </div>
