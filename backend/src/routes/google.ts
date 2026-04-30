@@ -1,3 +1,4 @@
+
 import { Router } from 'express';
 import { GoogleOAuthService } from '../services/googleOAuthService';
 import prisma from '../utils/prismaClient';
@@ -10,85 +11,79 @@ const googleService = new GoogleOAuthService();
 const JWT_SECRET: jwt.Secret = env.JWT_SECRET;
 const JWT_EXPIRE = env.JWT_EXPIRE;
 
-// Get Google OAuth callback
+// Get Google OAuth URL
+router.get('/auth-url', (req, res) => {
+  try {
+    const state = Math.random().toString(36).substring(2, 15);
+    const authUrl = googleService.generateAuthUrl(state);
+
+    // Store state in session or temporary storage for verification
+    // For now, we'll just return the URL
+
+    res.json({
+      success: true,
+      authUrl
+    });
+  } catch (error) {
+    console.error('Error generating Google auth URL:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Error generating auth URL'
+    });
+  }
+});
+
+// Google OAuth callback
 router.get('/callback', async (req, res) => {
   try {
-    console.log('CALLBACK START');
-
-    const { code, error } = req.query;
-
-    console.log('QUERY OK');
+    const { code, error, state } = req.query;
 
     if (error) {
-      console.log('GOOGLE ERROR');
-
-      return res.redirect(
-        `${env.FRONTEND_URL}/login?error=google_oauth_failed`
-      );
+      return res.redirect(`${env.FRONTEND_URL}/login?error=google_oauth_failed`);
     }
 
     if (!code) {
-      console.log('NO CODE');
-
-      return res.redirect(
-        `${env.FRONTEND_URL}/login?error=google_oauth_no_code`
-      );
+      return res.redirect(`${env.FRONTEND_URL}/login?error=google_oauth_no_code`);
     }
 
-    console.log('EXCHANGING TOKEN');
-
+    // Exchange code for tokens and user info
     const tokenResult = await googleService.exchangeCodeForToken(code as string);
 
-    console.log('TOKEN RESULT:', tokenResult.success);
-
     if (!tokenResult.success || !tokenResult.userInfo) {
-      console.log('TOKEN EXCHANGE FAILED');
-
-      return res.redirect(
-        `${env.FRONTEND_URL}/login?error=google_oauth_token_exchange_failed`
-      );
+      return res.redirect(`${env.FRONTEND_URL}/login?error=google_oauth_token_exchange_failed`);
     }
 
     const { userInfo } = tokenResult;
 
-    console.log('USER INFO OK');
-
+    // Check if user exists
     let user = await prisma.user.findUnique({
       where: { email: userInfo.email }
     });
 
-    console.log('USER SEARCH DONE');
-
     if (!user) {
-      console.log('CREATING USER');
-
+      // Create new user
       user = await prisma.user.create({
         data: {
           email: userInfo.email,
           name: userInfo.name,
-          password: '',
+          password: '', // Google OAuth users don't need password
           googleId: userInfo.id,
           googleAccessToken: tokenResult.accessToken,
           googleRefreshToken: tokenResult.refreshToken,
-          googleTokenExpiresAt: tokenResult.expiresIn
-            ? new Date(Date.now() + (tokenResult.expiresIn * 1000))
-            : undefined,
+          googleTokenExpiresAt: tokenResult.expiresIn ? new Date(Date.now() + (tokenResult.expiresIn * 1000)) : undefined,
           avatar: userInfo.picture,
-          emailVerified: true,
+          emailVerified: true, // Google accounts are pre-verified
         }
       });
     } else {
-      console.log('UPDATING USER');
-
+      // Update existing user with Google info
       user = await prisma.user.update({
         where: { id: user.id },
         data: {
           googleId: userInfo.id,
           googleAccessToken: tokenResult.accessToken,
           googleRefreshToken: tokenResult.refreshToken,
-          googleTokenExpiresAt: tokenResult.expiresIn
-            ? new Date(Date.now() + (tokenResult.expiresIn * 1000))
-            : undefined,
+          googleTokenExpiresAt: tokenResult.expiresIn ? new Date(Date.now() + (tokenResult.expiresIn * 1000)) : undefined,
           name: userInfo.name,
           avatar: userInfo.picture,
           emailVerified: true,
@@ -96,8 +91,7 @@ router.get('/callback', async (req, res) => {
       });
     }
 
-    console.log('GENERATING JWT');
-
+    // Generate JWT token
     const token = jwt.sign(
       {
         userId: user.id,
@@ -105,23 +99,15 @@ router.get('/callback', async (req, res) => {
         role: user.role
       },
       JWT_SECRET,
-      {
-        expiresIn: JWT_EXPIRE as unknown as jwt.SignOptions['expiresIn']
-      }
+      { expiresIn: JWT_EXPIRE as unknown as jwt.SignOptions['expiresIn'] }
     );
 
-    console.log('REDIRECTING');
-
-    res.redirect(
-      `${env.FRONTEND_URL}/login?token=${encodeURIComponent(token)}&google_login=true`
-    );
+    // Redirect to frontend with token
+    res.redirect(`${env.FRONTEND_URL}/login?token=${token}&google_login=true`);
 
   } catch (error) {
-    console.error('FULL GOOGLE CALLBACK ERROR:', error);
-
-    res.redirect(
-      `${env.FRONTEND_URL}/login?error=google_oauth_callback_error`
-    );
+    console.error('Google OAuth callback error:', error);
+    res.redirect(`${env.FRONTEND_URL}/login?error=google_oauth_callback_error`);
   }
 });
 
