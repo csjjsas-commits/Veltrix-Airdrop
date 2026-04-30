@@ -4,7 +4,7 @@ import { completeTask, startTask } from '../../services/api';
 import { UserTask } from '../../types';
 import { CountdownBadge } from './CountdownBadge';
 import { useAnalytics } from '../../hooks/useAnalytics';
-import { FaInstagram, FaTelegramPlane, FaUsers, FaExternalLinkAlt } from 'react-icons/fa';
+import { FaInstagram, FaTelegramPlane, FaYoutube, FaUsers, FaExternalLinkAlt } from 'react-icons/fa';
 
 interface Props {
   task: UserTask;
@@ -18,6 +18,7 @@ const getPlatformIcon = (platform?: string, taskType?: string) => {
   if (taskType === 'REFERRAL') return <FaUsers size={20} className="text-violet-300" />;
   const p = platform?.toLowerCase();
   if (p === 'instagram') return <FaInstagram size={20} className="text-violet-300" />;
+  if (p === 'youtube') return <FaYoutube size={20} className="text-red-500" />;
   if (p === 'twitter' || p === 'x') return (
     <div className="flex h-10 w-10 items-center justify-center rounded-full bg-violet-500/10 text-xs font-semibold text-violet-300">
       X
