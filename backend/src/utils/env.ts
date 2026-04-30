@@ -2,6 +2,13 @@ import * as dotenv from 'dotenv';
 
 dotenv.config();
 
+const normalizeUrl = (url = '') => {
+  const trimmed = url.trim();
+  if (!trimmed) return trimmed;
+  const normalized = trimmed.match(/^https?:\/\//i) ? trimmed : `https://${trimmed}`;
+  return normalized.replace(/\/+$/, '');
+};
+
 const requiredEnv = ['DATABASE_URL', 'JWT_SECRET'] as const;
 
 for (const key of requiredEnv) {
@@ -43,5 +50,5 @@ export const env = {
   TWITTER_CLIENT_ID: process.env.TWITTER_CLIENT_ID || '',
   TWITTER_CLIENT_SECRET: process.env.TWITTER_CLIENT_SECRET || '',
   TWITTER_REDIRECT_URI: process.env.TWITTER_REDIRECT_URI || '',
-  FRONTEND_URL: process.env.FRONTEND_URL || 'http://localhost:5173'
+  FRONTEND_URL: normalizeUrl(process.env.FRONTEND_URL || 'http://localhost:5173')
 };

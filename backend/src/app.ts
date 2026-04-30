@@ -6,13 +6,14 @@ import { notFoundHandler } from './middleware/notFound';
 import { errorHandler } from './middleware/errorHandler';
 import { globalLimiter } from './middleware/rateLimiter';
 import { logger } from './utils/logger';
+import { env } from './utils/env';
 
 const app = express();
 
 app.set('trust proxy', 1);
 
 const allowedOrigins = [
-  ...(process.env.FRONTEND_URL ? process.env.FRONTEND_URL.split(',').map((origin) => origin.trim()).filter(Boolean) : []),
+  ...(env.FRONTEND_URL ? env.FRONTEND_URL.split(',').map((origin) => origin.trim()).filter(Boolean) : []),
   'http://localhost:5173',
   'https://veltrix-airdrop.vercel.app'
 ];

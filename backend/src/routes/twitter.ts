@@ -2,6 +2,7 @@ import { Router } from 'express';
 import { TwitterService } from '../services/verification/twitter.service';
 import { authMiddleware } from '../middleware/auth';
 import prisma from '../utils/prismaClient';
+import { env } from '../utils/env';
 
 const router = Router();
 const twitterService = new TwitterService();
@@ -37,24 +38,24 @@ router.get('/callback', async (req, res) => {
 
     if (error) {
       console.error('Twitter OAuth error:', error);
-      return res.redirect(`${process.env.FRONTEND_URL}/dashboard?error=twitter_oauth_failed`);
+      return res.redirect(`${env.FRONTEND_URL}/dashboard?error=twitter_oauth_failed`);
     }
 
     if (!code || !state || typeof state !== 'string') {
-      return res.redirect(`${process.env.FRONTEND_URL}/dashboard?error=twitter_oauth_invalid`);
+      return res.redirect(`${env.FRONTEND_URL}/dashboard?error=twitter_oauth_invalid`);
     }
 
     // Extract user ID from state
     const stateParts = state.split('_');
     if (stateParts.length !== 3 || stateParts[0] !== 'twitter') {
-      return res.redirect(`${process.env.FRONTEND_URL}/dashboard?error=twitter_oauth_invalid_state`);
+      return res.redirect(`${env.FRONTEND_URL}/dashboard?error=twitter_oauth_invalid_state`);
     }
 
     const userId = stateParts[1];
     const codeVerifier = codeVerifiers.get(state);
 
     if (!codeVerifier) {
-      return res.redirect(`${process.env.FRONTEND_URL}/dashboard?error=twitter_oauth_expired`);
+      return res.redirect(`${env.FRONTEND_URL}/dashboard?error=twitter_oauth_expired`);
     }
 
     // Exchange code for token
@@ -62,7 +63,7 @@ router.get('/callback', async (req, res) => {
 
     if (!tokenResult.success) {
       console.error('Twitter token exchange failed:', tokenResult.message);
-      return res.redirect(`${process.env.FRONTEND_URL}/dashboard?error=twitter_token_exchange_failed`);
+      return res.redirect(`${env.FRONTEND_URL}/dashboard?error=twitter_token_exchange_failed`);
     }
 
     // Update user with Twitter credentials
@@ -81,10 +82,10 @@ router.get('/callback', async (req, res) => {
     // Clean up code verifier
     codeVerifiers.delete(state);
 
-    res.redirect(`${process.env.FRONTEND_URL}/dashboard?success=twitter_connected`);
+    res.redirect(`${env.FRONTEND_URL}/dashboard?success=twitter_connected`);
   } catch (error) {
     console.error('Twitter callback error:', error);
-    res.redirect(`${process.env.FRONTEND_URL}/dashboard?error=twitter_callback_error`);
+    res.redirect(`${env.FRONTEND_URL}/dashboard?error=twitter_callback_error`);
   }
 });
 
