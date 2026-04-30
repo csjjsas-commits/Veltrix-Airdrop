@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { FaExternalLinkAlt, FaYoutube } from 'react-icons/fa';
+import { FaExternalLinkAlt, FaGlobe, FaYoutube } from 'react-icons/fa';
 import { useMissionAction, MissionVerificationModalProps } from '../hooks/useMissionAction';
 import { useAuth } from '../hooks/useAuth';
 import { getDashboard, verifyTask } from '../services/api';
@@ -19,6 +19,9 @@ const platformIcons: Record<string, JSX.Element> = {
   ),
   youtube: (
     <FaYoutube size={44} className="text-red-500" />
+  ),
+  web: (
+    <FaGlobe size={44} className="text-violet-300" />
   ),
   telegram: (
     <svg viewBox="0 0 24 24" className="h-12 w-12 text-white" fill="currentColor" aria-hidden="true">

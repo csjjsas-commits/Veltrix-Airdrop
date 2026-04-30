@@ -31,6 +31,7 @@ export const TareasPage = () => {
     if (platform === 'telegram') return 'telegram';
     if (platform === 'instagram') return 'instagram';
     if (platform === 'youtube') return 'youtube';
+    if (platform === 'web') return 'web';
     return 'x';
   };
 

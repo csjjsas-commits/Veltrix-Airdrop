@@ -18,7 +18,7 @@ import { AdminConfig, AdminStats, LeaderboardEntry, SubmissionItem, TaskPayload,
 import { SubmissionsTable } from '../components/admin/SubmissionsTable';
 import { ConfigPanel } from '../components/admin/ConfigPanel';
 import { AnalyticsDashboard } from '../components/admin/AnalyticsDashboard';
-import { FiEdit2, FiTrash2, FiEye, FiEyeOff } from 'react-icons/fi';
+import { FiEdit2, FiTrash2, FiEye, FiEyeOff, FiGlobe } from 'react-icons/fi';
 import { SiInstagram, SiX, SiTelegram, SiYoutube } from 'react-icons/si';
 import { MdGroup } from 'react-icons/md';
 
@@ -44,6 +44,8 @@ const getPlatformIcon = (platform: string | undefined) => {
       return <SiTelegram className="w-5 h-5" />;
     case 'youtube':
       return <SiYoutube className="w-5 h-5 text-red-500" />;
+    case 'web':
+      return <FiGlobe className="w-5 h-5" />;
     case 'referral':
       return <MdGroup className="w-5 h-5" />;
     default:
@@ -87,7 +89,7 @@ const normalizeTaskForm = (task: UserTask | null) => {
     referralTarget: task.referralTarget ?? '',
     requiredReferralActions: task.requiredReferralActions ?? 0,
     taskActive: Boolean(task.active),
-    taskPlatform: (task.platform ?? (task.taskType === 'REFERRAL' ? 'referral' : 'x')) as 'instagram' | 'x' | 'telegram' | 'youtube' | 'referral',
+    taskPlatform: (task.platform ?? (task.taskType === 'REFERRAL' ? 'referral' : 'x')) as 'instagram' | 'x' | 'telegram' | 'youtube' | 'web' | 'referral',
     taskAction: 'seguir' as const,
     taskAccount: task.verificationData?.username ?? '',
     taskMandatory: Boolean(task.requiresProof),
@@ -116,7 +118,7 @@ export const AdminPanel = () => {
   const [referralTarget, setReferralTarget] = useState<string>('');
   const [requiredReferralActions, setRequiredReferralActions] = useState<number>(0);
   const [taskActive, setTaskActive] = useState<boolean>(true);
-  const [taskPlatform, setTaskPlatform] = useState<'instagram' | 'x' | 'telegram' | 'youtube' | 'referral'>('x');
+  const [taskPlatform, setTaskPlatform] = useState<'instagram' | 'x' | 'telegram' | 'youtube' | 'web' | 'referral'>('x');
   const [taskAction, setTaskAction] = useState<'seguir' | 'me gusta' | 'compartir' | 'ver video' | 'comentar' | 'suscribirse' | 'unirse'>('seguir');
   const [taskAccount, setTaskAccount] = useState<string>('');
   const [taskMandatory, setTaskMandatory] = useState<boolean>(false);
@@ -673,6 +675,7 @@ export const AdminPanel = () => {
                       <option value="instagram">Instagram</option>
                       <option value="telegram">Telegram</option>
                       <option value="youtube">YouTube</option>
+                      <option value="web">Web</option>
                       <option value="referral">Sistema de Referidos</option>
                     </select>
                   </div>
