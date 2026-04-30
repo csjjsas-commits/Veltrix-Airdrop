@@ -4,9 +4,6 @@ import { verifyWithInvokeLLM } from '../services/invokeLLMService';
 import { ValidationError } from '../utils/errors';
 
 const ACTION_MAP: Record<string, string> = {
-  YOUTUBE_SUBSCRIBE: 'suscribirse al canal',
-  YOUTUBE_LIKE: 'dar like al video',
-  YOUTUBE_COMMENT: 'comentar en el video',
   TWITTER_FOLLOW: 'seguir la cuenta',
   TWITTER_LIKE: 'dar like al tweet',
   TWITTER_RETWEET: 'retuitear el tweet',

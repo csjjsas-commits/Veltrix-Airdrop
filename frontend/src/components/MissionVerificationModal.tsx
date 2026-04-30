@@ -21,12 +21,6 @@ const platformIcons: Record<string, JSX.Element> = {
     <svg viewBox="0 0 24 24" className="h-12 w-12 text-white" fill="currentColor" aria-hidden="true">
       <path d="M12 2C6.477 2 2 6.477 2 12s4.477 10 10 10 10-4.477 10-10S17.523 2 12 2zm4.75 8.05l-3.727 3.83c-.287.295-.32.295-.63.205l-1.75-.65-1.1 1.05c-.15.15-.27.31-.58.31l.21-2.98 5.43-4.91c.24-.21-.05-.33-.37-.12L7.41 11.25l-2.95-.92c-.64-.2-.65.16-.14.44l7.27 2.28 1.75 5.9c.33 1.17 1.12 1.48 2.11.92.97-.56 4.25-3.08 5.39-3.75.9-.52.52-.82-.18-.55L12.9 14.78l-1.82-1.05 4.62-4.9c.35-.36.67-.16.48.2z" />
     </svg>
-  ),
-  youtube: (
-    <svg viewBox="0 0 24 24" className="h-12 w-12 text-white" fill="currentColor" aria-hidden="true">
-      <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814z" />
-      <path d="M9.545 15.568V8.432L15.818 12z" fill="#060606" />
-    </svg>
   )
 };
 
@@ -113,7 +107,6 @@ export const MissionVerificationModal = ({
           <div className="mb-8 flex items-start justify-between gap-4">
             <div>
               <h2 className="text-3xl font-bold text-white">Invitá a tus amigos</h2>
-              <p className="mt-2 text-sm text-slate-400">Comparte tu enlace para ganar puntos cuando tus amigos completen tareas.</p>
             </div>
             <button
               onClick={onClose}
@@ -124,9 +117,6 @@ export const MissionVerificationModal = ({
           </div>
 
           <div className="space-y-6">
-            <div className="inline-flex items-center rounded-full border border-violet-500/30 bg-violet-500/10 px-4 py-2 text-sm font-semibold text-violet-300">
-              Premio por referido: {task?.points ?? 0} pts
-            </div>
 
             <div className="grid gap-4 sm:grid-cols-2">
               <div className="rounded-[1.75rem] border border-slate-800 bg-slate-900/90 p-6 text-center">

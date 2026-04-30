@@ -2,7 +2,6 @@ import { TaskVerificationType, TaskVerificationTypes, VerificationProvider, Veri
 import { TwitterService } from './twitter.service';
 import { DiscordService } from './discord.service';
 import { TelegramService } from './telegram.service';
-import { YouTubeService } from './youtube.service';
 import { WalletService } from './wallet.service';
 import { ReferralService } from './referral.service';
 
@@ -22,11 +21,6 @@ export class VerificationProviderRegistry {
     [TaskVerificationTypes.TELEGRAM_JOIN_CHANNEL, { type: TaskVerificationTypes.TELEGRAM_JOIN_CHANNEL, provider: TelegramService }],
     [TaskVerificationTypes.TELEGRAM_JOIN_GROUP, { type: TaskVerificationTypes.TELEGRAM_JOIN_GROUP, provider: TelegramService }],
     [TaskVerificationTypes.TELEGRAM_BOT_VERIFY, { type: TaskVerificationTypes.TELEGRAM_BOT_VERIFY, provider: TelegramService }],
-
-    // YouTube verifications
-    [TaskVerificationTypes.YOUTUBE_SUBSCRIBE, { type: TaskVerificationTypes.YOUTUBE_SUBSCRIBE, provider: YouTubeService }],
-    [TaskVerificationTypes.YOUTUBE_LIKE, { type: TaskVerificationTypes.YOUTUBE_LIKE, provider: YouTubeService }],
-    [TaskVerificationTypes.YOUTUBE_CONNECT, { type: TaskVerificationTypes.YOUTUBE_CONNECT, provider: YouTubeService }],
 
     // Wallet verifications
     [TaskVerificationTypes.WALLET_CONNECT, { type: TaskVerificationTypes.WALLET_CONNECT, provider: WalletService }],

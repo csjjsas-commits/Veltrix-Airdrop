@@ -55,11 +55,6 @@ export const TareasReferralPanel = ({ referralTask }: Props) => {
         <div>
           <p className="text-xs uppercase tracking-[0.35em] text-slate-500 font-semibold">Referidos</p>
           <h3 className="mt-3 text-2xl font-bold text-white">Invitá a tus amigos</h3>
-          <p className="mt-2 text-sm text-slate-400">Comparte tu enlace para ganar puntos cuando tus amigos completen tareas.</p>
-        </div>
-
-        <div className="inline-flex items-center rounded-full border border-violet-500/30 bg-violet-500/10 px-4 py-2 text-sm font-semibold text-violet-300">
-          Premio por referido: {referralTask?.points ?? 0} pts
         </div>
 
         <div className="grid gap-4 sm:grid-cols-2">

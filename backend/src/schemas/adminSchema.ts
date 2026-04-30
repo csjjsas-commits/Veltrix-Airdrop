@@ -30,8 +30,6 @@ const taskVerificationTypeEnum = z.enum([
   TaskVerificationTypes.TELEGRAM_JOIN_CHANNEL,
   TaskVerificationTypes.TELEGRAM_JOIN_GROUP,
   TaskVerificationTypes.TELEGRAM_BOT_VERIFY,
-  TaskVerificationTypes.YOUTUBE_SUBSCRIBE,
-  TaskVerificationTypes.YOUTUBE_LIKE,
   TaskVerificationTypes.WALLET_CONNECT,
   TaskVerificationTypes.WALLET_HOLD_TOKEN,
   TaskVerificationTypes.WALLET_NFT_OWNERSHIP,

@@ -1,6 +1,6 @@
 import { useEffect, useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { FaInstagram, FaTelegramPlane, FaYoutube, FaTasks, FaStar, FaCheckCircle, FaClock, FaBolt, FaExternalLinkAlt } from 'react-icons/fa';
+import { FaInstagram, FaTelegramPlane, FaTasks, FaStar, FaCheckCircle, FaClock, FaBolt, FaExternalLinkAlt } from 'react-icons/fa';
 import { useAuth } from '../hooks/useAuth';
 import { useAnalytics } from '../hooks/useAnalytics';
 import { useMissionAction } from '../hooks/useMissionAction';
@@ -26,7 +26,6 @@ export const DashboardPage = () => {
   const getPlatformKey = (task: UserTask) => {
     const platform = task.platform?.toString().toLowerCase();
     if (platform === 'twitter') return 'x';
-    if (platform === 'youtube') return 'youtube';
     if (platform === 'telegram') return 'telegram';
     if (platform === 'instagram') return 'instagram';
     return 'x';
@@ -39,8 +38,6 @@ export const DashboardPage = () => {
         return <FaInstagram size={22} className="text-violet-300" />;
       case 'telegram':
         return <FaTelegramPlane size={22} className="text-violet-300" />;
-      case 'youtube':
-        return <FaYoutube size={22} className="text-violet-300" />;
       default:
         return (
           <div className="flex h-11 w-11 items-center justify-center rounded-full bg-violet-500/10 text-xs font-semibold text-violet-300">

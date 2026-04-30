@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { useAuth } from '../../hooks/useAuth';
 import { Button } from '../ui/Button';
 import { TelegramVerification } from './TelegramVerification';
-import { YouTubeVerification } from './YouTubeVerification';
 import { TwitterVerification } from './TwitterVerification';
 import { verifyTask } from '../../services/api';
 
@@ -32,29 +31,6 @@ export const VerificationButton: React.FC<VerificationButtonProps> = ({
         verificationData={verificationData}
         onVerificationComplete={onVerificationComplete}
         disabled={disabled}
-      />
-    );
-  }
-
-  // Use specialized component for YouTube verification
-  if (verificationType.startsWith('YOUTUBE_')) {
-    const action = verificationType === 'YOUTUBE_CONNECT' ? 'connect' :
-                   verificationType === 'YOUTUBE_SUBSCRIBE' ? 'subscribe' : 'like';
-    return (
-      <YouTubeVerification
-        taskId={taskId}
-        action={action}
-        targetId={verificationData?.targetId || verificationData?.channelId || verificationData?.videoId}
-        channelId={verificationData?.channelId}
-        channelTitle={verificationData?.channelTitle}
-        onVerificationComplete={(success, data) => {
-          onVerificationComplete({
-            verified: success,
-            taskCompleted: success,
-            message: success ? 'Verificación exitosa' : 'Verificación fallida',
-            ...data
-          });
-        }}
       />
     );
   }

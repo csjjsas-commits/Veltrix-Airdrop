@@ -13,7 +13,7 @@ export const TareasPage = () => {
   const [tasks, setTasks] = useState<UserTask[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
-  const [activePlatform, setActivePlatform] = useState<'all' | 'instagram' | 'x' | 'telegram' | 'youtube'>('all');
+  const [activePlatform, setActivePlatform] = useState<'all' | 'instagram' | 'x' | 'telegram'>('all');
   const [modalTask, setModalTask] = useState<UserTask | null>(null);
   const { state: missionState } = useMissionAction();
 
@@ -21,14 +21,12 @@ export const TareasPage = () => {
     { key: 'all', label: 'Todas' },
     { key: 'instagram', label: 'Instagram' },
     { key: 'x', label: 'X' },
-    { key: 'telegram', label: 'Telegram' },
-    { key: 'youtube', label: 'YouTube' }
+    { key: 'telegram', label: 'Telegram' }
   ] as const;
 
   const getPlatformKey = (task: UserTask) => {
     const platform = task.platform?.toString().toLowerCase();
     if (platform === 'twitter') return 'x';
-    if (platform === 'youtube') return 'youtube';
     if (platform === 'telegram') return 'telegram';
     if (platform === 'instagram') return 'instagram';
     return 'x';

@@ -10,13 +10,6 @@ interface TelegramTaskData {
   botUrl?: string;
 }
 
-interface YouTubeTaskData {
-  channelId?: string;
-  channelTitle?: string;
-  videoId?: string;
-  videoTitle?: string;
-}
-
 interface AdminTaskFormProps {
   onSubmit: (data: any) => Promise<void>;
   onCancel: () => void;
@@ -40,11 +33,6 @@ export const AdminTaskForm: React.FC<AdminTaskFormProps> = ({
     groupUrl: initialData?.verificationData?.groupUrl || '',
     botUsername: initialData?.verificationData?.botUsername || '',
     botUrl: initialData?.verificationData?.botUrl || '',
-    // YouTube fields
-    youtubeChannelId: initialData?.verificationData?.channelId || '',
-    youtubeChannelTitle: initialData?.verificationData?.channelTitle || '',
-    youtubeVideoId: initialData?.verificationData?.videoId || '',
-    youtubeVideoTitle: initialData?.verificationData?.videoTitle || '',
     // Twitter fields
     twitterUsername: initialData?.verificationData?.username || '',
     twitterTweetId: initialData?.verificationData?.tweetId || '',
@@ -83,22 +71,6 @@ export const AdminTaskForm: React.FC<AdminTaskFormProps> = ({
           verificationData = {
             botUsername: formData.botUsername,
             botUrl: formData.botUrl
-          };
-          break;
-        case 'YOUTUBE_SUBSCRIBE':
-          verificationData = {
-            action: 'subscribe',
-            targetId: formData.youtubeChannelId,
-            channelId: formData.youtubeChannelId,
-            channelTitle: formData.youtubeChannelTitle
-          };
-          break;
-        case 'YOUTUBE_LIKE':
-          verificationData = {
-            action: 'like',
-            targetId: formData.youtubeVideoId,
-            videoId: formData.youtubeVideoId,
-            videoTitle: formData.youtubeVideoTitle
           };
           break;
         case 'TWITTER_FOLLOW':
@@ -160,8 +132,7 @@ export const AdminTaskForm: React.FC<AdminTaskFormProps> = ({
         ...(formData.verificationType === 'REFERRAL_INVITE' && { referralTarget: formData.referralTarget }),
         taskType: 'AUTO_COMPLETE',
         verificationMethod: 'SYSTEM_AUTOMATIC',
-        platform: formData.verificationType.startsWith('YOUTUBE_') ? 'youtube' :
-                 formData.verificationType.startsWith('TWITTER_') ? 'twitter' :
+        platform: formData.verificationType.startsWith('TWITTER_') ? 'twitter' :
                  formData.verificationType.startsWith('WALLET_') ? 'wallet' :
                  formData.verificationType === 'REFERRAL_INVITE' ? 'referral' : 'telegram',
         active: formData.active
@@ -242,10 +213,6 @@ export const AdminTaskForm: React.FC<AdminTaskFormProps> = ({
                 <option value="TELEGRAM_JOIN_CHANNEL">Unirse a Canal</option>
                 <option value="TELEGRAM_JOIN_GROUP">Unirse a Grupo</option>
                 <option value="TELEGRAM_BOT_VERIFY">Verificar con Bot</option>
-              </optgroup>
-              <optgroup label="YouTube">
-                <option value="YOUTUBE_SUBSCRIBE">Suscribirse a Canal</option>
-                <option value="YOUTUBE_LIKE">Dar Like a Video</option>
               </optgroup>
               <optgroup label="X (Twitter)">
                 <option value="TWITTER_FOLLOW">Seguir Cuenta</option>
@@ -360,77 +327,6 @@ export const AdminTaskForm: React.FC<AdminTaskFormProps> = ({
                     className="w-full rounded-2xl border border-brand-graphite/70 bg-brand-blackVoid/80 px-4 py-3 text-brand-pureWhite outline-none focus:border-brand-neonCyan"
                   />
                 </div>
-              </div>
-            </div>
-          )}
-
-          {/* YouTube Configuration */}
-          {formData.verificationType === 'YOUTUBE_SUBSCRIBE' && (
-            <div className="space-y-4">
-              <h3 className="text-lg font-medium text-brand-pureWhite">Configuración del Canal de YouTube</h3>
-              <div className="grid gap-4 md:grid-cols-2">
-                <div>
-                  <label className="block text-sm text-brand-softGray mb-2">
-                    ID del Canal *
-                  </label>
-                  <input
-                    type="text"
-                    value={formData.youtubeChannelId}
-                    onChange={(e) => updateFormData('youtubeChannelId', e.target.value)}
-                    placeholder="UC1234567890abcdef"
-                    className="w-full rounded-2xl border border-brand-graphite/70 bg-brand-blackVoid/80 px-4 py-3 text-brand-pureWhite outline-none focus:border-brand-neonCyan"
-                    required
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm text-brand-softGray mb-2">
-                    Título del Canal
-                  </label>
-                  <input
-                    type="text"
-                    value={formData.youtubeChannelTitle}
-                    onChange={(e) => updateFormData('youtubeChannelTitle', e.target.value)}
-                    placeholder="Nombre del Canal"
-                    className="w-full rounded-2xl border border-brand-graphite/70 bg-brand-blackVoid/80 px-4 py-3 text-brand-pureWhite outline-none focus:border-brand-neonCyan"
-                  />
-                </div>
-              </div>
-            </div>
-          )}
-
-          {formData.verificationType === 'YOUTUBE_LIKE' && (
-            <div className="space-y-4">
-              <h3 className="text-lg font-medium text-brand-pureWhite">Configuración del Video de YouTube</h3>
-              <div className="grid gap-4 md:grid-cols-2">
-                <div>
-                  <label className="block text-sm text-brand-softGray mb-2">
-                    ID del Video *
-                  </label>
-                  <input
-                    type="text"
-                    value={formData.youtubeVideoId}
-                    onChange={(e) => updateFormData('youtubeVideoId', e.target.value)}
-                    placeholder="dQw4w9WgXcQ"
-                    className="w-full rounded-2xl border border-brand-graphite/70 bg-brand-blackVoid/80 px-4 py-3 text-brand-pureWhite outline-none focus:border-brand-neonCyan"
-                    required
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm text-brand-softGray mb-2">
-                    Título del Video
-                  </label>
-                  <input
-                    type="text"
-                    value={formData.youtubeVideoTitle}
-                    onChange={(e) => updateFormData('youtubeVideoTitle', e.target.value)}
-                    placeholder="Título del Video"
-                    className="w-full rounded-2xl border border-brand-graphite/70 bg-brand-blackVoid/80 px-4 py-3 text-brand-pureWhite outline-none focus:border-brand-neonCyan"
-                  />
-                </div>
-              </div>
-              <div className="p-3 bg-yellow-50 text-yellow-700 border border-yellow-200 rounded-md text-sm">
-                <p className="font-medium mb-1">Nota:</p>
-                <p>La verificación de likes de YouTube no está soportada por la API de YouTube. Los usuarios recibirán un mensaje indicando que esta función no está disponible.</p>
               </div>
             </div>
           )}

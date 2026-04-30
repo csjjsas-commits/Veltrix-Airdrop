@@ -49,13 +49,10 @@ export class VerificationService {
       throw new ValidationError('Ya has completado esta tarea');
     }
 
-    // Get user data for verification (needed for YouTube and Twitter access tokens)
+    // Get user data for verification (needed for Twitter access tokens)
     const user = await prisma.user.findUnique({
       where: { id: userId },
       select: {
-        youtubeAccessToken: true,
-        youtubeRefreshToken: true,
-        youtubeTokenExpiresAt: true,
         twitterAccessToken: true,
         twitterRefreshToken: true,
         twitterTokenExpiresAt: true
@@ -80,11 +77,7 @@ export class VerificationService {
       ...(verificationRequest.linkOpenedAt ? { linkOpenedAt: verificationRequest.linkOpenedAt } : {})
     } as Record<string, any>;
 
-    if (verificationType === TaskVerificationTypes.YOUTUBE_SUBSCRIBE || verificationType === TaskVerificationTypes.YOUTUBE_LIKE) {
-      verificationData.accessToken = user.youtubeAccessToken;
-      verificationData.refreshToken = user.youtubeRefreshToken;
-      verificationData.tokenExpiresAt = user.youtubeTokenExpiresAt;
-    } else if (verificationType === TaskVerificationTypes.TWITTER_FOLLOW || verificationType === TaskVerificationTypes.TWITTER_LIKE || verificationType === TaskVerificationTypes.TWITTER_RETWEET) {
+    if (verificationType === TaskVerificationTypes.TWITTER_FOLLOW || verificationType === TaskVerificationTypes.TWITTER_LIKE || verificationType === TaskVerificationTypes.TWITTER_RETWEET) {
       verificationData.accessToken = user.twitterAccessToken;
       verificationData.refreshToken = user.twitterRefreshToken;
       verificationData.tokenExpiresAt = user.twitterTokenExpiresAt;
