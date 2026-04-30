@@ -17,7 +17,7 @@ export const HeroPanel = ({ dashboard, loading }: HeroPanelProps) => {
   const pointsToNextLevel = stats?.pointsToNextLevel ?? 500;
 
   return (
-    <div className="relative overflow-hidden rounded-2xl border border-brand-graphite/70 bg-brand-deepBlue/85 p-8 shadow-brand-soft">
+    <div className="relative overflow-hidden rounded-2xl border border-brand-graphite/70 bg-brand-deepBlue/85 p-4 sm:p-6 lg:p-8 shadow-brand-soft">
       <div className="absolute inset-0 bg-brand-fog opacity-80" />
       <div className="absolute top-0 right-0 h-64 w-64 rounded-full bg-brand-neonCyan/10 blur-3xl" />
       <div className="absolute bottom-0 left-0 h-48 w-48 rounded-full bg-brand-elitePurple/10 blur-3xl" />
@@ -38,7 +38,7 @@ export const HeroPanel = ({ dashboard, loading }: HeroPanelProps) => {
               </div>
             </div>
 
-            <h1 className="text-4xl lg:text-5xl font-bold text-brand-pureWhite mb-3">
+            <h1 className="text-2xl sm:text-3xl lg:text-5xl font-bold text-brand-pureWhite mb-3">
               Welcome back, {loading ? 'Loading...' : user?.name?.split(' ')[0] || 'Pilot'}
             </h1>
 
@@ -70,7 +70,7 @@ export const HeroPanel = ({ dashboard, loading }: HeroPanelProps) => {
           </div>
 
           <div className="relative flex-shrink-0">
-            <div className="relative h-36 w-36 rounded-3xl border border-brand-electricBlue/20 bg-brand-graphite/90 p-5 shadow-brand-glow">
+            <div className="relative h-28 w-28 sm:h-32 sm:w-32 lg:h-36 lg:w-36 rounded-3xl border border-brand-electricBlue/20 bg-brand-graphite/90 p-5 shadow-brand-glow">
               <div className="text-center">
                 <div className="mb-2 text-3xl">🏆</div>
                 <div className="text-xs font-semibold uppercase tracking-wider text-brand-neonCyan">

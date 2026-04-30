@@ -33,11 +33,11 @@ export const WalletPanel = () => {
 
   if (user?.walletAddress) {
     return (
-      <div className="rounded-3xl border border-brand-neonCyan/30 bg-brand-neonCyan/10 px-6 py-5">
+      <div className="rounded-3xl border border-brand-neonCyan/30 bg-brand-neonCyan/10 px-4 sm:px-5 lg:px-6 py-4 sm:py-5">
         <div className="flex items-center gap-3">
-          <div className="text-2xl">👛</div>
+          <div className="text-xl sm:text-2xl">👛</div>
           <div>
-            <h3 className="text-lg font-semibold text-brand-pureWhite">Wallet Conectada</h3>
+            <h3 className="text-base sm:text-lg font-semibold text-brand-pureWhite">Wallet Conectada</h3>
             <p className="text-sm text-brand-softGray">
               {user.walletAddress.slice(0, 6)}...{user.walletAddress.slice(-4)}
             </p>
@@ -48,11 +48,11 @@ export const WalletPanel = () => {
   }
 
   return (
-    <div className="rounded-3xl border border-brand-electricBlue/30 bg-brand-electricBlue/10 px-6 py-5">
+    <div className="rounded-3xl border border-brand-electricBlue/30 bg-brand-electricBlue/10 px-4 sm:px-5 lg:px-6 py-4 sm:py-5">
       <div className="flex items-start gap-3">
-        <div className="text-2xl">👛</div>
+        <div className="text-xl sm:text-2xl">👛</div>
         <div className="flex-1">
-          <h3 className="text-lg font-semibold text-brand-pureWhite mb-2">Agregar Wallet Address</h3>
+          <h3 className="text-base sm:text-lg font-semibold text-brand-pureWhite mb-2">Agregar Wallet Address</h3>
           <p className="text-sm text-brand-softGray mb-4">
             Agrega tu dirección de wallet BSC para participar en el airdrop y completar tareas automáticamente.
           </p>

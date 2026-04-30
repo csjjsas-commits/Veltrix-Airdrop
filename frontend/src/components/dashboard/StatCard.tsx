@@ -47,7 +47,7 @@ export const StatCard = ({ title, value, subtitle, icon, color, trend }: StatCar
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       whileHover={{ scale: 1.02 }}
-      className={`relative overflow-hidden rounded-xl border ${colors.border} bg-gradient-to-br ${colors.bg} p-6 shadow-lg ${colors.glow} transition-all duration-300 hover:shadow-xl`}
+      className={`relative overflow-hidden rounded-xl border ${colors.border} bg-gradient-to-br ${colors.bg} p-4 sm:p-5 lg:p-6 shadow-lg ${colors.glow} transition-all duration-300 hover:shadow-xl`}
     >
       <div className={`absolute inset-0 bg-gradient-to-br ${colors.bg} opacity-40`} />
 

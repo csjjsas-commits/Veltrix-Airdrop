@@ -51,7 +51,7 @@ export const MissionCard = ({
       whileHover={!isLocked ? { scale: 1.02 } : {}}
       onHoverStart={() => setIsHovered(true)}
       onHoverEnd={() => setIsHovered(false)}
-      className={`relative overflow-hidden rounded-xl border ${statusStyles[status]} bg-brand-graphite/85 p-6 shadow-brand-soft transition-all duration-300 ${
+      className={`relative overflow-hidden rounded-xl border ${statusStyles[status]} bg-brand-graphite/85 p-4 sm:p-5 lg:p-6 shadow-brand-soft transition-all duration-300 ${
         isLocked ? 'cursor-not-allowed' : 'cursor-pointer'
       }`}
     >
@@ -62,7 +62,7 @@ export const MissionCard = ({
       <div className="relative">
         <div className="flex items-start justify-between mb-4 gap-4">
           <div className="flex-1">
-            <h4 className="text-lg font-semibold text-brand-pureWhite mb-1">{title}</h4>
+            <h4 className="text-base sm:text-lg font-semibold text-brand-pureWhite mb-1">{title}</h4>
             <p className="text-sm text-brand-softGray line-clamp-2">{description}</p>
           </div>
           <div className={`ml-3 rounded-full border px-3 py-1 text-xs font-semibold ${difficultyStyles[difficulty]}`}>

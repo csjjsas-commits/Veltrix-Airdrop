@@ -50,21 +50,21 @@ export const TareasReferralPanel = ({ referralTask }: Props) => {
   };
 
   return (
-    <div className="sticky top-24 rounded-[2rem] border border-slate-800 bg-slate-950/95 p-6 shadow-2xl shadow-black/40">
+    <div className="sticky top-24 rounded-[2rem] border border-slate-800 bg-slate-950/95 p-4 sm:p-5 lg:p-6 shadow-2xl shadow-black/40">
       <div className="space-y-6">
         <div>
           <p className="text-xs uppercase tracking-[0.35em] text-slate-500 font-semibold">Referidos</p>
-          <h3 className="mt-3 text-2xl font-bold text-white">Invitá a tus amigos</h3>
+          <h3 className="mt-3 text-xl sm:text-2xl font-bold text-white">Invitá a tus amigos</h3>
         </div>
 
         <div className="grid gap-4 sm:grid-cols-2">
-          <div className="rounded-[1.75rem] border border-slate-800 bg-slate-900/90 p-5 text-center">
+          <div className="rounded-[1.75rem] border border-slate-800 bg-slate-900/90 p-4 sm:p-5 text-center">
             <p className="text-xs uppercase tracking-widest text-slate-500">Referidos</p>
-            <p className="mt-4 text-4xl font-bold text-white">{referralStats.count}</p>
+            <p className="mt-4 text-3xl sm:text-4xl font-bold text-white">{referralStats.count}</p>
           </div>
-          <div className="rounded-[1.75rem] border border-slate-800 bg-slate-900/90 p-5 text-center">
+          <div className="rounded-[1.75rem] border border-slate-800 bg-slate-900/90 p-4 sm:p-5 text-center">
             <p className="text-xs uppercase tracking-widest text-slate-500">Pts ganados</p>
-            <p className="mt-4 text-4xl font-bold text-violet-300">{referralStats.pointsEarned}</p>
+            <p className="mt-4 text-3xl sm:text-4xl font-bold text-violet-300">{referralStats.pointsEarned}</p>
           </div>
         </div>
 

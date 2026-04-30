@@ -22,11 +22,11 @@ export const ReferralPanel = () => {
   };
 
   return (
-    <div className="rounded-3xl border border-brand-elitePurple/30 bg-brand-elitePurple/10 px-6 py-5">
+    <div className="rounded-3xl border border-brand-elitePurple/30 bg-brand-elitePurple/10 px-4 sm:px-5 lg:px-6 py-4 sm:py-5">
       <div className="flex items-start gap-3">
-        <div className="text-2xl">👥</div>
+        <div className="text-xl sm:text-2xl">👥</div>
         <div className="flex-1">
-          <h3 className="text-lg font-semibold text-brand-pureWhite mb-2">Invita a tus amigos</h3>
+          <h3 className="text-base sm:text-lg font-semibold text-brand-pureWhite mb-2">Invita a tus amigos</h3>
           <p className="text-sm text-brand-softGray mb-4">
             Comparte tu enlace de referido y gana puntos cuando tus amigos se registren y completen tareas.
           </p>
