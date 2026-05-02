@@ -488,14 +488,27 @@ export const AdminPanel = () => {
                     </tr>
                   </thead>
                   <tbody>
-                    {submissions.map((submission) => (
+                    {submissions.map((submission) => {
+                      // Extraer userHandle del verificationMetadata
+                      let userHandle = '—';
+                      if (submission.verificationMetadata) {
+                        try {
+                          const metadata = typeof submission.verificationMetadata === 'string' 
+                            ? JSON.parse(submission.verificationMetadata)
+                            : submission.verificationMetadata;
+                          userHandle = metadata.userHandle || metadata.username || '—';
+                        } catch (e) {
+                          userHandle = '—';
+                        }
+                      }
+                      return (
                       <tr
                         key={submission.id}
                         className="border-b border-gray-700/20 transition hover:bg-gray-800/30"
                       >
                         <td className="px-6 py-4 text-gray-300">{submission.user?.name || submission.user?.email || '—'}</td>
                         <td className="px-6 py-4 text-gray-300">{submission.task?.title || '—'}</td>
-                        <td className="px-6 py-4 text-gray-400">@usuario</td>
+                        <td className="px-6 py-4 text-gray-400">{userHandle}</td>
                         <td className="px-6 py-4">
                           <span
                             className={`inline-flex items-center rounded-full px-3 py-1 text-xs font-medium ${
@@ -519,20 +532,30 @@ export const AdminPanel = () => {
                             : '—'}
                         </td>
                         <td className="px-6 py-4">
-                          {submission.status === 'FAILED' && !overriddenSubmissions.has(submission.id) && (
-                            <button
-                              onClick={() => handleForceApprove(submission.id)}
-                              className="text-xs font-semibold text-purple-400 transition hover:text-purple-300"
-                            >
-                              Forzar Aprobación
-                            </button>
-                          )}
-                          {overriddenSubmissions.has(submission.id) && (
-                            <span className="text-xs text-green-400">✓ Forzado</span>
+                          {submission.status === 'PENDING' ? (
+                            <div className="flex gap-2">
+                              <button
+                                onClick={() => handleReview(submission.id, 'approve')}
+                                className="rounded px-3 py-1 text-xs font-semibold bg-emerald-500/20 text-emerald-300 hover:bg-emerald-500/30 transition"
+                              >
+                                Aprobar
+                              </button>
+                              <button
+                                onClick={() => handleReview(submission.id, 'reject')}
+                                className="rounded px-3 py-1 text-xs font-semibold bg-rose-500/20 text-rose-300 hover:bg-rose-500/30 transition"
+                              >
+                                Rechazar
+                              </button>
+                            </div>
+                          ) : submission.status === 'COMPLETED' ? (
+                            <span className="text-xs text-emerald-400">✓ Aprobado</span>
+                          ) : (
+                            <span className="text-xs text-rose-400">✗ Rechazado</span>
                           )}
                         </td>
                       </tr>
-                    ))}
+                      );
+                    })}
                   </tbody>
                 </table>
               </div>

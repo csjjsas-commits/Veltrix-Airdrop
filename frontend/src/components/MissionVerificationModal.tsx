@@ -79,7 +79,11 @@ export const MissionVerificationModal = ({
   const isAutoVerification = task.verificationType && task.verificationType !== 'MANUAL' && task.taskType !== 'WALLET_ACTION';
   const isWalletVerification = task.taskType === 'WALLET_ACTION';
   const requiresHandleInput = isWalletVerification || !isAutoVerification;
-  const canSubmit = !currentState.isLoading && (!requiresHandleInput || verificationHandle.trim().length > 0);
+  
+  // Para auto verificación: necesita link abierto (si hay actionUrl) y handle ingresado
+  const needsLinkOpened = isAutoVerification && task.actionUrl && !linkOpened;
+  const needsHandle = requiresHandleInput && verificationHandle.trim().length === 0;
+  const canSubmit = !currentState.isLoading && !needsLinkOpened && !needsHandle;
 
   const formatPlatformText = (text?: string) => {
     if (!text) return '';
@@ -250,6 +254,7 @@ export const MissionVerificationModal = ({
                 verificationData={task.verificationData}
                 linkOpened={linkOpened}
                 hasActionUrl={!!task.actionUrl}
+                userHandle={verificationHandle}
                 onVerificationComplete={(result) => {
                   if (result.verified || result.taskCompleted) {
                     onTaskComplete({

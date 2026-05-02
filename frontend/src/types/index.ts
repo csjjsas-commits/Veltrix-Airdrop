@@ -106,6 +106,7 @@ export interface SubmissionItem {
   status: 'PENDING' | 'COMPLETED' | 'FAILED';
   completedAt: string | null;
   pointsAwarded: number | null;
+  verificationMetadata?: string | any;
   user: {
     id: string;
     email: string;

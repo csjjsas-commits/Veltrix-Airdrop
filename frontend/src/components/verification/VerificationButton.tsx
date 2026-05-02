@@ -13,6 +13,7 @@ interface VerificationButtonProps {
   disabled?: boolean;
   linkOpened?: boolean;
   hasActionUrl?: boolean;
+  userHandle?: string;
 }
 
 export const VerificationButton: React.FC<VerificationButtonProps> = ({
@@ -22,7 +23,8 @@ export const VerificationButton: React.FC<VerificationButtonProps> = ({
   onVerificationComplete,
   disabled = false,
   linkOpened = true,
-  hasActionUrl = false
+  hasActionUrl = false,
+  userHandle
 }) => {
   const { token } = useAuth();
 
@@ -74,7 +76,8 @@ export const VerificationButton: React.FC<VerificationButtonProps> = ({
         return;
       }
 
-      const result = await submitTaskForReview(token, taskId, JSON.stringify(getVerificationData()), `Verificación automática para ${verificationType}`);
+      const verificationPayload = getVerificationData();
+      const result = await submitTaskForReview(token, taskId, JSON.stringify(verificationPayload), `Verificación automática para ${verificationType}`);
       const normalizedResult = {
         verified: true,
         taskCompleted: true,
@@ -95,24 +98,32 @@ export const VerificationButton: React.FC<VerificationButtonProps> = ({
   };
 
   const getVerificationData = () => {
+    const baseData = {
+      userHandle: userHandle || undefined,
+      linkOpened: hasActionUrl ? linkOpened : undefined
+    };
+
     switch (verificationType) {
       case 'TWITTER_FOLLOW':
         return {
           action: 'follow',
           targetId: verificationData?.targetUserId,
-          username: prompt('Ingresa tu username de X (sin @):')
+          username: userHandle,
+          ...baseData
         };
       case 'TWITTER_LIKE':
         return {
           action: 'like',
           tweetId: verificationData?.tweetId,
-          username: prompt('Ingresa tu username de X (sin @):')
+          username: userHandle,
+          ...baseData
         };
       case 'TWITTER_RETWEET':
         return {
           action: 'retweet',
           tweetId: verificationData?.tweetId,
-          username: prompt('Ingresa tu username de X (sin @):')
+          username: userHandle,
+          ...baseData
         };
       case 'DISCORD_JOIN':
         return {
@@ -129,46 +140,52 @@ export const VerificationButton: React.FC<VerificationButtonProps> = ({
         return {
           action: 'join_channel',
           chatId: verificationData?.channelId,
-          userTelegramId: prompt('Ingresa tu ID de usuario de Telegram:')
+          userTelegramId: userHandle,
+          ...baseData
         };
       case 'TELEGRAM_JOIN_GROUP':
         return {
           action: 'join_group',
           chatId: verificationData?.groupId,
-          userTelegramId: prompt('Ingresa tu ID de usuario de Telegram:')
+          userTelegramId: userHandle,
+          ...baseData
         };
       case 'TELEGRAM_BOT_VERIFY':
         return {
           action: 'bot_verify',
-          userTelegramId: prompt('Ingresa tu ID de usuario de Telegram:')
+          userTelegramId: userHandle,
+          ...baseData
         };
       case 'WALLET_CONNECT':
         return {
           action: 'connect',
-          walletAddress: prompt('Ingresa tu dirección de wallet Ethereum:')
+          walletAddress: userHandle,
+          ...baseData
         };
       case 'WALLET_HOLD_TOKEN':
         return {
           action: 'hold_token',
           contractAddress: verificationData?.contractAddress,
           amount: verificationData?.amount,
-          walletAddress: prompt('Ingresa tu dirección de wallet Ethereum:')
+          walletAddress: userHandle,
+          ...baseData
         };
       case 'WALLET_NFT_OWNERSHIP':
         return {
           action: 'nft_ownership',
           contractAddress: verificationData?.contractAddress,
           tokenId: verificationData?.tokenId,
-          walletAddress: prompt('Ingresa tu dirección de wallet Ethereum:')
+          walletAddress: userHandle,
+          ...baseData
         };
       case 'WALLET_TRANSACTION':
         return {
           action: 'transaction',
-          txHash: prompt('Ingresa el hash de tu transacción:'),
-          walletAddress: prompt('Ingresa tu dirección de wallet Ethereum:')
+          txHash: userHandle,
+          ...baseData
         };
       default:
-        return {};
+        return baseData;
     }
   };
 
