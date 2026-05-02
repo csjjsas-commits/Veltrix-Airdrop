@@ -52,6 +52,7 @@ export const MissionVerificationModal = ({
   const [referralStats, setReferralStats] = useState({ count: 0, pointsEarned: 0 });
   const [copied, setCopied] = useState(false);
   const [error, setError] = useState('');
+  const [linkOpened, setLinkOpened] = useState(false);
 
   useEffect(() => {
     if (!isOpen || !task || task.taskType !== 'REFERRAL' || !token) return;
@@ -225,36 +226,41 @@ export const MissionVerificationModal = ({
           {task.actionUrl && (
             <div className="rounded-[1.75rem] border border-slate-800 bg-slate-900/95 p-5">
               <p className="text-xs uppercase tracking-[0.35em] text-slate-400 mb-3">Paso 1: completá la acción</p>
-              <a
-                href={task.actionUrl}
-                target="_blank"
-                rel="noreferrer"
+              <button
+                onClick={() => {
+                  setLinkOpened(true);
+                  if (task.actionUrl) {
+                    window.open(task.actionUrl, '_blank');
+                  }
+                }}
                 className="inline-flex w-full items-center gap-3 rounded-3xl bg-slate-950 px-4 py-4 text-sm font-semibold text-white transition hover:bg-slate-900"
               >
                 <FaExternalLinkAlt className="h-4 w-4 text-violet-300" />
                 <span className="truncate">Abrir acción</span>
-              </a>
+              </button>
             </div>
           )}
 
           <div className="rounded-[1.75rem] border border-slate-800 bg-slate-900/95 p-5">
-            <p className="text-xs uppercase tracking-[0.35em] text-slate-400 mb-3">Paso 2: {isAutoVerification ? 'Verificación automática' : `Ingresa tu ${isWalletVerification ? 'dirección de wallet' : 'usuario en ' + displayPlatform}`}</p>
+            <p className="text-xs uppercase tracking-[0.35em] text-slate-400 mb-3">Paso 2: {isAutoVerification ? 'Enviar para revisión' : `Ingresa tu ${isWalletVerification ? 'dirección de wallet' : 'usuario en ' + displayPlatform}`}</p>
             {isAutoVerification ? (
               <VerificationButton
                 taskId={task.id}
                 verificationType={task.verificationType!}
                 verificationData={task.verificationData}
+                linkOpened={linkOpened}
+                hasActionUrl={!!task.actionUrl}
                 onVerificationComplete={(result) => {
                   if (result.verified || result.taskCompleted) {
                     onTaskComplete({
                       ...task,
-                      status: 'COMPLETED',
+                      status: 'PENDING',
                       completedAt: new Date().toISOString(),
-                      pointsAwarded: task.points
+                      pointsAwarded: null
                     });
                     onClose();
                   } else {
-                    setError(result.message || 'Verificación fallida');
+                    setError(result.message || 'Error al enviar tarea');
                   }
                 }}
               />

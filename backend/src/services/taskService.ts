@@ -670,37 +670,38 @@ export const submitTaskForReview = async (
       }
     },
     update: {
-      status: 'COMPLETED',
+      status: 'PENDING',
       completedAt: new Date(),
-      pointsAwarded: task.points,
+      pointsAwarded: null,
       verificationMetadata: proofMetadata
     },
     create: {
       userId,
       taskId,
-      status: 'COMPLETED',
+      status: 'PENDING',
       completedAt: new Date(),
-      pointsAwarded: task.points,
+      pointsAwarded: null,
       verificationMetadata: proofMetadata
     }
   });
 
-  await prisma.user.update({
-    where: { id: userId },
-    data: {
-      points: {
-        increment: task.points
-      }
-    }
-  });
+  // No otorgar puntos automáticamente, esperar aprobación del admin
+  // await prisma.user.update({
+  //   where: { id: userId },
+  //   data: {
+  //     points: {
+  //       increment: task.points
+  //     }
+  //   }
+  // });
 
-  await prisma.airdropConfig.updateMany({
-    data: {
-      totalCommunityPoints: {
-        increment: task.points
-      }
-    }
-  });
+  // await prisma.airdropConfig.updateMany({
+  //   data: {
+  //     totalCommunityPoints: {
+  //       increment: task.points
+  //     }
+  //   }
+  // });
 
   return {
     id: task.id,

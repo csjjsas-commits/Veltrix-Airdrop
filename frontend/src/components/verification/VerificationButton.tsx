@@ -3,7 +3,7 @@ import { useAuth } from '../../hooks/useAuth';
 import { Button } from '../ui/Button';
 import { TelegramVerification } from './TelegramVerification';
 import { TwitterVerification } from './TwitterVerification';
-import { verifyTask } from '../../services/api';
+import { verifyTask, submitTaskForReview } from '../../services/api';
 
 interface VerificationButtonProps {
   taskId: string;
@@ -11,6 +11,8 @@ interface VerificationButtonProps {
   verificationData?: any;
   onVerificationComplete: (result: any) => void;
   disabled?: boolean;
+  linkOpened?: boolean;
+  hasActionUrl?: boolean;
 }
 
 export const VerificationButton: React.FC<VerificationButtonProps> = ({
@@ -18,7 +20,9 @@ export const VerificationButton: React.FC<VerificationButtonProps> = ({
   verificationType,
   verificationData,
   onVerificationComplete,
-  disabled = false
+  disabled = false,
+  linkOpened = true,
+  hasActionUrl = false
 }) => {
   const { token } = useAuth();
 
@@ -70,11 +74,12 @@ export const VerificationButton: React.FC<VerificationButtonProps> = ({
         return;
       }
 
-      const result = await verifyTask(token, taskId, { verificationData: getVerificationData() });
+      const result = await submitTaskForReview(token, taskId, JSON.stringify(getVerificationData()), `Verificación automática para ${verificationType}`);
       const normalizedResult = {
-        ...result,
-        success: !!(result?.verified || result?.taskCompleted),
-        message: result?.message || (result?.verified || result?.taskCompleted ? 'Verificación exitosa' : 'Verificación fallida')
+        verified: true,
+        taskCompleted: true,
+        message: 'Tarea enviada para revisión por el administrador',
+        ...result
       };
 
       setLastResult(normalizedResult);
@@ -168,22 +173,22 @@ export const VerificationButton: React.FC<VerificationButtonProps> = ({
   };
 
   const getButtonText = () => {
-    if (isVerifying) return 'Verificando...';
+    if (isVerifying) return 'Enviando...';
 
     switch (verificationType) {
-      case 'TWITTER_FOLLOW': return 'Seguir en X';
-      case 'TWITTER_LIKE': return 'Dar Like en X';
-      case 'TWITTER_RETWEET': return 'Retuitear en X';
-      case 'DISCORD_JOIN': return 'Unirse a Discord';
-      case 'DISCORD_ROLE': return 'Verificar Rol';
-      case 'TELEGRAM_JOIN_CHANNEL': return 'Unirse al Canal';
-      case 'TELEGRAM_JOIN_GROUP': return 'Unirse al Grupo';
-      case 'TELEGRAM_BOT_VERIFY': return 'Verificar con Bot';
-      case 'WALLET_CONNECT': return 'Conectar Wallet';
-      case 'WALLET_HOLD_TOKEN': return 'Verificar Tokens';
-      case 'WALLET_NFT_OWNERSHIP': return 'Verificar NFT';
-      case 'WALLET_TRANSACTION': return 'Verificar Transacción';
-      default: return 'Verificar';
+      case 'TWITTER_FOLLOW': return 'Enviar seguimiento';
+      case 'TWITTER_LIKE': return 'Enviar like';
+      case 'TWITTER_RETWEET': return 'Enviar retweet';
+      case 'DISCORD_JOIN': return 'Enviar unión';
+      case 'DISCORD_ROLE': return 'Enviar rol';
+      case 'TELEGRAM_JOIN_CHANNEL': return 'Enviar canal';
+      case 'TELEGRAM_JOIN_GROUP': return 'Enviar grupo';
+      case 'TELEGRAM_BOT_VERIFY': return 'Enviar verificación';
+      case 'WALLET_CONNECT': return 'Enviar wallet';
+      case 'WALLET_HOLD_TOKEN': return 'Enviar tokens';
+      case 'WALLET_NFT_OWNERSHIP': return 'Enviar NFT';
+      case 'WALLET_TRANSACTION': return 'Enviar transacción';
+      default: return 'Enviar para revisión';
     }
   };
 
@@ -214,7 +219,7 @@ export const VerificationButton: React.FC<VerificationButtonProps> = ({
     <div className="space-y-2">
       <Button
         onClick={handleVerification}
-        disabled={disabled || isVerifying}
+        disabled={disabled || isVerifying || (hasActionUrl && !linkOpened)}
         className={`${getButtonColor()} text-white px-4 py-2 rounded-lg disabled:opacity-50`}
       >
         {getButtonText()}
