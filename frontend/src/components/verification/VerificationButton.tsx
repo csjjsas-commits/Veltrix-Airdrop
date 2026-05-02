@@ -232,15 +232,26 @@ export const VerificationButton: React.FC<VerificationButtonProps> = ({
     }
   };
 
+  const isLinkRequired = hasActionUrl && !linkOpened;
+  const isHandleRequired = !userHandle?.trim();
+  const isButtonDisabled = disabled || isVerifying || isLinkRequired || isHandleRequired;
+
   return (
     <div className="space-y-2">
       <Button
         onClick={handleVerification}
-        disabled={disabled || isVerifying || (hasActionUrl && !linkOpened)}
+        disabled={isButtonDisabled}
         className={`${getButtonColor()} text-white px-4 py-2 rounded-lg disabled:opacity-50`}
       >
         {getButtonText()}
       </Button>
+
+      {isLinkRequired && (
+        <p className="text-sm text-yellow-300">Abre el link antes de verificar.</p>
+      )}
+      {!isLinkRequired && isHandleRequired && (
+        <p className="text-sm text-yellow-300">Ingresa tu usuario para habilitar el botón.</p>
+      )}
 
       {lastResult && (
         <div className={`text-sm p-2 rounded ${

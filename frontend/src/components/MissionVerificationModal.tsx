@@ -247,6 +247,17 @@ export const MissionVerificationModal = ({
 
           <div className="rounded-[1.75rem] border border-slate-800 bg-slate-900/95 p-5">
             <p className="text-xs uppercase tracking-[0.35em] text-slate-400 mb-3">Paso 2: {isAutoVerification ? 'Enviar para revisión' : `Ingresa tu ${isWalletVerification ? 'dirección de wallet' : 'usuario en ' + displayPlatform}`}</p>
+            {isAutoVerification && (
+              <div className="space-y-3">
+                <input
+                  value={verificationHandle}
+                  onChange={(e) => setVerificationHandle(e.target.value)}
+                  placeholder={isWalletVerification ? "0x..." : "@tuusuario"}
+                  className="w-full rounded-3xl border border-slate-800 bg-slate-950 px-4 py-4 text-white placeholder:text-slate-500 outline-none focus:border-violet-400 focus:ring-2 focus:ring-violet-500/20"
+                />
+                <p className="text-sm text-slate-500">Abre el link primero, luego coloca tu usuario y haz clic en verificar.</p>
+              </div>
+            )}
             {isAutoVerification ? (
               <VerificationButton
                 taskId={task.id}
@@ -255,6 +266,7 @@ export const MissionVerificationModal = ({
                 linkOpened={linkOpened}
                 hasActionUrl={!!task.actionUrl}
                 userHandle={verificationHandle}
+                disabled={!verificationHandle.trim()}
                 onVerificationComplete={(result) => {
                   if (result.verified || result.taskCompleted) {
                     onTaskComplete({
