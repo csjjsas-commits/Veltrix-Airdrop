@@ -266,7 +266,6 @@ export const MissionVerificationModal = ({
                 linkOpened={linkOpened}
                 hasActionUrl={!!task.actionUrl}
                 userHandle={verificationHandle}
-                disabled={!verificationHandle.trim()}
                 onVerificationComplete={(result) => {
                   if (
                       result.verified ||
