@@ -268,7 +268,12 @@ export const MissionVerificationModal = ({
                 userHandle={verificationHandle}
                 disabled={!verificationHandle.trim()}
                 onVerificationComplete={(result) => {
-                  if (result.verified || result.taskCompleted) {
+                  if (
+                      result.verified ||
+                      result.taskCompleted ||
+                      result.pending
+                     ) {
+
                     onTaskComplete({
                       ...task,
                       status: 'PENDING',
