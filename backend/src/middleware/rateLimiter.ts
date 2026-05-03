@@ -29,7 +29,7 @@ export const registerLimiter = createLimiter({
 
 export const submitLimiter = createLimiter({
   windowMs: 5 * 60 * 1000,
-  max: 6,
+  max: 20,
   message: { success: false, message: 'Demasiados envíos de tareas. Intenta en unos minutos.' }
 });
 

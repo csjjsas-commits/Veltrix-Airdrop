@@ -56,9 +56,9 @@ router.post('/:id/open-link', taskCompleteLimiter, openLinkHandler);
 router.post(
   '/:id/submit',
   submitLimiter,
-  verifyCaptcha,
   submitTaskHandler
 );
+
 
 // POST /api/tasks/:id/verify - Verificar tarea automáticamente
 router.post(
